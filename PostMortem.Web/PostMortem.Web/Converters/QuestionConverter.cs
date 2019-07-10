@@ -12,6 +12,7 @@
         {
             Guard.IsNotNull(source, nameof(source));
             Guard.IsNotNull(destination, nameof(destination));
+            Guard.IsNotNull(context, nameof(context));
             destination.Importance = source.Importance;
             destination.QuestionId = source.QuestionId;
             destination.QuestionText = source.QuestionText;

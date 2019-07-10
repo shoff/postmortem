@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using Events.Projects;
     using Questions;
 
     public class Project
@@ -25,6 +26,21 @@
                 this.questions.ProjectId = this.ProjectId;
                 return this.questions;
             }
+        }
+
+        public static ProjectGetAllEventArgs CreateGetAllEventArgs()
+        {
+            return new ProjectGetAllEventArgs();
+        }
+
+        public static ProjectGetByIdEventArgs CreateGetByIdEventArgs(Guid projectId)
+        {
+            return new ProjectGetByIdEventArgs(projectId);
+        }
+
+        public static ProjectCreatedEventArgs CreateProjectCreatedEventArgs(Project project)
+        {
+            return new ProjectCreatedEventArgs(project);
         }
     }
 }

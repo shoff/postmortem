@@ -9,6 +9,6 @@
         public string ProjectName { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public ICollection<QuestionDto> Comments { get; set; } = new HashSet<QuestionDto>();
+        public ICollection<QuestionDto> Questions { get; set; } = new HashSet<QuestionDto>();
     }
 }
