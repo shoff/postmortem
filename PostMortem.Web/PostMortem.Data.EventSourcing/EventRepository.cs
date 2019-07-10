@@ -9,7 +9,7 @@
     using Domain.Questions;
     using Polly;
 
-    public partial class EventRepository : IRepository
+    public partial class EventRepository : PostMortem.Domain.IRepository
     {
         public Task<PolicyResult<ICollection<Project>>> GetAllProjectsAsync()
         {
@@ -46,11 +46,6 @@
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult<Question>> GetQuestionsByProjectIdAsync(Guid projectId)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<PolicyResult> UpdateCommentAsync(Comment comment)
         {
             throw new NotImplementedException();
@@ -72,6 +67,11 @@
         }
 
         public Task<PolicyResult> UpdateProjectAsync(Project requestProject)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<PolicyResult<ICollection<Question>>> IRepository.GetQuestionsByProjectIdAsync(Guid projectId)
         {
             throw new NotImplementedException();
         }
