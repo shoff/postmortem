@@ -1,20 +1,20 @@
-﻿namespace PostMortem.Infrastructure.Events.Comments
+﻿namespace PostMortem.Infrastructure.Events.Projects
 {
     using System.Threading;
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
     using Domain;
-    using Domain.Events.Comments;
+    using Domain.Events.Projects;
     using MediatR;
     using Polly;
     using Zatoichi.Common.Infrastructure.Resilience;
 
-    public class CommentLikedHandler : IRequestHandler<CommentLikedEventArgs, PolicyResult>
+    public class ProjectUpdatedHandler : IRequestHandler<ProjectUpdatedEventArgs, PolicyResult>
     {
         private readonly IExecutionPolicies executionPolicies;
         private readonly IRepository repository;
 
-        public CommentLikedHandler(
+        public ProjectUpdatedHandler(
             IRepository repository,
             IExecutionPolicies executionPolicies)
         {
@@ -22,9 +22,9 @@
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
-        public Task<PolicyResult> Handle(CommentLikedEventArgs request, CancellationToken cancellationToken)
+        public Task<PolicyResult> Handle(ProjectUpdatedEventArgs request, CancellationToken cancellationToken)
         {
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAsync(() => this.repository.LikeCommentAsync(request.CommentId));
+            return this.executionPolicies.DbExecutionPolicy.ExecuteAsync(() => this.repository.UpdateProjectAsync(request.Project));
         }
     }
 }

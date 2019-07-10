@@ -24,7 +24,7 @@
 
         public Task<PolicyResult> Handle(CommentUpdatedEventArgs request, CancellationToken cancellationToken)
         {
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAsync(() => this.repository.AddCommentAsync(request.Comment));
+            return this.executionPolicies.DbExecutionPolicy.ExecuteAsync(() => this.repository.UpdateCommentAsync(request.Comment));
         }
     }
 }

@@ -27,24 +27,4 @@
             return this.executionPolicies.DbExecutionPolicy.ExecuteAsync(() => this.repository.CreateProjectAsync(request.Project));
         }
     }
-
-
-    public class ProjectUpdatedHandler : IRequestHandler<ProjectUpdatedEventArgs, PolicyResult>
-    {
-        private readonly IExecutionPolicies executionPolicies;
-        private readonly IRepository repository;
-
-        public ProjectUpdatedHandler(
-            IRepository repository,
-            IExecutionPolicies executionPolicies)
-        {
-            this.executionPolicies = Guard.IsNotNull(executionPolicies, nameof(executionPolicies));
-            this.repository = Guard.IsNotNull(repository, nameof(repository));
-        }
-
-        public Task<PolicyResult> Handle(ProjectUpdatedEventArgs request, CancellationToken cancellationToken)
-        {
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAsync(() => this.repository.UpdateProjectAsync(request.Project));
-        }
-    }
 }

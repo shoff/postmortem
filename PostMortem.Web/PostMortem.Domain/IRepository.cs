@@ -17,7 +17,7 @@
         Task<PolicyResult> AddQuestionAsync(Question question);
         Task<PolicyResult> DeleteQuestionAsync(Guid questionId);
         Task<PolicyResult> DeleteCommentAsync(Guid questionId);
-        Task<PolicyResult<Question>> GetQuestionsByProjectIdAsync(Guid projectId);
+        Task<PolicyResult<ICollection<Question>>> GetQuestionsByProjectIdAsync(Guid projectId);
         Task<PolicyResult> UpdateCommentAsync(Comment comment);
         Task<PolicyResult> LikeCommentAsync(Guid commentId);
         Task<PolicyResult> DislikeCommentAsync(Guid commentId);

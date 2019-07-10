@@ -177,7 +177,7 @@
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult<Domain.Questions.Question>> GetQuestionsByProjectIdAsync(Guid projectId)
+        public Task<PolicyResult<ICollection<Domain.Questions.Question>>> GetQuestionsByProjectIdAsync(Guid projectId)
         {
             throw new NotImplementedException();
         }
