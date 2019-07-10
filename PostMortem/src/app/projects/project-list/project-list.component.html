@@ -1,0 +1,18 @@
+<div>
+  <mat-table [dataSource]="dataSource">
+    <ng-container matColumnDef="projectName">
+      <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+      <mat-cell *matCellDef="let project"> <a href="/project?projectId={{project.projectId}}">{{project.projectName}}</a> </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="startDate">
+      <mat-header-cell *matHeaderCellDef> Start Date </mat-header-cell>
+      <mat-cell *matCellDef="let project"> {{project.startDate}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="endDate">
+      <mat-header-cell *matHeaderCellDef> End Date </mat-header-cell>
+      <mat-cell *matCellDef="let project"> {{project.endDate}} </mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+</div>
