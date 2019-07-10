@@ -4,8 +4,10 @@
     using ChaosMonkey.Guards;
     using Domain.Projects;
     using Domain.Questions;
+    using MediatR;
+    using Polly;
 
-    public abstract class QuestionEventArgs : EventArgs
+    public abstract class QuestionEventArgs : EventArgs, IRequest<PolicyResult>
     {
         protected QuestionEventArgs(Project project, Question question)
         {

@@ -9,14 +9,14 @@
     using Domain.Questions;
     using Polly;
 
-    public partial class EventRepository : IRepository, IDisposable
+    public partial class EventRepository : IRepository
     {
         public Task<PolicyResult<ICollection<Project>>> GetAllProjectsAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> CreateAsync(Project project)
+        public Task<PolicyResult> CreateProjectAsync(Project project)
         {
             throw new NotImplementedException();
         }
@@ -66,8 +66,14 @@
             throw new NotImplementedException();
         }
 
-        public void Dispose()
+        public Task<PolicyResult> UpdateQuestionAsync(Question question)
         {
+            throw new NotImplementedException();
+        }
+
+        public Task<PolicyResult> UpdateProjectAsync(Project requestProject)
+        {
+            throw new NotImplementedException();
         }
     }
 }

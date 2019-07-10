@@ -69,7 +69,7 @@
         //#pragma warning restore 8123
         //        }
 
-        //        public async Task<Domain.Projects.Project> CreateAsync(Project projectDto)
+        //        public async Task<Domain.Projects.Project> CreateProjectAsync(Project projectDto)
         //        {
         //            try
         //            {
@@ -147,7 +147,7 @@
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> CreateAsync(Domain.Projects.Project project)
+        public Task<PolicyResult> CreateProjectAsync(Domain.Projects.Project project)
         {
             throw new NotImplementedException();
         }
@@ -193,6 +193,16 @@
         }
 
         public Task<PolicyResult> DislikeCommentAsync(Guid commentId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PolicyResult> UpdateQuestionAsync(Domain.Questions.Question question)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PolicyResult> UpdateProjectAsync(Domain.Projects.Project requestProject)
         {
             throw new NotImplementedException();
         }
