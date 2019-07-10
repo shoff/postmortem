@@ -1,16 +1,15 @@
 ﻿namespace PostMortem.Web.Controllers
 {
     using System;
-    using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
     using ChaosMonkey.Guards;
     using Domain;
+    using Domain.Projects;
     using Dtos;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Routing;
-    using Zatoichi.Common.Infrastructure.Extensions;
 
     [Route("api/[controller]")]
     [ApiController]
@@ -44,12 +43,12 @@
         public async Task<IActionResult> GetById(Guid id)
         {
             var vm = await this.repository.GetByProjectIdAsync(id);
-            if (vm.Item1 == null)
+            if (vm == null)
             {
                 return this.NotFound(id);
             }
-            var projectDto = this.mapper.Map<ProjectDto>(vm.Item1);
-            projectDto.Questions.AddRange(vm.Item2.Map(q => this.mapper.Map<QuestionDto>(q)).ToList());
+            var projectDto = this.mapper.Map<ProjectDto>(vm);
+            // projectDto.Questions.AddRange(vm.Item2.Map(q => this.mapper.Map<QuestionDto>(q)).ToList());
             return this.Ok(projectDto);
         }
 
@@ -64,15 +63,27 @@
             }
 
             project.CreatedBy = this.username;
-            var entity = await this.repository.CreateAsync(project);
+            var p = new Project
+            {
+                ProjectId = Guid.NewGuid(),
+                EndDate = project.EndDate,
+                ProjectName = project.ProjectName,
+                StartDate = project.StartDate
+            };
+            var result = await this.repository.CreateAsync(p);
 
-            var url = this.linkGenerator.GetPathByAction(
-                this.HttpContext, 
-                controller: "Projects", 
-                action: "GetById", 
-                values: new { id = entity.ProjectId });
+            if (result.Outcome == Polly.OutcomeType.Successful)
+            {
+                var url = this.linkGenerator.GetPathByAction(
+                    this.HttpContext,
+                    controller: "Projects",
+                    action: "GetById",
+                    values: new {id = p.ProjectId});
 
-            return this.Created($"{this.HttpContext.Request.Scheme}//{this.HttpContext.Request.Host}{url}", entity);
+                return this.Created($"{this.HttpContext.Request.Scheme}//{this.HttpContext.Request.Host}{url}", p);
+            }
+
+            return new StatusCodeResult(500);
         }
     }
 

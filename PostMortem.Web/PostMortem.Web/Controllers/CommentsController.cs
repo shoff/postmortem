@@ -7,25 +7,34 @@
     using Dtos;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Routing;
     using Microsoft.Extensions.Logging;
-    using Zatoichi.Common.Infrastructure.Extensions;
 
     [Route("api/[controller]")]
     [ApiController]
     public class CommentsController : BaseController
     {
+        private readonly LinkGenerator linkGenerator;
         private readonly ILogger<CommentsController> logger;
         private readonly IRepository repository;
 
         public CommentsController(
+            LinkGenerator linkGenerator,
             INameGeneratorClient nameGenerator,
             IHttpContextAccessor httpContextAccessor,
             ILogger<CommentsController> logger,
             IRepository repository)
             : base(httpContextAccessor, nameGenerator)
         {
-            this.logger = logger;
+            this.linkGenerator = Guard.IsNotNull(linkGenerator, nameof(linkGenerator));
+            this.logger = Guard.IsNotNull(logger, nameof(logger));
             this.repository = Guard.IsNotNull(repository, nameof(repository));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            throw new NotImplementedException();
         }
 
         [HttpPost]
@@ -46,7 +55,18 @@
 
                 var result = await this.repository.AddCommentAsync(comment).ConfigureAwait(false);
 
-                return result.ToActionResult();
+                if (result.Outcome == Polly.OutcomeType.Successful)
+                {
+                    var url = this.linkGenerator.GetPathByAction(
+                        this.HttpContext,
+                        controller: "Questions",
+                        action: "GetById",
+                        values: new { id = comment.CommentId });
+
+                    return this.Created($"{this.HttpContext.Request.Scheme}//{this.HttpContext.Request.Host}{url}", comment);
+                }
+
+                return new StatusCodeResult(500);
             }
             catch (Exception e)
             {

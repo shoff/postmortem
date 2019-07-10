@@ -3,6 +3,8 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using ChaosMonkey.Guards;
+    using Zatoichi.Common.Infrastructure.Extensions;
 
     public class CommentCollection : IList<Comment>, IReadOnlyCollection<Comment>
     {
@@ -96,6 +98,19 @@
                 value.QuestionId = this.QuestionId;
                 this.comments[index] = value;
             }
+        }
+
+        public void AddRange(ICollection<Comment> comments)
+        {
+            Guard.IsNotNull(comments, nameof(comments));
+            if (this.questionId == null || this.questionId == Guid.Empty)
+            {
+                throw new ApplicationException(
+                    "Cannot add questions unless the Project property has first been assigned.");
+            }
+
+            comments.Each(dto => dto.QuestionId = this.questionId);
+            this.comments.AddRange(comments);
         }
     }
 }
