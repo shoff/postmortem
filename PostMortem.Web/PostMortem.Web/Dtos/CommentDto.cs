@@ -18,7 +18,14 @@
         {
             var comment = new Comment
             {
-
+                Commenter = dto.Commenter,
+                CommentId = dto.CommentId,
+                CommentText = dto.CommentText,
+                DateAdded = dto.DateAdded,
+                Dislikes = dto.Dislikes,
+                GenerallyPositive = dto.GenerallyPositive,
+                Likes = dto.Likes,
+                QuestionId = dto.QuestionId
             };
             return comment;
         }
