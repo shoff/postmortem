@@ -9,7 +9,7 @@
     using Domain.Questions;
     using Polly;
 
-    public partial class EventRepository : IRepository, IDisposable
+    public partial class NEventSourceRepository : IRepository, IDisposable
     {
         public Task<PolicyResult<ICollection<Project>>> GetAllProjectsAsync()
         {
@@ -23,16 +23,20 @@
 
         public Task<Project> GetByProjectIdAsync(Guid projectId)
         {
+            // acquire stream from store.
+            // replay project stream in reverse, grab first event.
             throw new NotImplementedException();
         }
 
         public Task<PolicyResult> AddCommentAsync(Comment comment)
         {
+            // create new stream for the comment. Add initial entry.
             throw new NotImplementedException();
         }
 
         public Task<PolicyResult> AddQuestionAsync(Question question)
         {
+            // create new question 
             throw new NotImplementedException();
         }
 

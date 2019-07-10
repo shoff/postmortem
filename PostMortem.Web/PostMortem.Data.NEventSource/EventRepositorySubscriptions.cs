@@ -1,6 +1,6 @@
 ﻿namespace PostMortem.Data.EventSourcing
 {
-    public partial class EventRepository
+    public partial class NEventSourceRepository
     {
 
         private void Subscribe()
