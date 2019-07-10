@@ -2,7 +2,7 @@
 {
     using AutoMapper;
     using ChaosMonkey.Guards;
-    using Data;
+    using Domain.Questions;
     using Dtos;
     using Zatoichi.Common.Infrastructure.Extensions;
 

@@ -5,12 +5,11 @@
     using System.Threading.Tasks;
     using AutoMapper;
     using ChaosMonkey.Guards;
-    using Data;
+    using Domain;
     using Dtos;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Routing;
-    using Services;
     using Zatoichi.Common.Infrastructure.Extensions;
 
     [Route("api/[controller]")]

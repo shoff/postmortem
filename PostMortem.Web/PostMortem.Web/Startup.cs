@@ -7,12 +7,13 @@ using Microsoft.Extensions.DependencyInjection;
 namespace PostMortem.Web
 {
     using AutoMapper;
-    using Config;
     using Converters;
-    using Data;
+    using Data.MongoDb;
+    using Data.MongoDb.Config;
+    using Domain;
+    using Infrastructure;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection.Extensions;
-    using Services;
     using Swashbuckle.AspNetCore.Swagger;
 
     public class Startup

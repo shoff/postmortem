@@ -2,7 +2,7 @@
 {
     using AutoMapper;
     using ChaosMonkey.Guards;
-    using Data;
+    using Domain.Comments;
     using Dtos;
 
     public class CommentConverter : ITypeConverter<Comment, CommentDto>

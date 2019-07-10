@@ -1,6 +1,7 @@
 ﻿namespace PostMortem.Web.Dtos
 {
     using System;
+    using Domain.Comments;
 
     public class CommentDto
     {
@@ -12,5 +13,14 @@
         public string Commenter { get; set; }
         public int Likes { get; set; }
         public int Dislikes { get; set; }
+
+        public static implicit operator Comment(CommentDto dto)
+        {
+            var comment = new Comment
+            {
+
+            };
+            return comment;
+        }
     }
 }

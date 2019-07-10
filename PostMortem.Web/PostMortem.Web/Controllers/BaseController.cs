@@ -2,9 +2,9 @@
 {
     using System;
     using ChaosMonkey.Guards;
+    using Domain;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Services;
 
     public abstract class BaseController : ControllerBase
     {
