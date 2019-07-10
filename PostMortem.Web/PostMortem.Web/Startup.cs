@@ -1,23 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace PostMortem.Web
+﻿namespace PostMortem.Web
 {
-    using AutoMapper;
-    using Converters;
-    using Data.MongoDb;
-    using Data.MongoDb.Config;
-    using Domain;
-    using Infrastructure;
-    using Infrastructure.Events.Comments;
-    using MediatR;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.DependencyInjection.Extensions;
-    using Swashbuckle.AspNetCore.Swagger;
-    using Zatoichi.Common.Infrastructure.Resilience;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
 
     public class Startup
     {
@@ -31,28 +18,12 @@ namespace PostMortem.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddLogging();
-            services.AddOptions();
-            services.AddAutoMapper(typeof(ProjectProfile).Assembly);
-            services.Configure<MongoOptions>(this.Configuration.GetSection("MongoOptions"));
-            services.Configure<PolicyOptions>(this.Configuration.GetSection("PolicyOptions"));
-            services.AddHttpClient<INameGeneratorClient, NameGeneratorClient>();
-            services.AddMediatR(typeof(CommentAddedHandler).Assembly);
-            services.AddTransient<IRepository, Repository>();
-            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddCors();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Info
-                {
-                    Version = "v1",
-                    Title = "Postmortem API",
-                    Description = "Postmortem API",
-                    TermsOfService = "None",
-                    Contact = new Contact() { Name = "Postmortem", Email = "steve.hoff@identifix.com" }
-                });
-            });
+            services.InitializeContainer(this.Configuration)
+                .InitializeOptions(this.Configuration)
+                .InitializeSwagger()
+                .AddCors()
+                .AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,10 +40,7 @@ namespace PostMortem.Web
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Postmortem API");
-            });
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Postmortem API"); });
             app.UseMvc();
         }
     }
