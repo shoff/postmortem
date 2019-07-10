@@ -2,9 +2,12 @@
 {
     using System;
     using System.Threading.Tasks;
+    using AutoMapper;
     using ChaosMonkey.Guards;
     using Domain;
+    using Domain.Questions;
     using Dtos;
+    using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Routing;
@@ -14,21 +17,24 @@
     [ApiController]
     public class QuestionsController : BaseController
     {
+        private readonly IMediator mediator;
+        private readonly IMapper mapper;
         private readonly LinkGenerator linkGenerator;
         private readonly ILogger<QuestionsController> logger;
-        private readonly IRepository repository;
 
         public QuestionsController(
+            IMapper mapper,
+            IMediator mediator,
             LinkGenerator linkGenerator,
             INameGeneratorClient nameGenerator,
             IHttpContextAccessor httpContextAccessor,
-            ILogger<QuestionsController> logger,
-            IRepository repository)
+            ILogger<QuestionsController> logger)
             : base(httpContextAccessor, nameGenerator)
         {
+            this.mediator = Guard.IsNotNull(mediator, nameof(mediator));
+            this.mapper = Guard.IsNotNull(mapper, nameof(mapper));
             this.linkGenerator = Guard.IsNotNull(linkGenerator, nameof(linkGenerator));
             this.logger = Guard.IsNotNull(logger, nameof(logger));
-            this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
         [HttpGet]
@@ -48,7 +54,8 @@
 
             try
             {
-                var result = await this.repository.AddQuestionAsync(question).ConfigureAwait(false);
+                var result = await this.mediator.Send(Question.CreateQuestionAddedEventArgs(question));
+                // this.repository.AddQuestionAsync(question).ConfigureAwait(false);
                 if (result.Outcome == Polly.OutcomeType.Successful)
                 {
                     var url = this.linkGenerator.GetPathByAction(
