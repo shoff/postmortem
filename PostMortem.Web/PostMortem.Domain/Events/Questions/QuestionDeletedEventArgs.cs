@@ -4,8 +4,8 @@
     using Domain.Questions;
 
     public class QuestionDeletedEventArgs : QuestionEventArgs {
-        public QuestionDeletedEventArgs(Project project, Question question) 
-            : base(project, question)
+        public QuestionDeletedEventArgs(Question question) 
+            : base(question)
         {
         }
     }
