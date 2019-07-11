@@ -2,9 +2,11 @@
 {
     using AutoMapper;
     using Converters;
+    using Data.EventSourcing;
     using Data.MongoDb;
     using Data.MongoDb.Config;
     using Domain;
+    using Domain.Events;
     using Infrastructure;
     using Infrastructure.Events.Comments;
     using MediatR;
@@ -31,6 +33,9 @@
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHttpClient<INameGeneratorClient, NameGeneratorClient>();
             services.AddMediatR(typeof(CommentAddedHandler).Assembly);
+
+            // event sourcing
+            services.AddSingleton<IEventBroker, EventBroker>();
             return services;
         }
 

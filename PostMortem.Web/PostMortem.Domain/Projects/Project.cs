@@ -30,10 +30,13 @@
         {
             get
             {
-                if (ProjectId == Guid.Empty) ProjectId = Guid.NewGuid();
+                if (ProjectId == Guid.Empty)
+                {
+                    ProjectId = Guid.NewGuid();
+                }
 
-                questions.ProjectId = ProjectId;
-                return questions;
+                this.questions.ProjectId = ProjectId;
+                return this.questions;
             }
         }
 

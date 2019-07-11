@@ -37,6 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PostMortem.Data.EventSourcing\PostMortem.Data.EventSourcing.csproj" />
     <ProjectReference Include="..\PostMortem.Data.MongDb\PostMortem.Data.MongoDb.csproj" />
     <ProjectReference Include="..\PostMortem.Domain\PostMortem.Domain.csproj" />
     <ProjectReference Include="..\PostMortem.Infrastructure\PostMortem.Infrastructure.csproj" />

@@ -5,33 +5,43 @@
     using System.Threading.Tasks;
     using Domain;
     using Domain.Comments;
-    using Domain.Projects;
+    using Domain.Events;
     using Domain.Questions;
+
+    using DomainProject = Domain.Projects.Project;
+    using DomainQuestion = Domain.Questions.Question;
+    using DomainComment = Domain.Comments.Comment;
 
     public class EventRepository : IRepository
     {
+        private IEventBroker eventBroker;
 
-        public Task<ICollection<Project>> GetAllProjectsAsync()
+        public EventRepository(IEventBroker eventBroker)
+        {
+            this.eventBroker = eventBroker;
+        }
+
+        public Task<ICollection<DomainProject>> GetAllProjectsAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<Guid> CreateProjectAsync(Project project)
+        public Task<Guid> CreateProjectAsync(DomainProject project)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Project> GetByProjectIdAsync(Guid projectId)
+        public Task<DomainProject> GetByProjectIdAsync(Guid projectId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Guid> AddCommentAsync(Comment comment)
+        public Task<Guid> AddCommentAsync(DomainComment comment)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Guid> AddQuestionAsync(Question question)
+        public Task<Guid> AddQuestionAsync(DomainQuestion question)
         {
             throw new NotImplementedException();
         }
@@ -51,7 +61,7 @@
             throw new NotImplementedException();
         }
 
-        public Task UpdateCommentAsync(Comment comment)
+        public Task UpdateCommentAsync(DomainComment comment)
         {
             throw new NotImplementedException();
         }
@@ -66,12 +76,12 @@
             throw new NotImplementedException();
         }
 
-        public Task UpdateQuestionAsync(Question question)
+        public Task UpdateQuestionAsync(DomainQuestion question)
         {
             throw new NotImplementedException();
         }
 
-        public Task UpdateProjectAsync(Project requestProject)
+        public Task UpdateProjectAsync(DomainProject requestProject)
         {
             throw new NotImplementedException();
         }
