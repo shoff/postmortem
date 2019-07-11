@@ -8,7 +8,7 @@
     using Domain.Projects;
     using Domain.Questions;
 
-    public partial class EventRepository : IRepository
+    public class EventRepository : IRepository
     {
 
         public Task<ICollection<Project>> GetAllProjectsAsync()
