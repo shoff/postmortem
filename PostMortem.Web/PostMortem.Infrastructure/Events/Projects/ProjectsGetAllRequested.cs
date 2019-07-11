@@ -26,7 +26,7 @@
 
         public Task<PolicyResult<ICollection<Project>>> Handle(ProjectGetAllEventArgs request, CancellationToken cancellationToken)
         {
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAsync(() => this.repository.GetAllProjectsAsync());
+            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.GetAllProjectsAsync());
         }
     }
 }

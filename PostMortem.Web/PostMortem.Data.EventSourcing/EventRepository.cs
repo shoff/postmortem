@@ -7,16 +7,16 @@
     using Domain.Comments;
     using Domain.Projects;
     using Domain.Questions;
-    using Polly;
 
-    public partial class EventRepository : PostMortem.Domain.IRepository
+    public partial class EventRepository : IRepository
     {
-        public Task<PolicyResult<ICollection<Project>>> GetAllProjectsAsync()
+
+        public Task<ICollection<Project>> GetAllProjectsAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> CreateProjectAsync(Project project)
+        public Task<Guid> CreateProjectAsync(Project project)
         {
             throw new NotImplementedException();
         }
@@ -26,52 +26,52 @@
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> AddCommentAsync(Comment comment)
+        public Task<Guid> AddCommentAsync(Comment comment)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> AddQuestionAsync(Question question)
+        public Task<Guid> AddQuestionAsync(Question question)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> DeleteQuestionAsync(Guid questionId)
+        public Task DeleteQuestionAsync(Guid questionId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> DeleteCommentAsync(Guid questionId)
+        public Task DeleteCommentAsync(Guid questionId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> UpdateCommentAsync(Comment comment)
+        public Task<ICollection<Question>> GetQuestionsByProjectIdAsync(Guid projectId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> LikeCommentAsync(Guid commentId)
+        public Task UpdateCommentAsync(Comment comment)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> DislikeCommentAsync(Guid commentId)
+        public Task LikeCommentAsync(Guid commentId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> UpdateQuestionAsync(Question question)
+        public Task DislikeCommentAsync(Guid commentId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> UpdateProjectAsync(Project requestProject)
+        public Task UpdateQuestionAsync(Question question)
         {
             throw new NotImplementedException();
         }
 
-        Task<PolicyResult<ICollection<Question>>> IRepository.GetQuestionsByProjectIdAsync(Guid projectId)
+        public Task UpdateProjectAsync(Project requestProject)
         {
             throw new NotImplementedException();
         }

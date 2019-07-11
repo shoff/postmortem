@@ -24,7 +24,7 @@
 
         public Task<PolicyResult> Handle(CommentDislikedEventArgs request, CancellationToken cancellationToken)
         {
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAsync(() => this.repository.DislikeCommentAsync(request.CommentId));
+            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.DislikeCommentAsync(request.CommentId));
         }
     }
 }

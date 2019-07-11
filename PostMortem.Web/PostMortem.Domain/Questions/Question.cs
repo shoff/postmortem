@@ -44,6 +44,7 @@
             QuestionAddedEventArgs eventArgs = new QuestionAddedEventArgs(question);
             return eventArgs;
         }
+
         public static QuestionDeletedEventArgs CreateQuestionDeletedEventArgs(Question question)
         {
             var eventArgs = new QuestionDeletedEventArgs(question);

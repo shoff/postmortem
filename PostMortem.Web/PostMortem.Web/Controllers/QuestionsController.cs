@@ -55,7 +55,6 @@
             try
             {
                 var result = await this.mediator.Send(Question.CreateQuestionAddedEventArgs(question));
-                // this.repository.AddQuestionAsync(question).ConfigureAwait(false);
                 if (result.Outcome == Polly.OutcomeType.Successful)
                 {
                     var url = this.linkGenerator.GetPathByAction(
