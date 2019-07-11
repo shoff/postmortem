@@ -8,6 +8,7 @@
     using Domain;
     using Domain.Events;
     using Infrastructure;
+    using Infrastructure.Events;
     using Infrastructure.Events.Comments;
     using MediatR;
     using Microsoft.AspNetCore.Http;
