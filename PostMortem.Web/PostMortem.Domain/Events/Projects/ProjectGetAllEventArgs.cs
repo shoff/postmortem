@@ -7,5 +7,10 @@
 
     public class ProjectGetAllEventArgs : EventBase, IRequest<PolicyResult<ICollection<Project>>>
     {
+        public override T Apply<T>()
+        {
+            // NFI yet
+            throw new System.NotImplementedException();
+        }
     }
 }

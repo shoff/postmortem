@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Comments;
-    using Polly;
     using Projects;
     using Questions;
 
@@ -23,5 +22,7 @@
         Task DislikeCommentAsync(Guid commentId);
         Task UpdateQuestionAsync(Question question);
         Task UpdateProjectAsync(Project requestProject);
+        Task UpdateQuestionResponseCount(Guid projectId, int count);
+
     }
 }

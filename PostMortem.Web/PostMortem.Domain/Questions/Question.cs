@@ -25,6 +25,8 @@
         public string QuestionText { get; set; }
         public int ResponseCount { get; set; }
         public int Importance { get; set; }
+        public bool Active { get; set; } = true;
+        public DateTime? LastUpdated { get; set; }
 
         public IReadOnlyCollection<Comment> Comments
         {
@@ -48,7 +50,7 @@
 
         public static QuestionDeletedEventArgs CreateQuestionDeletedEventArgs(Question question)
         {
-            var eventArgs = new QuestionDeletedEventArgs(question);
+            var eventArgs = new QuestionDeletedEventArgs(question.QuestionId);
             return eventArgs;
         }
 
