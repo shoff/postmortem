@@ -30,7 +30,7 @@
 
         public Task<PolicyResult> Handle(CommentDislikedEventArgs request, CancellationToken cancellationToken)
         {
-            this.eventBroker.CommentDisliked.Raise(this, request);
+            //this.eventBroker.CommentDisliked.Raise(this, request);
             return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.DislikeCommentAsync(request.CommentId));
         }
     }
