@@ -26,6 +26,7 @@
                 typeof(Data.MongoDb.Converters.MongoDbProfile).Assembly);
             
             services.AddTransient<IExecutionPolicies, ExecutionPolicies>();
+            services.AddTransient<IPolicyFactory, AsyncPolicyFactory>();
             services.AddTransient<IRepository, Repository>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHttpClient<INameGeneratorClient, NameGeneratorClient>();
