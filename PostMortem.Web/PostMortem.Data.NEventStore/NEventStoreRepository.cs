@@ -25,68 +25,67 @@ namespace PostMortem.Data.NEventStore
             this.logger = Guard.IsNotNull(logger,nameof(logger));
             this.eventStore = Guard.IsNotNull(eventStore,nameof(eventStore));
         }
-        public Task<PolicyResult<ICollection<DomainProject>>> GetAllProjectsAsync()
+        public async Task<ICollection<DomainProject>> GetAllProjectsAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> CreateProjectAsync(DomainProject project)
-        {
-            //throw new NotImplementedException();
-
-        }
-
-        public Task<DomainProject> GetByProjectIdAsync(Guid projectId)
+        public async Task<Guid> CreateProjectAsync(DomainProject project)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> AddCommentAsync(DomainComment comment)
+        public async Task<DomainProject> GetByProjectIdAsync(Guid projectId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> AddQuestionAsync(DomainQuestion question)
+        public async Task<Guid> AddCommentAsync(DomainComment comment)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> DeleteQuestionAsync(Guid questionId)
+        public async Task<Guid> AddQuestionAsync(DomainQuestion question)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> DeleteCommentAsync(Guid questionId)
+        public async Task DeleteQuestionAsync(Guid questionId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult<ICollection<DomainQuestion>>> GetQuestionsByProjectIdAsync(Guid projectId)
+        public async Task DeleteCommentAsync(Guid questionId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> UpdateCommentAsync(DomainComment comment)
+        public async Task<ICollection<DomainQuestion>> GetQuestionsByProjectIdAsync(Guid projectId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> LikeCommentAsync(Guid commentId)
+        public async Task UpdateCommentAsync(DomainComment comment)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> DislikeCommentAsync(Guid commentId)
+        public async Task LikeCommentAsync(Guid commentId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> UpdateQuestionAsync(DomainQuestion question)
+        public async Task DislikeCommentAsync(Guid commentId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PolicyResult> UpdateProjectAsync(DomainProject requestProject)
+        public async Task UpdateQuestionAsync(DomainQuestion question)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task UpdateProjectAsync(DomainProject requestProject)
         {
             throw new NotImplementedException();
         }
