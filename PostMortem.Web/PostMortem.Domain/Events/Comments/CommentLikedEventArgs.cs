@@ -2,8 +2,9 @@
 {
     using System;
     using MediatR;
+    using Polly;
 
-    public class CommentLikedEventArgs : EventArgs, INotification
+    public class CommentLikedEventArgs : EventArgs, IRequest<PolicyResult>
     {
         public Guid CommentId { get; set; } 
     }

@@ -2,9 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AssemblyName>PostMortem.Data.NEventStore</AssemblyName>
+    <RootNamespace>PostMortem.Data.NEventStore</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="NEventStore" Version="6.1.0" />
+    <PackageReference Include="NEventStore.Persistence.Sql" Version="7.0.0" />
     <PackageReference Include="Polly" Version="7.1.0" />
   </ItemGroup>
 

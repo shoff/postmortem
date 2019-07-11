@@ -1,4 +1,4 @@
-﻿namespace PostMortem.Data.NEventSource
+﻿namespace PostMortem.Data.NEventStore
 {
     using System;
     using System.Collections.Generic;

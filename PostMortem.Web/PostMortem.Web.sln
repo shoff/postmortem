@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostMortem.Domain", "PostMo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostMortem.Infrastructure", "PostMortem.Infrastructure\PostMortem.Infrastructure.csproj", "{0E8D3124-3000-47BB-856C-6E59A7295B22}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostMortem.Data.NEventSource", "PostMortem.Data.NEventSource\PostMortem.Data.NEventSource.csproj", "{D6F0F55A-7C9A-45D0-A088-9B6B5471DF62}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostMortem.Data.NEventStore", "PostMortem.Data.NEventStore\PostMortem.Data.NEventStore.csproj", "{D6F0F55A-7C9A-45D0-A088-9B6B5471DF62}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8B64C9BD-7BF3-4BA0-B25D-6AB9DB5B89ED}"
 	ProjectSection(SolutionItems) = preProject

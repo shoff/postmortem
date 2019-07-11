@@ -5,9 +5,9 @@
     using MediatR;
     using Polly;
 
-    public class ProjectCreatedEventArgs : IRequest<PolicyResult>
+    public class ProjectUpdatedEventArgs : IRequest<PolicyResult>
     {
-        public ProjectCreatedEventArgs(Project project)
+        public ProjectUpdatedEventArgs(Project project)
         {
             this.Project = Guard.IsNotNull(project, nameof(project));
         }

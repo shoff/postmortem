@@ -70,7 +70,7 @@
                 ProjectName = project.ProjectName,
                 StartDate = project.StartDate
             };
-            var result = await this.repository.CreateAsync(p);
+            var result = await this.repository.CreateProjectAsync(p);
 
             if (result.Outcome == Polly.OutcomeType.Successful)
             {

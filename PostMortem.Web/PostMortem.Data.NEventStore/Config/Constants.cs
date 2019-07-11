@@ -1,4 +1,4 @@
-﻿namespace PostMortem.Data.NEventSource.Config
+﻿namespace PostMortem.Data.NEventStore.Config
 {
     public static class Constants
     {

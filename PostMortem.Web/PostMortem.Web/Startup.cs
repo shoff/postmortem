@@ -12,9 +12,12 @@ namespace PostMortem.Web
     using Data.MongoDb.Config;
     using Domain;
     using Infrastructure;
+    using Infrastructure.Events.Comments;
+    using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Swashbuckle.AspNetCore.Swagger;
+    using Zatoichi.Common.Infrastructure.Resilience;
 
     public class Startup
     {
@@ -32,19 +35,12 @@ namespace PostMortem.Web
             services.AddOptions();
             services.AddAutoMapper(typeof(ProjectProfile).Assembly);
             services.Configure<MongoOptions>(this.Configuration.GetSection("MongoOptions"));
+            services.Configure<PolicyOptions>(this.Configuration.GetSection("PolicyOptions"));
             services.AddHttpClient<INameGeneratorClient, NameGeneratorClient>();
+            services.AddMediatR(typeof(CommentAddedHandler).Assembly);
             services.AddTransient<IRepository, Repository>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddCors();
-            //    options =>  {
-            //    options.AddDefaultPolicy (
-            //        builder =>  { 
-            //            builder
-            //                .AllowAnyOrigin()
-            //                .AllowAnyMethod()
-            //                .AllowAnyHeader();
-            //        });
-            //});
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSwaggerGen(c =>
             {
