@@ -6,5 +6,7 @@
         public const string ADMIN = "admin";
         public const string PROJECTS_COLLECTION = "projects";
         public const string QUESTIONS_COLLECTION = "questions";
+        public const string COMMENTS_COLLECTION = "comments";
+
     }
 }

@@ -21,7 +21,9 @@
             IConfiguration configuration)
         {
             services.AddLogging();
-            services.AddAutoMapper(typeof(ProjectProfile).Assembly);
+            services.AddAutoMapper(
+                typeof(ProjectProfile).Assembly, 
+                typeof(Data.MongoDb.Converters.MongoDbProfile).Assembly);
             
             services.AddTransient<IExecutionPolicies, ExecutionPolicies>();
             services.AddTransient<IRepository, Repository>();

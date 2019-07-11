@@ -10,8 +10,9 @@
     public class Question
     {
         private readonly CommentCollection comments = new CommentCollection();
-        
-        public Question() { }
+
+        public Question()
+            : this(new List<Comment>()) { }
 
         public Question(ICollection<Comment> comments)
         {

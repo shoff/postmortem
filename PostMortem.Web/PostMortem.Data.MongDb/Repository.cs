@@ -20,33 +20,30 @@
     public class Repository : IRepository
     {
         private readonly IMapper mapper;
-        private readonly IOptions<MongoOptions> options;
         private readonly ILogger<Repository> logger;
-        private readonly MongoClient client;
         private readonly IMongoDatabase database;
-
-
+        
         public Repository(
             IMapper mapper,
             ILogger<Repository> logger,
             IOptions<MongoOptions> options)
         {
+            Guard.IsNotNull(options, nameof(options));
             this.mapper = Guard.IsNotNull(mapper, nameof(mapper));
-            this.options = Guard.IsNotNull(options, nameof(options));
             this.logger = Guard.IsNotNull(logger, nameof(logger));
 
-            MongoInternalIdentity internalIdentity = new MongoInternalIdentity(Constants.ADMIN, this.options.Value.Username);
-            PasswordEvidence passwordEvidence = new PasswordEvidence(this.options.Value.Password);
-            MongoCredential mongoCredential = new MongoCredential(this.options.Value.AuthMechanism, internalIdentity, passwordEvidence);
+            MongoInternalIdentity internalIdentity = new MongoInternalIdentity(Constants.ADMIN, options.Value.Username);
+            PasswordEvidence passwordEvidence = new PasswordEvidence(options.Value.Password);
+            MongoCredential mongoCredential = new MongoCredential(options.Value.AuthMechanism, internalIdentity, passwordEvidence);
 
             MongoClientSettings settings = new MongoClientSettings
             {
                 Credential = mongoCredential,
-                Server = new MongoServerAddress(this.options.Value.MongoHost, int.Parse(this.options.Value.Port))
+                Server = new MongoServerAddress(options.Value.MongoHost, int.Parse(options.Value.Port))
             };
 
-            this.client = new MongoClient(settings);
-            this.database = this.client.GetDatabase(this.options.Value.DefaultDb);
+            var client = new MongoClient(settings);
+            this.database = client.GetDatabase(options.Value.DefaultDb);
         }
 
         public async Task<ICollection<DomainProject>> GetAllProjectsAsync()
@@ -56,24 +53,76 @@
             return projectList.Map(p => this.mapper.Map<DomainProject>(p)).ToList();
         }
 
-        public Task<Guid> CreateProjectAsync(DomainProject project)
+        public async Task<Guid> CreateProjectAsync(DomainProject project)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var projects = this.database.GetCollection<Project>(Constants.PROJECTS_COLLECTION);
+                var mongoProject = this.mapper.Map<Project>(project);
+                await projects.InsertOneAsync(mongoProject);
+                return project.ProjectId;
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError(e, e.Message);
+                throw;
+            }  
         }
 
-        public Task<DomainProject> GetByProjectIdAsync(Guid projectId)
+        public async Task<DomainProject> GetByProjectIdAsync(Guid projectId)
         {
-            throw new NotImplementedException();
+            // https://docs.mongodb.com/manual/tutorial/model-referenced-one-to-many-relationships-between-documents/
+            var projects = this.database.GetCollection<Project>(Constants.PROJECTS_COLLECTION);
+            var proj = await projects.FindAsync(p => p.ProjectId == projectId).ConfigureAwait(false);
+            var project = proj.FirstOrDefault();
+
+            if (project == null)
+            {
+                return (null);
+            }
+            var questions = await this.GetQuestionsByProjectIdAsync(project.ProjectId);
+            var domainProject = new DomainProject(questions)
+            {
+                EndDate = project.EndDate,
+                ProjectId = project.ProjectId,
+                ProjectName = project.ProjectName,
+                StartDate = project.StartDate
+            };
+            return domainProject;
         }
 
-        public Task<Guid> AddCommentAsync(DomainComment comment)
+        public Task<Guid> AddCommentAsync(DomainComment domainComment)
         {
-            throw new NotImplementedException();
+            Guard.IsNotNull(domainComment, nameof(domainComment));
+            try
+            {
+                var commentsCollection = this.database.GetCollection<Comment>(Constants.COMMENTS_COLLECTION);
+                var comment = this.mapper.Map<Comment>(domainComment);
+                commentsCollection.InsertOne(comment);
+                return Task.FromResult(comment.CommentId);
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError(e, e.Message);
+                throw;
+            }
         }
 
-        public Task<Guid> AddQuestionAsync(DomainQuestion question)
+        public Task<Guid> AddQuestionAsync(DomainQuestion domainQuestion)
         {
-            throw new NotImplementedException();
+            // TODO validate the projectId?
+            try
+            {
+                var questionCollection = this.database.GetCollection<Question>(Constants.QUESTIONS_COLLECTION);
+                var question = this.mapper.Map<Question>(domainQuestion);
+                questionCollection.InsertOne(question);
+                return Task.FromResult(question.QuestionId);
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError(e, e.Message);
+                throw;
+            }
         }
 
         public Task DeleteQuestionAsync(Guid questionId)
@@ -86,9 +135,32 @@
             throw new NotImplementedException();
         }
 
-        public Task<ICollection<DomainQuestion>> GetQuestionsByProjectIdAsync(Guid projectId)
+        public async Task<ICollection<DomainQuestion>> GetQuestionsByProjectIdAsync(Guid projectId)
         {
-            throw new NotImplementedException();
+            var questionCollection = this.database.GetCollection<Question>(Constants.QUESTIONS_COLLECTION);
+            var commentCollection = this.database.GetCollection<Comment>(Constants.COMMENTS_COLLECTION);
+
+            var mongoQuestions = await questionCollection.FindAsync(f => f.ProjectId == projectId).ConfigureAwait(false);
+            var questions = await mongoQuestions.ToListAsync();
+
+            List<DomainQuestion> domainQuestions = new List<DomainQuestion>();
+
+            foreach (var question in questions)
+            {
+                var mongoComments = await commentCollection.FindAsync(c => c.QuestionId == question.QuestionId).ConfigureAwait(false);
+                var comments = mongoComments.ToList().Map(c=> this.mapper.Map<DomainComment>(c)).ToList();
+                var dc = new DomainQuestion(comments)
+                {
+                    Importance = question.Importance,
+                    ProjectId = question.ProjectId,
+                    QuestionId = question.QuestionId,
+                    QuestionText = question.QuestionText,
+                    ResponseCount = question.ResponseCount
+                };
+                domainQuestions.Add(dc);
+            }
+
+            return domainQuestions;
         }
 
         public Task UpdateCommentAsync(DomainComment comment)
@@ -96,14 +168,38 @@
             throw new NotImplementedException();
         }
 
-        public Task LikeCommentAsync(Guid commentId)
+        public async Task LikeCommentAsync(Guid commentId)
         {
-            throw new NotImplementedException();
+            var commentCollection = this.database.GetCollection<Comment>(Constants.COMMENTS_COLLECTION);
+            var mongoComment = await commentCollection.FindAsync(c => c.CommentId == commentId).ConfigureAwait(false);
+            
+            var comment = mongoComment.FirstOrDefault();
+            if (comment == null)
+            {
+                // meh this is a POC so..
+                return;
+            }
+
+            comment.Likes++;
+            var filter = Builders<Comment>.Filter.Eq("comment_id", commentId);
+            await commentCollection.ReplaceOneAsync(filter, comment);
         }
 
-        public Task DislikeCommentAsync(Guid commentId)
+        public async Task DislikeCommentAsync(Guid commentId)
         {
-            throw new NotImplementedException();
+            var commentCollection = this.database.GetCollection<Comment>(Constants.COMMENTS_COLLECTION);
+            var mongoComment = await commentCollection.FindAsync(c => c.CommentId == commentId).ConfigureAwait(false);
+
+            var comment = mongoComment.FirstOrDefault();
+            if (comment == null)
+            {
+                // meh this is a POC so..
+                return;
+            }
+
+            comment.Likes--;
+            var filter = Builders<Comment>.Filter.Eq("comment_id", commentId);
+            await commentCollection.ReplaceOneAsync(filter, comment);
         }
 
         public Task UpdateQuestionAsync(DomainQuestion question)

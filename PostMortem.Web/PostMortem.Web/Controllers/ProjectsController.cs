@@ -81,7 +81,7 @@
             };
             var result = await this.mediator.Send(Project.CreateProjectCreatedEventArgs(p));
 
-            if (result.Outcome == Polly.OutcomeType.Successful)
+            if (result.Outcome == OutcomeType.Successful)
             {
                 var url = this.linkGenerator.GetPathByAction(
                     this.HttpContext,

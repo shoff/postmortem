@@ -5,7 +5,22 @@
 
     public class Comment
     {
-        public Guid CommentId { get; set; }
+        private Guid commentId = Guid.Empty;
+
+        public Guid CommentId
+        {
+            get
+            {
+                if (this.commentId == Guid.Empty)
+                {
+                    this.commentId = Guid.NewGuid();
+                }
+
+                return this.commentId;
+            }
+            set => this.commentId = value;
+        }
+
         public Guid QuestionId { get; set; }
         public string CommentText { get; set; }
         public bool GenerallyPositive { get; set; }
