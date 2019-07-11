@@ -2,12 +2,17 @@
 {
     using System;
 
-    public interface IEvent<T> 
+    public interface IEvent
     {
-        T Apply(T t);
-        T Undo(T t);
         IEventId Id { get; }
         DateTime CommitDate { get; }
         DateTime LastUpdate { get; }
+    }
+
+    public interface IEvent<T> : IEvent
+    {
+        T Apply(T t);
+        T Undo(T t);
+
     }
 }
