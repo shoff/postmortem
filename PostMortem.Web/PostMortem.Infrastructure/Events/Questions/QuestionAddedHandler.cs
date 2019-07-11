@@ -1,5 +1,6 @@
 ﻿namespace PostMortem.Infrastructure.Events.Questions
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
@@ -9,7 +10,7 @@
     using Polly;
     using Zatoichi.Common.Infrastructure.Resilience;
 
-    public class QuestionAddedHandler : IRequestHandler<QuestionAddedEventArgs, PolicyResult>
+    public class QuestionAddedHandler : IRequestHandler<QuestionAddedEventArgs, PolicyResult<Guid>>
     {
         private readonly IExecutionPolicies executionPolicies;
         private readonly IRepository repository;
@@ -22,9 +23,9 @@
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
-        public Task<PolicyResult> Handle(QuestionAddedEventArgs request, CancellationToken cancellationToken)
+        public Task<PolicyResult<Guid>> Handle(QuestionAddedEventArgs request, CancellationToken cancellationToken)
         {
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAsync(() => this.repository.AddQuestionAsync(request.Question));
+            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.AddQuestionAsync(request.Question));
         }
     }
 }

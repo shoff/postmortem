@@ -1,11 +1,12 @@
 ﻿namespace PostMortem.Domain.Events.Projects
 {
+    using System;
     using ChaosMonkey.Guards;
     using Domain.Projects;
     using MediatR;
     using Polly;
 
-    public class ProjectCreatedEventArgs : IRequest<PolicyResult>
+    public class ProjectCreatedEventArgs : IRequest<PolicyResult<Guid>>
     {
         public ProjectCreatedEventArgs(Project project)
         {

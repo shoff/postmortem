@@ -7,49 +7,58 @@
     using Domain;
     using Domain.Projects;
     using Dtos;
+    using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Routing;
+    using Polly;
+    using Zatoichi.Common.Infrastructure.Extensions;
 
     [Route("api/[controller]")]
     [ApiController]
     public class ProjectsController : BaseController
     {
+        private readonly IMediator mediator;
         private readonly LinkGenerator linkGenerator;
         private readonly IMapper mapper;
-        private readonly IRepository repository;
 
         public ProjectsController(
+            IMediator mediator,
             IMapper mapper,
             INameGeneratorClient nameGenerator,
             LinkGenerator linkGenerator,
-            IHttpContextAccessor httpContextAccessor,
-            IRepository repository)
+            IHttpContextAccessor httpContextAccessor)
             : base(httpContextAccessor, nameGenerator)
         {
+            this.mediator = Guard.IsNotNull(mediator, nameof(mediator));
             this.linkGenerator = Guard.IsNotNull(linkGenerator, nameof(linkGenerator));
             this.mapper = Guard.IsNotNull(mapper, nameof(mapper));
-            this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var projects = await this.repository.GetAllProjectsAsync();
-            return this.Ok(projects);
+            var result = await this.mediator.Send(Project.CreateGetAllEventArgs());
+            if (result.Outcome == OutcomeType.Successful)
+            {
+                var projects = result.Result.Map(p => this.mapper.Map<ProjectDto>(p));
+                return this.Ok(projects);
+            }
+
+            return new StatusCodeResult(500);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var vm = await this.repository.GetByProjectIdAsync(id);
-            if (vm == null)
+            var result = await this.mediator.Send(Project.CreateGetByIdEventArgs(id));
+            if (result.Outcome == OutcomeType.Successful)
             {
-                return this.NotFound(id);
+                var project = this.mapper.Map<ProjectDto>(result.Result);
+                return this.Ok(project);
             }
-            var projectDto = this.mapper.Map<ProjectDto>(vm);
-            // projectDto.Questions.AddRange(vm.Item2.Map(q => this.mapper.Map<QuestionDto>(q)).ToList());
-            return this.Ok(projectDto);
+
+            return new StatusCodeResult(500);
         }
 
 
@@ -70,9 +79,9 @@
                 ProjectName = project.ProjectName,
                 StartDate = project.StartDate
             };
-            var result = await this.repository.CreateProjectAsync(p);
+            var result = await this.mediator.Send(Project.CreateProjectCreatedEventArgs(p));
 
-            if (result.Outcome == Polly.OutcomeType.Successful)
+            if (result.Outcome == OutcomeType.Successful)
             {
                 var url = this.linkGenerator.GetPathByAction(
                     this.HttpContext,
@@ -80,7 +89,7 @@
                     action: "GetById",
                     values: new {id = p.ProjectId});
 
-                return this.Created($"{this.HttpContext.Request.Scheme}//{this.HttpContext.Request.Host}{url}", p);
+                return this.Created($"{this.HttpContext.Request.Scheme}//{this.HttpContext.Request.Host}{url}", this.mapper.Map<Project>(p));
             }
 
             return new StatusCodeResult(500);

@@ -4,13 +4,15 @@
     using System.Collections.Generic;
     using ChaosMonkey.Guards;
     using Comments;
+    using Events.Questions;
 
 
     public class Question
     {
         private readonly CommentCollection comments = new CommentCollection();
-        
-        public Question() { }
+
+        public Question()
+            : this(new List<Comment>()) { }
 
         public Question(ICollection<Comment> comments)
         {
@@ -36,6 +38,24 @@
                 this.comments.QuestionId = this.QuestionId;
                 return this.comments;
             }
+        }
+
+        public static QuestionAddedEventArgs CreateQuestionAddedEventArgs(Question question)
+        {
+            QuestionAddedEventArgs eventArgs = new QuestionAddedEventArgs(question);
+            return eventArgs;
+        }
+
+        public static QuestionDeletedEventArgs CreateQuestionDeletedEventArgs(Question question)
+        {
+            var eventArgs = new QuestionDeletedEventArgs(question);
+            return eventArgs;
+        }
+
+        public static QuestionUpdatedEventArgs CreateQuestionUpdatedEventArgs(Question question)
+        {
+            var eventArgs = new QuestionUpdatedEventArgs(question);
+            return eventArgs;
         }
     }
 }

@@ -6,6 +6,11 @@
 
     public class CommentLikedEventArgs : EventArgs, IRequest<PolicyResult>
     {
-        public Guid CommentId { get; set; } 
+        public CommentLikedEventArgs(Guid commentId)
+        {
+            this.CommentId = commentId;
+        }
+
+        public Guid CommentId { get; private set; } 
     }
 }

@@ -24,7 +24,7 @@
 
         public Task<PolicyResult> Handle(QuestionUpdatedEventArgs request, CancellationToken cancellationToken)
         {
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAsync(() => this.repository.UpdateQuestionAsync(request.Question));
+            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.UpdateQuestionAsync(request.Question));
         }
     }
 }

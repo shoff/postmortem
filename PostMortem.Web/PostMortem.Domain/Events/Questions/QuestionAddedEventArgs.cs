@@ -1,14 +1,18 @@
 ﻿namespace PostMortem.Domain.Events.Questions
 {
-    using Domain.Projects;
+    using System;
+    using ChaosMonkey.Guards;
     using Domain.Questions;
-    using Projects;
+    using MediatR;
+    using Polly;
 
-    public class QuestionAddedEventArgs : QuestionEventArgs
+    public class QuestionAddedEventArgs : EventArgs, IRequest<PolicyResult<Guid>>
     {
-        public QuestionAddedEventArgs(Project project, Question question)
-            : base(project, question)
+        public QuestionAddedEventArgs(Question question)
         {
+            this.Question = Guard.IsNotNull(question, nameof(question));
         }
+
+        public Question Question { get; set; }
     }
 }

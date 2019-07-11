@@ -2,9 +2,12 @@
 {
     using System;
     using System.Threading.Tasks;
+    using AutoMapper;
     using ChaosMonkey.Guards;
     using Domain;
+    using Domain.Comments;
     using Dtos;
+    using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Routing;
@@ -14,27 +17,45 @@
     [ApiController]
     public class CommentsController : BaseController
     {
+        private readonly IMapper mapper;
+        private readonly IMediator mediator;
         private readonly LinkGenerator linkGenerator;
         private readonly ILogger<CommentsController> logger;
-        private readonly IRepository repository;
 
         public CommentsController(
+            IMediator mediator,
+            IMapper mapper,
             LinkGenerator linkGenerator,
             INameGeneratorClient nameGenerator,
             IHttpContextAccessor httpContextAccessor,
-            ILogger<CommentsController> logger,
-            IRepository repository)
+            ILogger<CommentsController> logger)
             : base(httpContextAccessor, nameGenerator)
         {
+            this.mapper = Guard.IsNotNull(mapper, nameof(mapper));
+            this.mediator = Guard.IsNotNull(mediator, nameof(mediator));
             this.linkGenerator = Guard.IsNotNull(linkGenerator, nameof(linkGenerator));
             this.logger = Guard.IsNotNull(logger, nameof(logger));
-            this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
         [HttpGet]
         public async Task<IActionResult> GetById(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var result = await this.mediator.Send(Comment.CreateGetByIdEventArgs(id));
+
+                if (result.Outcome == Polly.OutcomeType.Successful)
+                {
+                    return this.Ok(this.mapper.Map<CommentDto>(result.Result));
+                }
+
+                return new StatusCodeResult(500);
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError(e, e.Message);
+                return new StatusCodeResult(500);
+            }
         }
 
         [HttpPost]
@@ -53,7 +74,8 @@
                     comment.Commenter = this.username; // generated anonymous username
                 }
 
-                var result = await this.repository.AddCommentAsync(comment).ConfigureAwait(false);
+                var result = await this.mediator.Send(Comment.CreateCommentAddedEventArgs(comment));
+                // this.repository.AddCommentAsync(comment).ConfigureAwait(false);
 
                 if (result.Outcome == Polly.OutcomeType.Successful)
                 {

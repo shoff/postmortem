@@ -10,18 +10,18 @@
 
     public interface IRepository
     {
-        Task<PolicyResult<ICollection<Project>>> GetAllProjectsAsync();
-        Task<PolicyResult> CreateProjectAsync(Project project);
+        Task<ICollection<Project>> GetAllProjectsAsync();
+        Task<Guid> CreateProjectAsync(Project project);
         Task<Project> GetByProjectIdAsync(Guid projectId);
-        Task<PolicyResult> AddCommentAsync(Comment comment);
-        Task<PolicyResult> AddQuestionAsync(Question question);
-        Task<PolicyResult> DeleteQuestionAsync(Guid questionId);
-        Task<PolicyResult> DeleteCommentAsync(Guid questionId);
-        Task<PolicyResult<ICollection<Question>>> GetQuestionsByProjectIdAsync(Guid projectId);
-        Task<PolicyResult> UpdateCommentAsync(Comment comment);
-        Task<PolicyResult> LikeCommentAsync(Guid commentId);
-        Task<PolicyResult> DislikeCommentAsync(Guid commentId);
-        Task<PolicyResult> UpdateQuestionAsync(Question question);
-        Task<PolicyResult> UpdateProjectAsync(Project requestProject);
+        Task<Guid> AddCommentAsync(Comment comment);
+        Task<Guid> AddQuestionAsync(Question question);
+        Task DeleteQuestionAsync(Guid questionId);
+        Task DeleteCommentAsync(Guid questionId);
+        Task<ICollection<Question>> GetQuestionsByProjectIdAsync(Guid projectId);
+        Task UpdateCommentAsync(Comment comment);
+        Task LikeCommentAsync(Guid commentId);
+        Task DislikeCommentAsync(Guid commentId);
+        Task UpdateQuestionAsync(Question question);
+        Task UpdateProjectAsync(Project requestProject);
     }
 }
