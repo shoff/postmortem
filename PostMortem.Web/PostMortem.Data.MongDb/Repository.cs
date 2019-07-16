@@ -22,7 +22,7 @@
         private readonly IMapper mapper;
         private readonly ILogger<Repository> logger;
         private readonly IMongoDatabase database;
-        
+
         public Repository(
             IMapper mapper,
             ILogger<Repository> logger,
@@ -66,7 +66,7 @@
             {
                 this.logger.LogError(e, e.Message);
                 throw;
-            }  
+            }
         }
 
         public async Task<DomainProject> GetByProjectIdAsync(Guid projectId)
@@ -89,6 +89,52 @@
                 StartDate = project.StartDate
             };
             return domainProject;
+        }
+
+        public async Task<ICollection<DomainComment>> GetCommentsByQuestionIdAsync(Guid questionId)
+        {
+            var commentCollection = this.database.GetCollection<Comment>(Constants.COMMENTS_COLLECTION);
+            var mongoComments = await commentCollection.FindAsync(c => c.QuestionId == questionId).ConfigureAwait(false);
+            return mongoComments.ToList().Map(c => this.mapper.Map<DomainComment>(c)).ToList();
+        }
+
+        public async Task<DomainQuestion> GetQuestionByIdAsync(Guid questionId, bool includeComments = false)
+        {
+            // https://docs.mongodb.com/manual/tutorial/model-referenced-one-to-many-relationships-between-documents/
+            var questions = this.database.GetCollection<Question>(Constants.QUESTIONS_COLLECTION);
+            var mongoQuestion = await questions.FindAsync(p => p.QuestionId == questionId).ConfigureAwait(false);
+            var question = mongoQuestion.FirstOrDefault();
+
+            if (question == null)
+            {
+                return null;
+            }
+            if (!includeComments)
+            {
+                var domainQuestion = new DomainQuestion
+                {
+                    Active = question.Active,
+                    Importance = question.Importance,
+                    ProjectId = question.ProjectId,
+                    QuestionId = question.QuestionId,
+                    QuestionText = question.QuestionText,
+                    ResponseCount = question.ResponseCount
+                };
+                return domainQuestion;
+            }
+
+
+            var comments = await this.GetCommentsByQuestionIdAsync(questionId);
+
+            return new DomainQuestion(comments)
+            {
+                Active = question.Active,
+                Importance = question.Importance,
+                ProjectId = question.ProjectId,
+                QuestionId = question.QuestionId,
+                QuestionText = question.QuestionText,
+                ResponseCount = question.ResponseCount
+            };
         }
 
         public Task<Guid> AddCommentAsync(DomainComment domainComment)
@@ -148,7 +194,7 @@
             foreach (var question in questions)
             {
                 var mongoComments = await commentCollection.FindAsync(c => c.QuestionId == question.QuestionId).ConfigureAwait(false);
-                var comments = mongoComments.ToList().Map(c=> this.mapper.Map<DomainComment>(c)).ToList();
+                var comments = mongoComments.ToList().Map(c => this.mapper.Map<DomainComment>(c)).ToList();
                 var dc = new DomainQuestion(comments)
                 {
                     Importance = question.Importance,
@@ -172,7 +218,7 @@
         {
             var commentCollection = this.database.GetCollection<Comment>(Constants.COMMENTS_COLLECTION);
             var mongoComment = await commentCollection.FindAsync(c => c.CommentId == commentId).ConfigureAwait(false);
-            
+
             var comment = mongoComment.FirstOrDefault();
             if (comment == null)
             {
@@ -204,12 +250,29 @@
 
         public Task UpdateQuestionAsync(DomainQuestion question)
         {
-            throw new NotImplementedException();
+            var questionCollection = this.database.GetCollection<Question>(Constants.QUESTIONS_COLLECTION);
+            return questionCollection.ReplaceOneAsync<Question>
+                (q=>q.QuestionId == question.QuestionId, this.mapper.Map<Question>(question));
         }
 
         public Task UpdateProjectAsync(DomainProject requestProject)
         {
             throw new NotImplementedException();
+        }
+
+        public Task UpdateQuestionResponseCount(Guid questionId, int count)
+        {
+            var questionCollection = this.database.GetCollection<Question>(Constants.QUESTIONS_COLLECTION);
+            return questionCollection.UpdateOneAsync(
+                Builders<Question>.Filter.Eq("question_id", questionId),
+                Builders<Question>.Update.Set("response_count", count));
+        }
+        public Task UpdateQuestionImportance(Guid questionId, int count)
+        {
+            var questionCollection = this.database.GetCollection<Question>(Constants.QUESTIONS_COLLECTION);
+            return questionCollection.UpdateOneAsync(
+                Builders<Question>.Filter.Eq("question_id", questionId),
+                Builders<Question>.Update.Set("importance", count));
         }
     }
 }

@@ -8,18 +8,16 @@
     using Newtonsoft.Json;
     using Polly;
 
-    public class QuestionImportanceEventArgs : ExpressionEventBase<Question>, IRequest<PolicyResult>
+    public class QuestionResponseCountChangedEventArgs : ExpressionEventBase<Question>, IRequest<PolicyResult>
     {
+        public QuestionResponseCountChangedEventArgs() { }
 
-        // To make serializer happy
-        public QuestionImportanceEventArgs() { }
-
-        public QuestionImportanceEventArgs(Guid questionId, int importance, int change)
+        public QuestionResponseCountChangedEventArgs(Guid questionId, int responseCount, int change)
         {
-            QuestionId = questionId;
-            this.Importance = importance;
+            this.QuestionId = questionId;
+            this.ResponseCount = responseCount;
             this.Change = change;
-            Expression<Func<int>> apply = () => this.Importance + this.Change;
+            Expression<Func<int>> apply = () => this.ResponseCount + this.Change;
             this.Expression = JsonConvert.SerializeObject(apply);
         }
 
@@ -27,7 +25,7 @@
         {
             Guard.IsNotNull(t, nameof(t));
             Expression<Func<int>> exp = JsonConvert.DeserializeObject<Expression<Func<int>>>(this.Expression);
-            t.Importance = exp.Compile().Invoke();
+            t.ResponseCount = exp.Compile().Invoke();
             return t;
         }
 
@@ -35,11 +33,10 @@
         {
             throw new System.NotImplementedException();
         }
-
+        
         public sealed override string Expression { get; protected set; }
         public Guid QuestionId { get; set; }
-        public int Importance { get; set; }
+        public int ResponseCount { get; set; }
         public int Change { get; set; }
-
     }
 }

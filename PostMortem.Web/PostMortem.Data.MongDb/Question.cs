@@ -18,6 +18,8 @@
         [Range(1, 10)]
         [BsonElement("importance")]
         public int Importance { get; set; }
+        [BsonElement("active")]
+        public bool Active { get; set; }
         [BsonElement("comments")]
         public virtual ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
     }

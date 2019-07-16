@@ -1,18 +1,32 @@
 ﻿namespace PostMortem.Domain.Events.Questions
 {
     using System;
-    using ChaosMonkey.Guards;
     using Domain.Questions;
     using MediatR;
     using Polly;
 
-    public class QuestionDeletedEventArgs : EventArgs, IRequest<PolicyResult>
+    public class QuestionDeletedEventArgs : EventBase<Question>, IRequest<PolicyResult>
     {
-        public QuestionDeletedEventArgs(Question question)
+        public QuestionDeletedEventArgs() { }
+
+        public QuestionDeletedEventArgs(Guid questionId)
         {
-            this.Question = Guard.IsNotNull(question, nameof(question));
+            this.QuestionId = questionId;
         }
 
-        public Question Question { get; set; }
+        public override Question Apply(Question t)
+        {
+            t.Active = false;
+            return t;
+        }
+
+        public override Question Undo(Question t)
+        {
+            t.Active = true;
+            return t;
+        }
+
+        public Guid QuestionId { get; private set; }
+
     }
 }
