@@ -30,7 +30,7 @@
             this.eventBroker.ChangeResponseCount(this, request);
 
             return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() =>
-                this.repository.UpdateQuestionResponseCount(request.QuestionId, request.ResponseCount + request.Change));
+                this.repository.UpdateQuestionResponseCount(request.QuestionId, request.NewValue));
         }
     }
 }

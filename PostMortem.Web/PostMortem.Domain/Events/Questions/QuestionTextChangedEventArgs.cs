@@ -5,7 +5,7 @@
     using MediatR;
     using Polly;
 
-    public class QuestionTextChangedEventArgs : EventBase<Question>, IRequest<PolicyResult>
+    public class QuestionTextChangedEventArgs : Command<Question>, IRequest<PolicyResult>
     {
         public QuestionTextChangedEventArgs() { }
 
@@ -26,9 +26,10 @@
             return t;
         }
 
-        public override Question Undo(Question t)
+        public override T Apply<T>()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
+
     }
 }

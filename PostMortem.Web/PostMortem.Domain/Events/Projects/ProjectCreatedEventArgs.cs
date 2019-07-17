@@ -6,7 +6,7 @@
     using MediatR;
     using Polly;
 
-    public class ProjectCreatedEventArgs : EventBase<Project>, IRequest<PolicyResult<Guid>>
+    public class ProjectCreatedEventArgs : Command<Project>, IRequest<PolicyResult<Guid>>
     {
         public ProjectCreatedEventArgs(Project project)
         {
@@ -20,7 +20,7 @@
             throw new NotImplementedException();
         }
 
-        public override Project Undo(Project t)
+        public override T Apply<T>()
         {
             throw new NotImplementedException();
         }

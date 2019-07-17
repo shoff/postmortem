@@ -2,14 +2,14 @@
 {
     using Domain.Questions;
 
-    public class QuestionCommentDeletedEventArgs : EventBase<Question>
+    public class QuestionCommentDeletedEventArgs : Command<Question>
     {
         public override Question Apply(Question t)
         {
             throw new System.NotImplementedException();
         }
 
-        public override Question Undo(Question t)
+        public override T Apply<T>()
         {
             throw new System.NotImplementedException();
         }

@@ -5,7 +5,7 @@
     using MediatR;
     using Polly;
 
-    public class QuestionDeletedEventArgs : EventBase<Question>, IRequest<PolicyResult>
+    public class QuestionDeletedEventArgs : Command<Question>, IRequest<PolicyResult>
     {
         public QuestionDeletedEventArgs() { }
 
@@ -20,12 +20,10 @@
             return t;
         }
 
-        public override Question Undo(Question t)
+        public override T Apply<T>()
         {
-            t.Active = true;
-            return t;
+            throw new NotImplementedException();
         }
-
         public Guid QuestionId { get; private set; }
 
     }

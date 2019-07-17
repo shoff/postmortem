@@ -13,10 +13,10 @@ export class ProjectService {
   constructor(private httpClient: HttpClient) { }
 
   getAllProjects(): Observable<ProjectDto[]> {
-    return this.httpClient.get<ProjectDto[]>('http://localhost:5000/api/projects/');
+    return this.httpClient.get<ProjectDto[]>('http://localhost:54091/api/projects/');
   }
 
   getProject(projectId): Observable<ProjectDto> {
-    return this.httpClient.get<ProjectDto>('http://localhost:5000/api/projects?projectId=' + projectId);
+    return this.httpClient.get<ProjectDto>('http://localhost:54091/api/projects?projectId=' + projectId);
   }
 }
