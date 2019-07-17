@@ -2,7 +2,7 @@
 {
     using Domain.Questions;
 
-    public class QuestionCommentAddedEventArgs : EventBase<Question>
+    public class QuestionCommentAddedEventArgs : Command<Question>
     {
         public override Question Apply(Question t)
         {

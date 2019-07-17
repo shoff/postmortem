@@ -5,7 +5,7 @@
     using MediatR;
     using Polly;
 
-    public class QuestionDeletedEventArgs : EventBase<Question>, IRequest<PolicyResult>
+    public class QuestionDeletedEventArgs : Command<Question>, IRequest<PolicyResult>
     {
         public QuestionDeletedEventArgs() { }
 

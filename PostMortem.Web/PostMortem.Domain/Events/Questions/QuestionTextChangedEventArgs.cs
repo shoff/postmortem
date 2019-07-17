@@ -5,7 +5,7 @@
     using MediatR;
     using Polly;
 
-    public class QuestionTextChangedEventArgs : EventBase<Question>, IRequest<PolicyResult>
+    public class QuestionTextChangedEventArgs : Command<Question>, IRequest<PolicyResult>
     {
         public QuestionTextChangedEventArgs() { }
 

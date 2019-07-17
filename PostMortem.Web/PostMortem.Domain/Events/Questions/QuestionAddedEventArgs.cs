@@ -6,7 +6,7 @@
     using MediatR;
     using Polly;
 
-    public class QuestionAddedEventArgs : EventBase, IRequest<PolicyResult<Guid>>
+    public class QuestionAddedEventArgs : Command<>, IRequest<PolicyResult<Guid>>
     {
         public QuestionAddedEventArgs(Question question)
         {

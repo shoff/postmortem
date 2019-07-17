@@ -5,7 +5,7 @@
     using MediatR;
     using Polly;
 
-    public class ProjectGetAllEventArgs : EventBase, IRequest<PolicyResult<ICollection<Project>>>
+    public class ProjectGetAllEventArgs : Command<>, IRequest<PolicyResult<ICollection<Project>>>
     {
         public override T Apply<T>()
         {

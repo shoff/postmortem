@@ -12,31 +12,26 @@
     {
         public QuestionResponseCountChangedEventArgs() { }
 
-        public QuestionResponseCountChangedEventArgs(Guid questionId, int responseCount, int change)
+        public QuestionResponseCountChangedEventArgs(Guid questionId, int oldValue, int newValue)
         {
             this.QuestionId = questionId;
-            this.ResponseCount = responseCount;
-            this.Change = change;
-            Expression<Func<int>> apply = () => this.ResponseCount + this.Change;
+            this.OldValue = oldValue;
+            this.NewValue = newValue;
+            Expression<Func<int>> apply = () => this.NewValue;
             this.Expression = JsonConvert.SerializeObject(apply);
         }
 
-        public override Question Apply(Question t)
+        public override Question Apply(Question question)
         {
-            Guard.IsNotNull(t, nameof(t));
+            Guard.IsNotNull(question, nameof(question));
             Expression<Func<int>> exp = JsonConvert.DeserializeObject<Expression<Func<int>>>(this.Expression);
-            t.ResponseCount = exp.Compile().Invoke();
-            return t;
-        }
-
-        public override Question Undo(Question t)
-        {
-            throw new System.NotImplementedException();
+            question.ResponseCount = exp.Compile().Invoke();
+            return question;
         }
         
         public sealed override string Expression { get; protected set; }
         public Guid QuestionId { get; set; }
-        public int ResponseCount { get; set; }
-        public int Change { get; set; }
+        public int OldValue { get; set; }
+        public int NewValue { get; set; }
     }
 }

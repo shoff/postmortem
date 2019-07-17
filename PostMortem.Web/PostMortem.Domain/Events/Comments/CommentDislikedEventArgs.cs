@@ -4,7 +4,7 @@
     using MediatR;
     using Polly;
 
-    public class CommentDislikedEventArgs : EventBase<Guid>, IRequest<PolicyResult>
+    public class CommentDislikedEventArgs : Command<Guid>, IRequest<PolicyResult>
     {
         public CommentDislikedEventArgs(Guid commentId)
         {
