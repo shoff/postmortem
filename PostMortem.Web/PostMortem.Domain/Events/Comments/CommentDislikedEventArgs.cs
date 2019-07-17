@@ -16,7 +16,7 @@
             throw new NotImplementedException();
         }
 
-        public override Guid Undo(Guid t)
+        public override T Apply<T>()
         {
             throw new NotImplementedException();
         }

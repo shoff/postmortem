@@ -6,7 +6,7 @@
     using MediatR;
     using Polly;
 
-    public class QuestionAddedEventArgs : Command<>, IRequest<PolicyResult<Guid>>
+    public class QuestionAddedEventArgs : Command<Question>, IRequest<PolicyResult<Guid>>
     {
         public QuestionAddedEventArgs(Question question)
         {
@@ -14,6 +14,11 @@
         }
 
         public Question Question { get; set; }
+
+        public override Question Apply(Question t)
+        {
+            throw new NotImplementedException();
+        }
 
         public override T Apply<T>()
         {

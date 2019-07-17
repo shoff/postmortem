@@ -30,12 +30,6 @@
             t.Importance = exp.Compile().Invoke();
             return t;
         }
-
-        public override Question Undo(Question t)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public sealed override string Expression { get; protected set; }
         public Guid QuestionId { get; set; }
         public int Importance { get; set; }

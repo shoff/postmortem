@@ -26,9 +26,10 @@
             return t;
         }
 
-        public override Question Undo(Question t)
+        public override T Apply<T>()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
+
     }
 }

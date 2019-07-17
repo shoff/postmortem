@@ -3,7 +3,7 @@
     using System;
     using System.Linq.Expressions;
 
-    public abstract class Command<T> : IEvent<T>
+    public abstract class Command<T> : EventArgs, IEvent<T>
     {
         public abstract T Apply(T t);
         public abstract T Apply<T>();

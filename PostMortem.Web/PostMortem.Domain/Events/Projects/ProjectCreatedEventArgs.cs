@@ -20,7 +20,7 @@
             throw new NotImplementedException();
         }
 
-        public override Project Undo(Project t)
+        public override T Apply<T>()
         {
             throw new NotImplementedException();
         }

@@ -5,8 +5,13 @@
     using MediatR;
     using Polly;
 
-    public class ProjectGetAllEventArgs : Command<>, IRequest<PolicyResult<ICollection<Project>>>
+    public class ProjectGetAllEventArgs : Command<Project>, IRequest<PolicyResult<ICollection<Project>>>
     {
+        public override Project Apply(Project t)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public override T Apply<T>()
         {
             // NFI yet

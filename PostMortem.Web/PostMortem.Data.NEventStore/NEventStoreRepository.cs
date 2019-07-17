@@ -89,5 +89,10 @@ namespace PostMortem.Data.NEventStore
         {
             throw new NotImplementedException();
         }
+
+        public Task UpdateQuestionResponseCount(Guid projectId, int count)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

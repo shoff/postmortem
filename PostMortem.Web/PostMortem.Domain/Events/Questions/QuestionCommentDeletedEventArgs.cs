@@ -9,7 +9,7 @@
             throw new System.NotImplementedException();
         }
 
-        public override Question Undo(Question t)
+        public override T Apply<T>()
         {
             throw new System.NotImplementedException();
         }

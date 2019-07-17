@@ -1,5 +1,6 @@
 ﻿namespace PostMortem.Infrastructure.Events.Questions
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
@@ -9,7 +10,7 @@
     using Polly;
     using Zatoichi.Common.Infrastructure.Resilience;
 
-    public class QuestionDeletedHandler : IRequestHandler<QuestionDeletedEventArgs, PolicyResult>
+    public class QuestionDeletedHandler : EventArgs, IRequestHandler<QuestionDeletedEventArgs, PolicyResult>
     {
         private readonly IExecutionPolicies executionPolicies;
         private readonly IRepository repository;
@@ -24,7 +25,7 @@
 
         public Task<PolicyResult> Handle(QuestionDeletedEventArgs request, CancellationToken cancellationToken)
         {
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.DeleteQuestionAsync(request.Question.QuestionId));
+            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.DeleteQuestionAsync(request.QuestionId));
         }
     }
 }

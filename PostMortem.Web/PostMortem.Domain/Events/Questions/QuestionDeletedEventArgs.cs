@@ -20,12 +20,10 @@
             return t;
         }
 
-        public override Question Undo(Question t)
+        public override T Apply<T>()
         {
-            t.Active = true;
-            return t;
+            throw new NotImplementedException();
         }
-
         public Guid QuestionId { get; private set; }
 
     }
