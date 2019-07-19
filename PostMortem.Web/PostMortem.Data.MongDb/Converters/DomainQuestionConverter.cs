@@ -1,4 +1,6 @@
-﻿namespace PostMortem.Data.MongoDb.Converters
+﻿using PostMortem.Domain.Questions;
+
+namespace PostMortem.Data.MongoDb.Converters
 {
     using AutoMapper;
     using ChaosMonkey.Guards;
@@ -16,7 +18,7 @@
             {
                 Importance = 0,
                 ProjectId = source.ProjectId,
-                QuestionId = source.QuestionId,
+                QuestionId = new QuestionId(source.QuestionId),
                 QuestionText = source.QuestionText,
                 ResponseCount = 0
             };

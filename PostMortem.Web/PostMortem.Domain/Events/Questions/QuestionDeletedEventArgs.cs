@@ -9,7 +9,7 @@
     {
         public QuestionDeletedEventArgs() { }
 
-        public QuestionDeletedEventArgs(Guid questionId)
+        public QuestionDeletedEventArgs(QuestionId questionId)
         {
             this.QuestionId = questionId;
         }
@@ -20,11 +20,7 @@
             return t;
         }
 
-        public override T Apply<T>()
-        {
-            throw new NotImplementedException();
-        }
-        public Guid QuestionId { get; private set; }
+        public QuestionId QuestionId { get; private set; }
 
     }
 }

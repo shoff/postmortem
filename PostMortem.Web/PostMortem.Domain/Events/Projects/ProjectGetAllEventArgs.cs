@@ -11,11 +11,5 @@
         {
             throw new System.NotImplementedException();
         }
-
-        public override T Apply<T>()
-        {
-            // NFI yet
-            throw new System.NotImplementedException();
-        }
     }
 }

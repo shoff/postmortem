@@ -26,10 +26,5 @@
             return t;
         }
 
-        public override T Apply<T>()
-        {
-            throw new NotImplementedException();
-        }
-
     }
 }

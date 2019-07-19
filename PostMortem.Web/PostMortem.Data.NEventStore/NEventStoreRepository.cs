@@ -1,4 +1,10 @@
 ﻿
+using System.Runtime.CompilerServices;
+using MongoDB.Bson.IO;
+using Newtonsoft.Json;
+using PostMortem.Domain.Events;
+using JsonConvert = Newtonsoft.Json.JsonConvert;
+
 namespace PostMortem.Data.NEventStore
 {
     using Microsoft.Extensions.Logging;
@@ -12,87 +18,68 @@ namespace PostMortem.Data.NEventStore
     using Polly;
     using global::NEventStore;
     using ChaosMonkey.Guards;
-    using DomainProject=Domain.Projects.Project;
-    using DomainQuestion=Domain.Questions.Question;
-    using DomainComment=Domain.Comments.Comment;
+    using DomainProject = Domain.Projects.Project;
+    using DomainQuestion = Domain.Questions.Question;
+    using DomainComment = Domain.Comments.Comment;
 
-    public partial class NEventStoreRepository : IRepository//, IDisposable
+    public partial class NEventStoreRepository
     {
         private readonly IStoreEvents eventStore;
         private readonly ILogger<NEventStoreRepository> logger;
+        private static readonly JsonSerializerSettings SerialzerSettings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.All
+        };
+
         public NEventStoreRepository(IStoreEvents eventStore, ILogger<NEventStoreRepository> logger)
         {
-            this.logger = Guard.IsNotNull(logger,nameof(logger));
-            this.eventStore = Guard.IsNotNull(eventStore,nameof(eventStore));
-        }
-        public async Task<ICollection<DomainProject>> GetAllProjectsAsync()
-        {
-            throw new NotImplementedException();
+            this.logger = Guard.IsNotNull(logger, nameof(logger));
+            this.eventStore = Guard.IsNotNull(eventStore, nameof(eventStore));
         }
 
-        public async Task<Guid> CreateProjectAsync(DomainProject project)
+        public Task SaveEventAsync<T, TAgg>(T eventArgs)
+            where T : IEvent<TAgg>
         {
-            throw new NotImplementedException();
+            return Task.Run(() =>
+            {
+                using (var store = eventStore.OpenStream(GetBucketId(typeof(TAgg)), eventArgs.Id.AsIdString(), int.MinValue, int.MaxValue))
+                {
+                    store.Add(new EventMessage {Body = Serialize<T, TAgg>(eventArgs)});
+                    store.CommitChanges(Guid.NewGuid());
+                }
+            });
         }
 
-        public async Task<DomainProject> GetByProjectIdAsync(Guid projectId)
+        private string GetBucketId(Type type)
         {
-            throw new NotImplementedException();
+            return type.ToString();
         }
 
-        public async Task<Guid> AddCommentAsync(DomainComment comment)
+        string Serialize<T, TAgg>(T eventArgs)
+            where T : IEvent<TAgg>
         {
-            throw new NotImplementedException();
+            return JsonConvert.SerializeObject(eventArgs, Formatting.None,SerialzerSettings);
         }
 
-        public async Task<Guid> AddQuestionAsync(DomainQuestion question)
+        T Deserialize<T, TAgg>(string body)
+            where T : class, IEvent<TAgg>
         {
-            throw new NotImplementedException();
+            return JsonConvert.DeserializeObject<T>(body,SerialzerSettings);
         }
 
-        public async Task DeleteQuestionAsync(Guid questionId)
+        public IEnumerable<IEvent<TAgg>> GetAllEvents<T, TId, TAgg>(TId id)
+            where T : class, IEvent<TAgg>
+            where TId : IAggregateId
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task DeleteCommentAsync(Guid questionId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<ICollection<DomainQuestion>> GetQuestionsByProjectIdAsync(Guid projectId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task UpdateCommentAsync(DomainComment comment)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task LikeCommentAsync(Guid commentId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task DislikeCommentAsync(Guid commentId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task UpdateQuestionAsync(DomainQuestion question)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task UpdateProjectAsync(DomainProject requestProject)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateQuestionResponseCount(Guid projectId, int count)
-        {
-            throw new NotImplementedException();
+            //TODO: figure out how to resolve bucket and stream ID
+            var commits = eventStore.Advanced.GetFrom(GetBucketId(typeof(TAgg)), id.AsIdString(),int.MinValue,int.MaxValue);
+            foreach (var commit in commits)
+            {
+                foreach (var e in commit.Events)
+                {
+                    yield return Deserialize<T, TAgg>((string) e.Body);
+                }
+            }
         }
     }
 }

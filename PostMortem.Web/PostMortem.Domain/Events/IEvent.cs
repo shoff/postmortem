@@ -5,7 +5,7 @@
     public interface IEvent<T>
     {
         T Apply(T t);
-        IEventId Id { get; }
+        IAggregateId Id { get; }
         DateTime CommitDate { get; }
         DateTime LastUpdate { get; }
     }

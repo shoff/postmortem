@@ -51,7 +51,7 @@
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var result = await this.mediator.Send(Project.CreateGetByIdEventArgs(id));
+            var result = await this.mediator.Send(Project.CreateGetByIdEventArgs(new ProjectId(id)));
             if (result.Outcome == OutcomeType.Successful)
             {
                 var project = this.mapper.Map<ProjectDto>(result.Result);
@@ -74,7 +74,7 @@
             project.CreatedBy = this.username;
             var p = new Project
             {
-                ProjectId = Guid.NewGuid(),
+                ProjectId = new ProjectId(Guid.NewGuid()),
                 EndDate = project.EndDate,
                 ProjectName = project.ProjectName,
                 StartDate = project.StartDate

@@ -14,7 +14,7 @@
             Guard.IsNotNull(destination, nameof(destination));
             Guard.IsNotNull(context, nameof(context));
             destination.Importance = source.Importance;
-            destination.QuestionId = source.QuestionId;
+            destination.QuestionId = source.QuestionId.Id;
             destination.QuestionText = source.QuestionText;
             destination.ResponseCount = source.ResponseCount;
             source.Comments.Each(c => destination.Comments.Add(context.Mapper.Map<CommentDto>(c)));

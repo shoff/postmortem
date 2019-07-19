@@ -16,7 +16,7 @@
             destination = new Project
             {
                 EndDate = source.EndDate,
-                ProjectId = source.ProjectId,
+                ProjectId = source.ProjectId.Id,
                 ProjectName = source.ProjectName
             };
             return destination;

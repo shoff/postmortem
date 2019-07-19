@@ -32,7 +32,7 @@
                 throw new ApplicationException(
                     "Cannot add questions unless the Project property has first been assigned.");
             }
-            question.QuestionId = this.projectId;
+            question.ProjectId = this.projectId;
             this.questions.Add(question);
         }
         public void Clear()
@@ -62,10 +62,10 @@
             if (this.projectId == null || this.projectId == Guid.Empty)
             {
                 throw new ApplicationException(
-                    "Cannot add questions unless the Question property has first been assigned.");
+                    "Cannot add questions unless the ProjectId property has first been assigned.");
             }
 
-            item.QuestionId = this.projectId;
+            item.ProjectId = this.projectId;
             this.questions.Insert(index, item);
         }
         public void RemoveAt(int index)
@@ -80,7 +80,7 @@
                 if (this.projectId == null || this.projectId == Guid.Empty)
                 {
                     throw new ApplicationException(
-                        "Cannot add questions unless the Question property has first been assigned.");
+                        "Cannot add questions unless the ProjectId property has first been assigned.");
                 }
 
                 value.ProjectId = this.ProjectId;

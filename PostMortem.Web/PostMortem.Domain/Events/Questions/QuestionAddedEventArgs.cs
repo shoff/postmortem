@@ -20,9 +20,5 @@
             throw new NotImplementedException();
         }
 
-        public override T Apply<T>()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

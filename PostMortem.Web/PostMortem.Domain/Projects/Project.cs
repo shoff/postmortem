@@ -21,7 +21,7 @@
             this.questions.AddRange(questions);
         }
 
-        public Guid ProjectId { get; set; }
+        public ProjectId ProjectId { get; set; }
         public string ProjectName { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
@@ -30,12 +30,12 @@
         {
             get
             {
-                if (ProjectId == Guid.Empty)
+                if (ProjectId == ProjectId.Empty)
                 {
-                    ProjectId = Guid.NewGuid();
+                    ProjectId = ProjectId.NewProjectId();
                 }
 
-                this.questions.ProjectId = ProjectId;
+                this.questions.ProjectId = ProjectId.Id;
                 return this.questions;
             }
         }
@@ -45,9 +45,9 @@
             return new ProjectGetAllEventArgs();
         }
 
-        public static ProjectGetByIdEventArgs CreateGetByIdEventArgs(Guid projectId)
+        public static ProjectGetByIdEventArgs CreateGetByIdEventArgs(ProjectId projectId)
         {
-            return new ProjectGetByIdEventArgs(projectId);
+            return new ProjectGetByIdEventArgs(projectId.Id);
         }
 
         public static ProjectCreatedEventArgs CreateProjectCreatedEventArgs(Project project)

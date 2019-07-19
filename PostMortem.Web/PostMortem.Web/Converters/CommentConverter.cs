@@ -16,7 +16,7 @@
             destination = new CommentDto
             {
                 Commenter = source.Commenter,
-                CommentId = source.CommentId,
+                CommentId = source.CommentId.Id,
                 CommentText = source.CommentText,
                 DateAdded = source.DateAdded,
                 Dislikes = source.Dislikes,

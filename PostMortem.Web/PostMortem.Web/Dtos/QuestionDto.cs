@@ -24,7 +24,7 @@
             {
                 Importance = dto.Importance,
                 ProjectId = dto.ProjectId,
-                QuestionId = dto.QuestionId,
+                QuestionId = new QuestionId(dto.QuestionId),
                 QuestionText = dto.QuestionText,
                 ResponseCount = dto.ResponseCount
             };

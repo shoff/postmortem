@@ -25,7 +25,7 @@
 
         public Task<PolicyResult> Handle(QuestionDeletedEventArgs request, CancellationToken cancellationToken)
         {
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.DeleteQuestionAsync(request.QuestionId));
+            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.DeleteQuestionAsync(request.QuestionId.Id));
         }
     }
 }

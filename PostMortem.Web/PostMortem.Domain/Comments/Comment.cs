@@ -5,15 +5,15 @@
 
     public class Comment
     {
-        private Guid commentId = Guid.Empty;
+        private CommentId commentId = CommentId.Empty;
 
-        public Guid CommentId
+        public CommentId CommentId
         {
             get
             {
-                if (this.commentId == Guid.Empty)
+                if (this.commentId.Equals(CommentId.Empty))
                 {
-                    this.commentId = Guid.NewGuid();
+                    this.commentId = CommentId.NewCommentId();
                 }
 
                 return this.commentId;
@@ -40,12 +40,12 @@
         }
         public static CommentLikedEventArgs CreateCommentLikedEventArgs(Comment comment)
         {
-            var eventArgs = new CommentLikedEventArgs(comment.CommentId);
+            var eventArgs = new CommentLikedEventArgs(comment.CommentId.Id);
             return eventArgs;
         }
         public static CommentDislikedEventArgs CreateCommentDislikedEventArgs(Comment comment)
         {
-            var eventArgs = new CommentDislikedEventArgs(comment.CommentId);
+            var eventArgs = new CommentDislikedEventArgs(comment.CommentId.Id);
             return eventArgs;
         }
         public static CommentUpdatedEventArgs CreateCommentUpdatedEventArgs(Comment comment)

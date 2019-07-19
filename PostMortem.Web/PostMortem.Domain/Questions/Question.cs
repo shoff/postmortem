@@ -20,7 +20,7 @@
             this.comments.AddRange(comments);
         }
 
-        public Guid QuestionId { get; set; }
+        public QuestionId QuestionId { get; set; }
         public Guid ProjectId { get; set; }
         public string QuestionText { get; set; }
         public int ResponseCount { get; set; }
@@ -32,12 +32,12 @@
         {
             get
             {
-                if (this.QuestionId == Guid.Empty)
+                if (this.QuestionId.Equals(QuestionId.Empty))
                 {
-                    this.QuestionId = Guid.NewGuid();
+                    this.QuestionId = QuestionId.NewQuestionId();
                 }
 
-                this.comments.QuestionId = this.QuestionId;
+                this.comments.QuestionId = this.QuestionId.Id;
                 return this.comments;
             }
         }

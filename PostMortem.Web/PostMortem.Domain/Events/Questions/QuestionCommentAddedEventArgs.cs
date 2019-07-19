@@ -9,9 +9,5 @@
             throw new System.NotImplementedException();
         }
 
-        public override T Apply<T>()
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

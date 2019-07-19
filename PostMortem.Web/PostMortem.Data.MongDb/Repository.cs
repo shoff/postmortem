@@ -1,4 +1,7 @@
-﻿namespace PostMortem.Data.MongoDb
+﻿using PostMortem.Domain.Projects;
+using PostMortem.Domain.Questions;
+
+namespace PostMortem.Data.MongoDb
 {
     using System;
     using System.Collections.Generic;
@@ -60,7 +63,7 @@
                 var projects = this.database.GetCollection<Project>(Constants.PROJECTS_COLLECTION);
                 var mongoProject = this.mapper.Map<Project>(project);
                 await projects.InsertOneAsync(mongoProject);
-                return project.ProjectId;
+                return project.ProjectId.Id;
             }
             catch (Exception e)
             {
@@ -84,7 +87,7 @@
             var domainProject = new DomainProject(questions)
             {
                 EndDate = project.EndDate,
-                ProjectId = project.ProjectId,
+                ProjectId = new ProjectId(project.ProjectId),
                 ProjectName = project.ProjectName,
                 StartDate = project.StartDate
             };
@@ -116,7 +119,7 @@
                     Active = question.Active,
                     Importance = question.Importance,
                     ProjectId = question.ProjectId,
-                    QuestionId = question.QuestionId,
+                    QuestionId = new QuestionId(question.QuestionId),
                     QuestionText = question.QuestionText,
                     ResponseCount = question.ResponseCount
                 };
@@ -131,7 +134,7 @@
                 Active = question.Active,
                 Importance = question.Importance,
                 ProjectId = question.ProjectId,
-                QuestionId = question.QuestionId,
+                QuestionId = new QuestionId(question.QuestionId),
                 QuestionText = question.QuestionText,
                 ResponseCount = question.ResponseCount
             };
@@ -199,7 +202,7 @@
                 {
                     Importance = question.Importance,
                     ProjectId = question.ProjectId,
-                    QuestionId = question.QuestionId,
+                    QuestionId = new QuestionId(question.QuestionId),
                     QuestionText = question.QuestionText,
                     ResponseCount = question.ResponseCount
                 };
@@ -252,7 +255,7 @@
         {
             var questionCollection = this.database.GetCollection<Question>(Constants.QUESTIONS_COLLECTION);
             return questionCollection.ReplaceOneAsync<Question>
-                (q=>q.QuestionId == question.QuestionId, this.mapper.Map<Question>(question));
+                (q=>q.QuestionId == question.QuestionId.Id, this.mapper.Map<Question>(question));
         }
 
         public Task UpdateProjectAsync(DomainProject requestProject)

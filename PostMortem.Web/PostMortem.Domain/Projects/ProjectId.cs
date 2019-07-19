@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Text;
+
+namespace PostMortem.Domain.Projects
+{
+    public class ProjectId : AggregateId<Guid>
+    {
+        private const string Prefix = "Project-";
+        public ProjectId(Guid id) : base(id)
+        {
+        }
+
+        public ProjectId(string idString) : this(ExtractGuid(idString))
+        {
+
+        }
+        private static Guid ExtractGuid(string idString) =>  Guid.Parse(idString.StartsWith(Prefix) ? idString.Substring(Prefix.Length) : idString);
+
+        public override string AsIdString() => $"{Prefix}{Id}";
+        public static readonly ProjectId Empty=new ProjectId(Guid.Empty);
+        public static ProjectId NewProjectId() => new ProjectId(Guid.NewGuid());
+    }
+}
