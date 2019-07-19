@@ -1,4 +1,6 @@
-﻿namespace PostMortem.Web.Controllers
+﻿using PostMortem.Domain.Questions;
+
+namespace PostMortem.Web.Controllers
 {
     using System;
     using System.Threading.Tasks;
@@ -38,24 +40,25 @@
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetById(/*[FromRoute]Guid questionId,*/Guid id) /*Since comments aren't an aggregate root, shouldn't we provide the parent Id too?*/
         {
-            try
-            {
-                var result = await this.mediator.Send(Comment.CreateGetByIdEventArgs(id));
+            throw new NotImplementedException();
+            //try
+            //{
+            //    var result = await this.mediator.Send(Comment.GetCommentById(id));
 
-                if (result.Outcome == Polly.OutcomeType.Successful)
-                {
-                    return this.Ok(this.mapper.Map<CommentDto>(result.Result));
-                }
+            //    if (result.Outcome == Polly.OutcomeType.Successful)
+            //    {
+            //        return this.Ok(this.mapper.Map<CommentDto>(result.Result));
+            //    }
 
-                return new StatusCodeResult(500);
-            }
-            catch (Exception e)
-            {
-                this.logger.LogError(e, e.Message);
-                return new StatusCodeResult(500);
-            }
+            //    return new StatusCodeResult(500);
+            //}
+            //catch (Exception e)
+            //{
+            //    this.logger.LogError(e, e.Message);
+            //    return new StatusCodeResult(500);
+            //}
         }
 
         [HttpPost]
@@ -74,14 +77,14 @@
                     comment.Commenter = this.username; // generated anonymous username
                 }
 
-                var result = await this.mediator.Send(Comment.CreateCommentAddedEventArgs(comment));
-                // this.repository.AddCommentAsync(comment).ConfigureAwait(false);
+                var question = new Question(comment.QuestionId);
+                var result = await question.AddCommentAsync(comment.CommentId, comment.CommentText, comment.DateAdded, comment.Commenter);
 
                 if (result.Outcome == Polly.OutcomeType.Successful)
                 {
                     var url = this.linkGenerator.GetPathByAction(
                         this.HttpContext,
-                        controller: "Questions",
+                        controller: "Comments",
                         action: "GetById",
                         values: new { id = comment.CommentId });
 

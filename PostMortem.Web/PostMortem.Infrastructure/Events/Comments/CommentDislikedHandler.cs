@@ -1,4 +1,7 @@
-﻿namespace PostMortem.Infrastructure.Events.Comments
+﻿using PostMortem.Domain.Comments;
+using PostMortem.Domain.EventSourcing.Events;
+
+namespace PostMortem.Infrastructure.Events.Comments
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -9,7 +12,7 @@
     using Polly;
     using Zatoichi.Common.Infrastructure.Resilience;
 
-    public class CommentDislikedHandler : IRequestHandler<CommentDislikedEventArgs, PolicyResult>
+    public class CommentDislikedHandler : IEventHandler<CommentDislikedEventArgs>
     {
         private readonly IExecutionPolicies executionPolicies;
         private readonly IRepository repository;
@@ -25,10 +28,15 @@
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
-        public Task<PolicyResult> Handle(CommentDislikedEventArgs request, CancellationToken cancellationToken)
+        //public Task<PolicyResult> Handle(CommentDislikedEventArgs request, CancellationToken cancellationToken)
+        //{
+        //    this.eventBroker.DislikeComment(this, request);
+        //    return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.DislikeCommentAsync(request.CommentId));
+        //}
+
+        public Task Handle(CommentDislikedEventArgs notification, CancellationToken cancellationToken)
         {
-            this.eventBroker.DislikeComment(this, request);
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.DislikeCommentAsync(request.CommentId));
+            throw new System.NotImplementedException();
         }
     }
 }

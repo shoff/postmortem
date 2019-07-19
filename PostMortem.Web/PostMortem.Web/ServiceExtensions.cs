@@ -1,4 +1,6 @@
-﻿namespace PostMortem.Web
+﻿using PostMortem.Domain.EventSourcing.Events;
+
+namespace PostMortem.Web
 {
     using AutoMapper;
     using Converters;
@@ -33,7 +35,7 @@
             services.AddTransient<IRepository, Repository>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHttpClient<INameGeneratorClient, NameGeneratorClient>();
-            services.AddMediatR(typeof(CommentAddedHandler).Assembly);
+            services.AddMediatR(typeof(CommentAddedEventHandler).Assembly);
 
             // event sourcing
             services.AddSingleton<IEventBroker, EventBroker>();

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PostMortem.Domain.Projects
 {
-    public class ProjectId : AggregateId<Guid>
+    public class ProjectId : EntityId<Guid>
     {
         private const string Prefix = "Project-";
         public ProjectId(Guid id) : base(id)

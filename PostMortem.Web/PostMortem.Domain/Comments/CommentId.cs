@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PostMortem.Domain.Comments
 {
-    public class CommentId : AggregateId<Guid>
+    public class CommentId : EntityId<Guid>
     {
         private const string Prefix = "Comment-";
         public CommentId(Guid id) : base(id)

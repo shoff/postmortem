@@ -1,4 +1,9 @@
-﻿namespace PostMortem.Infrastructure.Events
+﻿using PostMortem.Domain.Comments;
+using PostMortem.Domain.EventSourcing.Commands;
+using PostMortem.Domain.EventSourcing.Events;
+using PostMortem.Domain.Projects;
+
+namespace PostMortem.Infrastructure.Events
 {
     using System;
     using Domain.Events;
@@ -9,35 +14,15 @@
 
     public class EventBroker : IEventBroker
     {
-        public event EventHandler<ProjectCreatedEventArgs> ProjectCreated;
-        public event EventHandler<CommentDislikedEventArgs> CommentDisliked;
-        public event EventHandler<CommentLikedEventArgs> CommentLiked;
-        public event EventHandler<QuestionResponseCountChangedEventArgs> QuestionResponseCountChanged;
-        public event EventHandler<QuestionImportanceEventArgs> QuestionImportanceChanged;
-
-        public void ChangeResponseCount(object sender, QuestionImportanceEventArgs eventArgs)
+        //TODO: Patch in MediatR
+        public void RaiseEvent<TArgs>(TArgs @event) where TArgs : IEventArgs
         {
-            this.QuestionImportanceChanged.Raise(sender, eventArgs);
+            throw new NotImplementedException();
         }
 
-        public void ChangeResponseCount(object sender, QuestionResponseCountChangedEventArgs eventArgs)
+        public void DispatchCommand<TArgs>(TArgs command) where TArgs : ICommandArgs
         {
-            this.QuestionResponseCountChanged.Raise(sender, eventArgs);
-        }
-
-        public void CreateProject(object sender, ProjectCreatedEventArgs eventArgs)
-        {
-            this.ProjectCreated.Raise(sender, eventArgs);
-        }
-
-        public void DislikeComment(object sender, CommentDislikedEventArgs eventArgs)
-        {
-            this.CommentDisliked.Raise(sender, eventArgs);
-        }
-
-        public void LikeComment(object sender, CommentLikedEventArgs eventArgs)
-        {
-            this.CommentLiked.Raise(sender, eventArgs);
+            throw new NotImplementedException();
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PostMortem.Domain.Questions
 {
-    public class QuestionId : AggregateId<Guid>
+    public class QuestionId : EntityId<Guid>
     {
         private const string Prefix = "Question-";
         public QuestionId(Guid id) : base(id)

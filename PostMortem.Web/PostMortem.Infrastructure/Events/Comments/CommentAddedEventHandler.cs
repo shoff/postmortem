@@ -2,6 +2,7 @@
 
 namespace PostMortem.Infrastructure.Events.Comments
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
@@ -11,12 +12,12 @@ namespace PostMortem.Infrastructure.Events.Comments
     using Polly;
     using Zatoichi.Common.Infrastructure.Resilience;
 
-    public class CommentLikedHandler : IEventHandler<CommentLikedEventArgs>
+    public class CommentAddedEventHandler : IEventHandler<CommentAddedEventArgs>
     {
         private readonly IExecutionPolicies executionPolicies;
         private readonly IRepository repository;
 
-        public CommentLikedHandler(
+        public CommentAddedEventHandler(
             IRepository repository,
             IExecutionPolicies executionPolicies)
         {
@@ -24,14 +25,9 @@ namespace PostMortem.Infrastructure.Events.Comments
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
-        //public Task<PolicyResult> Handle(CommentLikedEventArgs request, CancellationToken cancellationToken)
-        //{
-        //    return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.LikeCommentAsync(request.CommentId));
-        //}
-
-        public Task Handle(CommentLikedEventArgs notification, CancellationToken cancellationToken)
+        public Task Handle(CommentAddedEventArgs notification, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

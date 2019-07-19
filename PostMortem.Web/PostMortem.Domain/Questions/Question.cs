@@ -1,4 +1,9 @@
-﻿namespace PostMortem.Domain.Questions
+﻿using System.Threading.Tasks;
+using Polly;
+using PostMortem.Domain.Events.Comments;
+using PostMortem.Domain.EventSourcing.Events;
+
+namespace PostMortem.Domain.Questions
 {
     using System;
     using System.Collections.Generic;
@@ -9,10 +14,24 @@
 
     public class Question
     {
+        private IEventBroker eventBroker;
+        IRepository repository;
+
+        public Question(IEventBroker eventBroker, IRepository repository)
+        {
+            this.eventBroker = Guard.IsNotNull(eventBroker, nameof(eventBroker));
+            this.repository = Guard.IsNotNull(repository, nameof(repository));
+        }
+
         private readonly CommentCollection comments = new CommentCollection();
 
         public Question()
             : this(new List<Comment>()) { }
+
+        public Question(Guid questionId)
+        {
+            QuestionId = new QuestionId(questionId);
+        }
 
         public Question(ICollection<Comment> comments)
         {
@@ -42,22 +61,40 @@
             }
         }
 
-        public static QuestionAddedEventArgs CreateQuestionAddedEventArgs(Question question)
+        public async Task<PolicyResult<Comment>> AddCommentAsync(Guid commentId,string commentText, DateTime dateAdded, string commenter )
         {
-            QuestionAddedEventArgs eventArgs = new QuestionAddedEventArgs(question);
-            return eventArgs;
+            // To avoid full CQRS, call the repository here? (Repo will call the event store to reconstitute the comment)... feels like a hack tho.
+            // fire off the comment added event here 
+            var comment = new Comment
+            {
+                CommentId = new CommentId(commentId), Commenter = commenter, CommentText = commentText,
+                DateAdded = dateAdded, Likes = 0, Dislikes = 0, QuestionId = this.QuestionId.Id,
+                GenerallyPositive = false
+            };
+            var _ = await repository.AddCommentAsync(comment);
+            
+            eventBroker.RaiseEvent(new CommentAddedEventArgs(commentId) { CommentText = commentText, Commenter = commenter, QuestionId = this.QuestionId.Id});
+            // TODO wrap in polly policy
+            throw new NotImplementedException();
         }
 
-        public static QuestionDeletedEventArgs CreateQuestionDeletedEventArgs(Question question)
-        {
-            var eventArgs = new QuestionDeletedEventArgs(question.QuestionId);
-            return eventArgs;
-        }
 
-        public static QuestionUpdatedEventArgs CreateQuestionUpdatedEventArgs(Question question)
-        {
-            var eventArgs = new QuestionUpdatedEventArgs(question);
-            return eventArgs;
-        }
+        //public static QuestionAddedEventArgs CreateQuestionAddedEventArgs(Question question)
+        //{
+        //    QuestionAddedEventArgs eventArgs = new QuestionAddedEventArgs(question);
+        //    return eventArgs;
+        //}
+
+        //public static QuestionDeletedEventArgs CreateQuestionDeletedEventArgs(Question question)
+        //{
+        //    var eventArgs = new QuestionDeletedEventArgs(question.QuestionId);
+        //    return eventArgs;
+        //}
+
+        //public static QuestionUpdatedEventArgs CreateQuestionUpdatedEventArgs(Question question)
+        //{
+        //    var eventArgs = new QuestionUpdatedEventArgs(question);
+        //    return eventArgs;
+        //}
     }
 }

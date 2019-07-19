@@ -40,19 +40,19 @@
             }
         }
 
-        public static ProjectGetAllEventArgs CreateGetAllEventArgs()
-        {
-            return new ProjectGetAllEventArgs();
-        }
+        //public static GetAllProjectsQueryArgs CreateGetAllEventArgs()
+        //{
+        //    return new GetAllProjectsQueryArgs();
+        //}
 
-        public static ProjectGetByIdEventArgs CreateGetByIdEventArgs(ProjectId projectId)
-        {
-            return new ProjectGetByIdEventArgs(projectId.Id);
-        }
+        //public static GetProjectByIdQueryArgs CreateGetByIdEventArgs(ProjectId projectId)
+        //{
+        //    return new GetProjectByIdQueryArgs(projectId.Id);
+        //}
 
-        public static ProjectCreatedEventArgs CreateProjectCreatedEventArgs(Project project)
-        {
-            return new ProjectCreatedEventArgs(project);
-        }
+        //public static ProjectCreatedEventArgs CreateProjectCreatedEventArgs(Project project)
+        //{
+        //    return new ProjectCreatedEventArgs(project);
+        //}
     }
 }

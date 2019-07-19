@@ -1,9 +1,6 @@
 ﻿
-using System.Runtime.CompilerServices;
-using MongoDB.Bson.IO;
 using Newtonsoft.Json;
-using PostMortem.Domain.Events;
-using JsonConvert = Newtonsoft.Json.JsonConvert;
+using PostMortem.Domain.EventSourcing.Events;
 
 namespace PostMortem.Data.NEventStore
 {
@@ -12,15 +9,8 @@ namespace PostMortem.Data.NEventStore
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Domain;
-    using Domain.Comments;
-    using Domain.Projects;
-    using Domain.Questions;
-    using Polly;
     using global::NEventStore;
     using ChaosMonkey.Guards;
-    using DomainProject = Domain.Projects.Project;
-    using DomainQuestion = Domain.Questions.Question;
-    using DomainComment = Domain.Comments.Comment;
 
     public partial class NEventStoreRepository
     {
@@ -37,16 +27,15 @@ namespace PostMortem.Data.NEventStore
             this.eventStore = Guard.IsNotNull(eventStore, nameof(eventStore));
         }
 
-        public Task SaveEventAsync<T, TAgg>(T eventArgs)
-            where T : IEvent<TAgg>
+        public Task SaveEventAsync(IEventArgs eventArgs)
         {
             return Task.Run(() =>
             {
-                using (var store = eventStore.OpenStream(GetBucketId(typeof(TAgg)), eventArgs.Id.AsIdString(), int.MinValue, int.MaxValue))
-                {
-                    store.Add(new EventMessage {Body = Serialize<T, TAgg>(eventArgs)});
-                    store.CommitChanges(Guid.NewGuid());
-                }
+                //using (var store = eventStore.OpenStream(GetBucketId(typeof(TAgg)), eventArgs.Id.AsIdString(), int.MinValue, int.MaxValue))
+                //{
+                //    store.Add(new EventMessage {Body = Serialize<T, TAgg>(eventArgs)});
+                //    store.CommitChanges(Guid.NewGuid());
+                //}
             });
         }
 
@@ -55,29 +44,25 @@ namespace PostMortem.Data.NEventStore
             return type.ToString();
         }
 
-        string Serialize<T, TAgg>(T eventArgs)
-            where T : IEvent<TAgg>
+        string Serialize(IEventArgs eventArgs)
         {
             return JsonConvert.SerializeObject(eventArgs, Formatting.None,SerialzerSettings);
         }
 
-        T Deserialize<T, TAgg>(string body)
-            where T : class, IEvent<TAgg>
+        IEventArgs Deserialize(string body)
         {
-            return JsonConvert.DeserializeObject<T>(body,SerialzerSettings);
+            return JsonConvert.DeserializeObject(body,SerialzerSettings) as IEventArgs;
         }
 
-        public IEnumerable<IEvent<TAgg>> GetAllEvents<T, TId, TAgg>(TId id)
-            where T : class, IEvent<TAgg>
-            where TId : IAggregateId
+        public IEnumerable<IEventArgs> GetAllEvents<TId, TAgg>(TId id)
+            where TId : IEntityId
         {
-            //TODO: figure out how to resolve bucket and stream ID
             var commits = eventStore.Advanced.GetFrom(GetBucketId(typeof(TAgg)), id.AsIdString(),int.MinValue,int.MaxValue);
             foreach (var commit in commits)
             {
                 foreach (var e in commit.Events)
                 {
-                    yield return Deserialize<T, TAgg>((string) e.Body);
+                    yield return Deserialize((string) e.Body);
                 }
             }
         }

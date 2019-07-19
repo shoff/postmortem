@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using PostMortem.Domain;
+using PostMortem.Domain.EventSourcing.Events;
 
 namespace PostMortem.Data.NEventStore
 {
@@ -45,10 +46,10 @@ namespace PostMortem.Data.NEventStore
             //this.readModel = client.GetDatabase(options.Value.DefaultDb);
         }
 
-        public async Task<Guid> InsertEvent<T>(IEvent<T> @event)
-        {
-            throw new NotImplementedException();
-        }
+        //public async Task<Guid> InsertEvent<T>(IEvent<T> @event)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
 
     }
