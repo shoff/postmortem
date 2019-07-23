@@ -10,7 +10,7 @@ namespace PostMortem.Domain.Events.Questions
     using Newtonsoft.Json;
     using Polly;
 
-    //public class QuestionImportanceSetEventArgs : UpdateEventArgsBase<int>
+    //public class QuestionImportanceSetEventArgs : IUpdateEventArgs<int>
     //{
     //    public Guid QuestionId { get; set; }
 

@@ -7,7 +7,7 @@ namespace PostMortem.Domain.Events.Questions
     using MediatR;
     using Polly;
 
-    //public class QuestionTextChangedEventArgs : UpdateEventArgsBase<string>
+    //public class QuestionTextChangedEventArgs : IUpdateEventArgs<string>
     //{
     //    public Guid QuestionId { get; set; }
 

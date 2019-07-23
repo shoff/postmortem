@@ -1,4 +1,5 @@
-﻿using PostMortem.Domain.Projects;
+﻿using PostMortem.Data.MongoDb;
+using PostMortem.Domain.Projects;
 
 namespace PostMortem.Infrastructure.Events.Projects
 {
@@ -13,22 +14,22 @@ namespace PostMortem.Infrastructure.Events.Projects
     using Zatoichi.Common.Infrastructure.Resilience;
     using Project = Domain.Projects.Project;
 
-    public class ProjectsGetAllRequestedHandler : IRequestHandler<GetAllProjectsQueryArgs, PolicyResult<ICollection<Project>>>
+    public class ProjectsGetAllRequestedHandler : IRequestHandler<GetAllProjectsQueryArgs, PolicyResult<IEnumerable<Project>>>
     { 
     private readonly IExecutionPolicies executionPolicies;
-        private readonly IRepository repository;
+        private readonly IProjectRepository repository;
 
         public ProjectsGetAllRequestedHandler(
-            IRepository repository,
+            IProjectRepository repository,
             IExecutionPolicies executionPolicies)
         {
             this.executionPolicies = Guard.IsNotNull(executionPolicies, nameof(executionPolicies));
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
-        public Task<PolicyResult<ICollection<Project>>> Handle(GetAllProjectsQueryArgs request, CancellationToken cancellationToken)
+        public Task<PolicyResult<IEnumerable<Project>>> Handle(GetAllProjectsQueryArgs request, CancellationToken cancellationToken)
         {
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.GetAllProjectsAsync());
+            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.GetAllAsync());
         }
     }
 }

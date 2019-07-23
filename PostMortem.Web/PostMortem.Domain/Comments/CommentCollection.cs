@@ -36,7 +36,7 @@
                 throw new ApplicationException(
                     "Cannot add comments unless the Question property has first been assigned.");
             }
-            comment.QuestionId = this.questionId;
+            //comment.QuestionId = this.questionId;
             this.comments.Add(comment);
         }
 
@@ -75,7 +75,7 @@
                     "Cannot add comments unless the Question property has first been assigned.");
             }
 
-            item.QuestionId = this.questionId;
+            //item.QuestionId = this.questionId;
             this.comments.Insert(index, item);
         }
 
@@ -95,7 +95,7 @@
                         "Cannot add comments unless the Question property has first been assigned.");
                 }
 
-                value.QuestionId = this.QuestionId;
+                //value.QuestionId = this.QuestionId;
                 this.comments[index] = value;
             }
         }
@@ -109,7 +109,7 @@
                     "Cannot add questions unless the Project property has first been assigned.");
             }
 
-            comments.Each(dto => dto.QuestionId = this.questionId);
+            //comments.Each(dto => dto.QuestionId = this.questionId);
             this.comments.AddRange(comments);
         }
     }

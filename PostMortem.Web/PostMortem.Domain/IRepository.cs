@@ -1,4 +1,6 @@
-﻿namespace PostMortem.Domain
+﻿using PostMortem.Domain.EventSourcing.Events;
+
+namespace PostMortem.Domain
 {
     using System;
     using System.Collections.Generic;
@@ -7,22 +9,18 @@
     using Projects;
     using Questions;
 
-    public interface IRepository
+    public interface IRepository<TEntity, in TEntityId>
+        where TEntityId :IEntityId
+        where TEntity : IEntity<TEntityId>
     {
-        Task<ICollection<Project>> GetAllProjectsAsync();
-        Task<Guid> CreateProjectAsync(Project project);
-        Task<Project> GetByProjectIdAsync(Guid projectId);
-        Task<Guid> AddCommentAsync(Comment comment);
-        Task<Guid> AddQuestionAsync(Question question);
-        Task DeleteQuestionAsync(Guid questionId);
-        Task DeleteCommentAsync(Guid questionId);
-        Task<ICollection<Question>> GetQuestionsByProjectIdAsync(Guid projectId);
-        Task UpdateCommentAsync(Comment comment);
-        Task LikeCommentAsync(Guid commentId);
-        Task DislikeCommentAsync(Guid commentId);
-        Task UpdateQuestionAsync(Question question);
-        Task UpdateProjectAsync(Project requestProject);
-        Task UpdateQuestionResponseCount(Guid projectId, int count);
+        Task<IEnumerable<TEntity>> GetAllAsync();
 
+        Task<TEntity> GetByIdAsync(TEntityId id);
+
+        Task SaveAsync(TEntity entity);
+        //void Delete(TEntity entity);
+        //void DeleteById(TEntityId commentId);
     }
+
+    
 }

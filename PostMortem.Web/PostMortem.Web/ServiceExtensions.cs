@@ -1,4 +1,6 @@
-﻿using PostMortem.Domain.EventSourcing.Events;
+﻿using PostMortem.Domain.Comments;
+using PostMortem.Domain.EventSourcing.Events;
+using PostMortem.Domain.Questions;
 
 namespace PostMortem.Web
 {
@@ -32,13 +34,17 @@ namespace PostMortem.Web
             
             services.AddTransient<IExecutionPolicies, ExecutionPolicies>();
             services.AddTransient<IPolicyFactory, AsyncPolicyFactory>();
-            services.AddTransient<IRepository, Repository>();
+            services.AddTransient<IProjectRepository, ProjectRepository>();
+            services.AddTransient<IQuestionRepository, QuestionRepository>();
+            services.AddTransient<ICommentRepository, CommentRepository>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.TryAddSingleton<IMongoDbContext, MongoDbContext>();
             services.AddHttpClient<INameGeneratorClient, NameGeneratorClient>();
-            services.AddMediatR(typeof(CommentAddedEventHandler).Assembly);
+            services.AddMediatR(typeof(CommentUpdatedHandler).Assembly);
+            //services.AddMediatR(typeof(CommentDislikedEventArgs).Assembly);
 
-            // event sourcing
-            services.AddSingleton<IEventBroker, EventBroker>();
+            // event sourcing (may not need this)
+            //services.AddSingleton<IEventBroker, EventBroker>();
             return services;
         }
 

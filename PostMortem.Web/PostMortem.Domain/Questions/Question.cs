@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Polly;
+using PostMortem.Data.MongoDb;
 using PostMortem.Domain.Events.Comments;
 using PostMortem.Domain.EventSourcing.Events;
 
@@ -12,14 +14,14 @@ namespace PostMortem.Domain.Questions
     using Events.Questions;
 
 
-    public class Question
+    public class Question : IEntity<QuestionId>
     {
-        private IEventBroker eventBroker;
-        IRepository repository;
+        //private IEventBroker eventBroker;
+        IQuestionRepository repository;
 
-        public Question(IEventBroker eventBroker, IRepository repository)
+        public Question(IQuestionRepository repository)
         {
-            this.eventBroker = Guard.IsNotNull(eventBroker, nameof(eventBroker));
+            
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
@@ -63,38 +65,12 @@ namespace PostMortem.Domain.Questions
 
         public async Task<PolicyResult<Comment>> AddCommentAsync(Guid commentId,string commentText, DateTime dateAdded, string commenter )
         {
-            // To avoid full CQRS, call the repository here? (Repo will call the event store to reconstitute the comment)... feels like a hack tho.
-            // fire off the comment added event here 
-            var comment = new Comment
-            {
-                CommentId = new CommentId(commentId), Commenter = commenter, CommentText = commentText,
-                DateAdded = dateAdded, Likes = 0, Dislikes = 0, QuestionId = this.QuestionId.Id,
-                GenerallyPositive = false
-            };
-            var _ = await repository.AddCommentAsync(comment);
-            
-            eventBroker.RaiseEvent(new CommentAddedEventArgs(commentId) { CommentText = commentText, Commenter = commenter, QuestionId = this.QuestionId.Id});
-            // TODO wrap in polly policy
+            var comment = new Comment(commentId, this.QuestionId, commenter, commentText, dateAdded);
+            this.comments.Add(comment);
+            // TODO wrap in polly policy and save the question and comment.
             throw new NotImplementedException();
         }
 
-
-        //public static QuestionAddedEventArgs CreateQuestionAddedEventArgs(Question question)
-        //{
-        //    QuestionAddedEventArgs eventArgs = new QuestionAddedEventArgs(question);
-        //    return eventArgs;
-        //}
-
-        //public static QuestionDeletedEventArgs CreateQuestionDeletedEventArgs(Question question)
-        //{
-        //    var eventArgs = new QuestionDeletedEventArgs(question.QuestionId);
-        //    return eventArgs;
-        //}
-
-        //public static QuestionUpdatedEventArgs CreateQuestionUpdatedEventArgs(Question question)
-        //{
-        //    var eventArgs = new QuestionUpdatedEventArgs(question);
-        //    return eventArgs;
-        //}
+        public QuestionId GetEntityId() => QuestionId;
     }
 }

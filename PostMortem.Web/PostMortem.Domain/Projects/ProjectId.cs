@@ -21,5 +21,7 @@ namespace PostMortem.Domain.Projects
         public override string AsIdString() => $"{Prefix}{Id}";
         public static readonly ProjectId Empty=new ProjectId(Guid.Empty);
         public static ProjectId NewProjectId() => new ProjectId(Guid.NewGuid());
+        public static implicit operator ProjectId(Guid id) => new ProjectId(id);
+        public static implicit operator ProjectId(string id) => new ProjectId(id);
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using MediatR;
+using Polly;
 
 namespace PostMortem.Domain.Comments
 {

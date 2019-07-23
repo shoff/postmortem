@@ -1,5 +1,6 @@
-﻿using PostMortem.Domain.Comments;
-using PostMortem.Domain.EventSourcing.Events;
+﻿using MediatR;
+using Polly;
+using PostMortem.Domain.Comments;
 
 namespace PostMortem.Domain.Events.Comments
 {
@@ -11,6 +12,5 @@ namespace PostMortem.Domain.Events.Comments
         {
             
         }
-
     }
 }

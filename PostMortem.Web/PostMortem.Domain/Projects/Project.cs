@@ -1,4 +1,7 @@
-﻿namespace PostMortem.Domain.Projects
+﻿using PostMortem.Data.MongoDb;
+using PostMortem.Domain.EventSourcing.Events;
+
+namespace PostMortem.Domain.Projects
 {
     using System;
     using System.Collections.Generic;
@@ -6,16 +9,17 @@
     using Events.Projects;
     using Questions;
 
-    public class Project
+    public class Project : IEntity<ProjectId>
     {
         private readonly QuestionCollection questions = new QuestionCollection();
+        IProjectRepository repository;
 
         public Project()
-            : this(new List<Question>())
+            : this(new List<Question>(),null)
         {
         }
 
-        public Project(ICollection<Question> questions)
+        public Project(ICollection<Question> questions, IProjectRepository repository)
         {
             Guard.IsNotNull(questions, nameof(questions));
             this.questions.AddRange(questions);
@@ -40,19 +44,6 @@
             }
         }
 
-        //public static GetAllProjectsQueryArgs CreateGetAllEventArgs()
-        //{
-        //    return new GetAllProjectsQueryArgs();
-        //}
-
-        //public static GetProjectByIdQueryArgs CreateGetByIdEventArgs(ProjectId projectId)
-        //{
-        //    return new GetProjectByIdQueryArgs(projectId.Id);
-        //}
-
-        //public static ProjectCreatedEventArgs CreateProjectCreatedEventArgs(Project project)
-        //{
-        //    return new ProjectCreatedEventArgs(project);
-        //}
+        public ProjectId GetEntityId() => ProjectId;
     }
 }

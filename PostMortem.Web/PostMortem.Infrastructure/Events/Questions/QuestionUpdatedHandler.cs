@@ -1,4 +1,6 @@
-﻿namespace PostMortem.Infrastructure.Events.Questions
+﻿using PostMortem.Domain.Questions;
+
+namespace PostMortem.Infrastructure.Events.Questions
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -12,10 +14,10 @@
     public class QuestionUpdatedHandler : IRequestHandler<QuestionUpdatedEventArgs, PolicyResult>
     {
         private readonly IExecutionPolicies executionPolicies;
-        private readonly IRepository repository;
+        private readonly IQuestionRepository repository;
 
         public QuestionUpdatedHandler(
-            IRepository repository,
+            IQuestionRepository repository,
             IExecutionPolicies executionPolicies)
         {
             this.executionPolicies = Guard.IsNotNull(executionPolicies, nameof(executionPolicies));
@@ -24,7 +26,7 @@
 
         public Task<PolicyResult> Handle(QuestionUpdatedEventArgs request, CancellationToken cancellationToken)
         {
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.UpdateQuestionAsync(request.Question));
+            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.SaveAsync(request.Question));
         }
     }
 }

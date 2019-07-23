@@ -1,4 +1,6 @@
-﻿namespace PostMortem.Infrastructure.Events.Projects
+﻿using PostMortem.Data.MongoDb;
+
+namespace PostMortem.Infrastructure.Events.Projects
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -12,10 +14,10 @@
     public class ProjectUpdatedHandler : IRequestHandler<ProjectUpdatedEventArgs, PolicyResult>
     {
         private readonly IExecutionPolicies executionPolicies;
-        private readonly IRepository repository;
+        private readonly IProjectRepository repository;
 
         public ProjectUpdatedHandler(
-            IRepository repository,
+            IProjectRepository repository,
             IExecutionPolicies executionPolicies)
         {
             this.executionPolicies = Guard.IsNotNull(executionPolicies, nameof(executionPolicies));
@@ -24,7 +26,7 @@
 
         public Task<PolicyResult> Handle(ProjectUpdatedEventArgs request, CancellationToken cancellationToken)
         {
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.UpdateProjectAsync(request.Project));
+            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.SaveAsync(request.Project));
         }
     }
 }

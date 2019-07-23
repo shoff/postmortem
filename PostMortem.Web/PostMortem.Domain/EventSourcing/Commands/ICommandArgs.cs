@@ -2,5 +2,8 @@
 
 namespace PostMortem.Domain.EventSourcing.Commands
 {
-    public interface ICommandArgs : IRequest {}
+    public interface ICommandArgs //: IRequest
+    {
+        // marker interface.
+    }
 }
