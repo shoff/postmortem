@@ -17,19 +17,20 @@
         public int Importance { get; set; }
         public ICollection<CommentDto> Comments { get; set; } = new HashSet<CommentDto>();
 
-        //public static implicit operator Question(QuestionDto dto)
-        //{
-        //    List<Comment> comments = dto.Comments.Select(c => (Comment)c).ToList();
-        //    var question = new Question(comments)
-        //    {
-        //        Importance = dto.Importance,
-        //        ProjectId = dto.ProjectId,
-        //        QuestionId = new QuestionId(dto.QuestionId),
-        //        QuestionText = dto.QuestionText,
-        //        ResponseCount = dto.ResponseCount
-        //    };
-        //    return question;
-        //}
+        public static implicit operator Question(QuestionDto dto)
+        {
+            //List<Comment> comments = dto.Comments.Select(c => (Comment)c).ToList();
+            //TODO: fix up comments
+            var question = new Question
+            {
+                Importance = dto.Importance,
+                ProjectId = dto.ProjectId,
+                QuestionId = new QuestionId(dto.QuestionId),
+                QuestionText = dto.QuestionText,
+                ResponseCount = dto.ResponseCount
+            };
+            return question;
+        }
     }
 
 }

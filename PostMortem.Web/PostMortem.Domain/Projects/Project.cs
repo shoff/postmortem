@@ -1,5 +1,4 @@
-﻿using PostMortem.Data.MongoDb;
-using PostMortem.Domain.EventSourcing.Events;
+﻿using PostMortem.Domain.EventSourcing.Events;
 
 namespace PostMortem.Domain.Projects
 {

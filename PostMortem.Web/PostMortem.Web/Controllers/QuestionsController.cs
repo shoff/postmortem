@@ -1,4 +1,6 @@
-﻿namespace PostMortem.Web.Controllers
+﻿using PostMortem.Domain.Events.Questions;
+
+namespace PostMortem.Web.Controllers
 {
     using System;
     using System.Threading.Tasks;
@@ -54,17 +56,17 @@
 
             try
             {
-                //var result = await this.mediator.Send(Question.CreateQuestionAddedEventArgs(question));
-                //if (result.Outcome == Polly.OutcomeType.Successful)
-                //{
-                //    var url = this.linkGenerator.GetPathByAction(
-                //        this.HttpContext,
-                //        controller: "Questions",
-                //        action: "GetById",
-                //        values: new { id = question.QuestionId });
+                var result = await this.mediator.Send(new AddQuestionCommandArgs(question));
+                if (result.Outcome == Polly.OutcomeType.Successful)
+                {
+                    var url = this.linkGenerator.GetPathByAction(
+                        this.HttpContext,
+                        controller: "Questions",
+                        action: "GetById",
+                        values: new { id = question.QuestionId });
 
-                //    return this.Created($"{this.HttpContext.Request.Scheme}//{this.HttpContext.Request.Host}{url}", question);
-                //}
+                    return this.Created($"{this.HttpContext.Request.Scheme}//{this.HttpContext.Request.Host}{url}", question);
+                }
 
                 return new StatusCodeResult(500);
             }

@@ -1,5 +1,6 @@
 ﻿using PostMortem.Domain.Comments;
 using PostMortem.Domain.EventSourcing.Events;
+using PostMortem.Domain.Projects;
 using PostMortem.Domain.Questions;
 
 namespace PostMortem.Web

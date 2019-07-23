@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Polly;
-using PostMortem.Data.MongoDb;
 using PostMortem.Domain.Events.Comments;
 using PostMortem.Domain.EventSourcing.Events;
 

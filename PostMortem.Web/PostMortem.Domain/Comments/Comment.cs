@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using ChaosMonkey.Guards;
 using Polly;
-using PostMortem.Data.MongoDb;
 using PostMortem.Domain.EventSourcing.Events;
 
 namespace PostMortem.Domain.Comments
