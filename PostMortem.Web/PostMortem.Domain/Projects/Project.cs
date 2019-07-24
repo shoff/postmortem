@@ -13,17 +13,17 @@ namespace PostMortem.Domain.Projects
         private readonly QuestionCollection questions = new QuestionCollection();
 
         public Project()
-            : this(new List<Question>(),null)
+            : this(new List<Question>())
         {
         }
 
-        public Project(ICollection<Question> questions, IProjectRepository repository)
+        public Project(ICollection<Question> questions)
         {
             Guard.IsNotNull(questions, nameof(questions));
             this.questions.AddRange(questions);
         }
 
-        public ProjectId ProjectId { get; set; }
+        public ProjectId ProjectId { get; set; } = ProjectId.Empty;
         public string ProjectName { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }

@@ -21,7 +21,6 @@ namespace PostMortem.Data.MongoDb
         {
         }
 
-        public override Guid GetDtoId(Project dto) => dto.ProjectId;
     }
 
 }

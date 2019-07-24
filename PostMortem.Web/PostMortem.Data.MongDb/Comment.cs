@@ -7,7 +7,7 @@
     public class Comment
     {
         [BsonId]
-        [Range(0, 50000)]
+        //[Range(0, 50000)]
         public Guid CommentId { get; set; }
         
         [Required]

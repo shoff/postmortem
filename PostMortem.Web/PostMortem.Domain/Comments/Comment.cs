@@ -48,7 +48,7 @@ namespace PostMortem.Domain.Comments
                 return this.commentId;
             }
             private set => this.commentId = value;
-        }
+        } 
 
         public Guid QuestionId { get;  private set; }
 

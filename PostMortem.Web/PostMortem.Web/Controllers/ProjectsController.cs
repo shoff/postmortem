@@ -1,4 +1,5 @@
-﻿using PostMortem.Domain.Projects.Commands;
+﻿using Microsoft.Extensions.Logging;
+using PostMortem.Domain.Projects.Commands;
 using PostMortem.Domain.Questions.Queries;
 
 namespace PostMortem.Web.Controllers
@@ -24,8 +25,10 @@ namespace PostMortem.Web.Controllers
         private readonly IMediator mediator;
         private readonly LinkGenerator linkGenerator;
         private readonly IMapper mapper;
+        private readonly ILogger<ProjectsController> logger;
 
         public ProjectsController(
+            ILogger<ProjectsController> logger,
             IMediator mediator,
             IMapper mapper,
             INameGeneratorClient nameGenerator,
@@ -36,6 +39,7 @@ namespace PostMortem.Web.Controllers
             this.mediator = Guard.IsNotNull(mediator, nameof(mediator));
             this.linkGenerator = Guard.IsNotNull(linkGenerator, nameof(linkGenerator));
             this.mapper = Guard.IsNotNull(mapper, nameof(mapper));
+            this.logger = Guard.IsNotNull(logger, nameof(logger));
         }
 
         [HttpGet]
@@ -47,7 +51,8 @@ namespace PostMortem.Web.Controllers
                 var projects = result.Result.Map(p => this.mapper.Map<ProjectDto>(p));
                 return this.Ok(projects);
             }
-
+            logger.LogError(500,$"{result.Outcome} : {result.FaultType}");
+            logger.LogDebug(500,result.FinalException,$"{result.Outcome} : {result.FaultType}");
             return new StatusCodeResult(500);
         }
 
@@ -74,14 +79,21 @@ namespace PostMortem.Web.Controllers
             }
 
             project.CreatedBy = this.username;
-            var p = new Project
+            var cmd = new CreateProjectCommandArgs
             {
                 ProjectId = new ProjectId(Guid.NewGuid()),
                 EndDate = project.EndDate,
                 ProjectName = project.ProjectName,
                 StartDate = project.StartDate
             };
-            var result = await this.mediator.Send(new CreateProjectCommandArgs{});
+            var p = new Project
+            {
+                ProjectId = cmd.ProjectId,
+                EndDate = cmd.EndDate,
+                ProjectName = cmd.ProjectName,
+                StartDate = cmd.StartDate
+            };
+            var result = await this.mediator.Send(cmd);
 
             if (result.Outcome == OutcomeType.Successful)
             {
@@ -89,11 +101,13 @@ namespace PostMortem.Web.Controllers
                     this.HttpContext,
                     controller: "Projects",
                     action: "GetById",
-                    values: new { id = p.ProjectId });
-
-                return this.Created($"{this.HttpContext.Request.Scheme}//{this.HttpContext.Request.Host}{url}", this.mapper.Map<Project>(p));
+                    values: new { id = cmd.ProjectId });
+                // TODO: retreive it from the DB???
+                return this.Created($"{this.HttpContext.Request.Scheme}//{this.HttpContext.Request.Host}{url}", p);
             }
 
+            logger.LogError(500,$"{result.Outcome} : {result.ExceptionType}");
+            logger.LogDebug(500,result.FinalException,$"{result.Outcome} : {result.ExceptionType}");
             return new StatusCodeResult(500);
         }
 

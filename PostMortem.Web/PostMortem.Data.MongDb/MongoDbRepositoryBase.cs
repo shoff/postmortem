@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using ChaosMonkey.Guards;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using PostMortem.Domain;
 
@@ -60,24 +61,26 @@ namespace PostMortem.Data.MongoDb
 
         public async Task<TEntity> GetByIdAsync(TEntityId id)
         {
-            return await Collection.Find(x => GetDtoId(x).Equals(id.Id))
+            return await Collection.Find(GetIdFilter(id))
                 .Project(x => Mapper.Map<TDto, TEntity>(x))
                 .SingleAsync();
         }
 
         public async Task SaveAsync(TEntity entity)
         {
+            var repl = Mapper.Map<TEntity, TDto>(entity);
             var replaceOneResult = await Collection.ReplaceOneAsync(
-                dto => GetDtoId(dto).Equals(entity.GetEntityId().Id), 
-                Mapper.Map<TEntity,TDto>(entity), 
-                new UpdateOptions {IsUpsert = true});
+                GetIdFilter(entity.GetEntityId()),
+                repl, 
+                new UpdateOptions {IsUpsert = true,});
         }
 
         public async Task DeleteByIdAsync(TEntityId id)
         {
-            await Collection.DeleteOneAsync(dto => GetDtoId(dto).Equals(id.Id));
+            await Collection.DeleteOneAsync(GetIdFilter(id));
         }
 
-        public abstract TId GetDtoId(TDto dto);
+        protected virtual FilterDefinition<TDto> GetIdFilter(TEntityId id) => Builders<TDto>.Filter.Eq("_id", id.Id);
+
     }
 }

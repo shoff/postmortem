@@ -31,12 +31,12 @@
 
         public void Add(Comment comment)
         {
-            if (this.questionId == null || this.questionId == Guid.Empty)
-            {
-                throw new ApplicationException(
-                    "Cannot add comments unless the Question property has first been assigned.");
-            }
-            //comment.QuestionId = this.questionId;
+            //if (this.questionId == null || this.questionId == Guid.Empty)
+            //{
+            //    throw new ApplicationException(
+            //        "Cannot add comments unless the Question property has first been assigned.");
+            //}
+            ////comment.QuestionId = this.questionId;
             this.comments.Add(comment);
         }
 
@@ -69,13 +69,13 @@
 
         public void Insert(int index, Comment item)
         {
-            if (this.questionId == null || this.questionId == Guid.Empty)
-            {
-                throw new ApplicationException(
-                    "Cannot add comments unless the Question property has first been assigned.");
-            }
+            //if (this.questionId == null || this.questionId == Guid.Empty)
+            //{
+            //    throw new ApplicationException(
+            //        "Cannot add comments unless the Question property has first been assigned.");
+            //}
 
-            //item.QuestionId = this.questionId;
+            ////item.QuestionId = this.questionId;
             this.comments.Insert(index, item);
         }
 
@@ -89,13 +89,13 @@
             get => this.comments[index];
             set
             {
-                if (this.questionId == null || this.questionId == Guid.Empty)
-                {
-                    throw new ApplicationException(
-                        "Cannot add comments unless the Question property has first been assigned.");
-                }
+                //if (this.questionId == null || this.questionId == Guid.Empty)
+                //{
+                //    throw new ApplicationException(
+                //        "Cannot add comments unless the Question property has first been assigned.");
+                //}
 
-                //value.QuestionId = this.QuestionId;
+                ////value.QuestionId = this.QuestionId;
                 this.comments[index] = value;
             }
         }
@@ -103,13 +103,13 @@
         public void AddRange(IEnumerable<Comment> comments)
         {
             Guard.IsNotNull(comments, nameof(comments));
-            if (this.questionId == null || this.questionId == Guid.Empty)
-            {
-                throw new ApplicationException(
-                    "Cannot add questions unless the Project property has first been assigned.");
-            }
+            //if (this.questionId == null || this.questionId == Guid.Empty)
+            //{
+            //    throw new ApplicationException(
+            //        "Cannot add questions unless the Project property has first been assigned.");
+            //}
 
-            //comments.Each(dto => dto.QuestionId = this.questionId);
+            ////comments.Each(dto => dto.QuestionId = this.questionId);
             this.comments.AddRange(comments);
         }
     }

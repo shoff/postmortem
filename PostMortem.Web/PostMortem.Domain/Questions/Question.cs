@@ -24,10 +24,11 @@ namespace PostMortem.Domain.Questions
         public Question(ICollection<Comment> comments)
         {
             Guard.IsNotNull(comments, nameof(comments));
+            this.QuestionId = QuestionId;
             this.comments.AddRange(comments);
         }
 
-        public QuestionId QuestionId { get; set; }
+        public QuestionId QuestionId { get; set; } = QuestionId.Empty;
         public Guid ProjectId { get; set; }
         public string QuestionText { get; set; }
         public int ResponseCount { get; set; }

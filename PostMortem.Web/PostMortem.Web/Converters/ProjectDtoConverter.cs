@@ -12,7 +12,7 @@
         public ProjectDto Convert(Project source, ProjectDto destination, ResolutionContext context)
         {
             Guard.IsNotNull(source, nameof(source));
-            Guard.IsNotNull(destination, nameof(destination));
+            //Guard.IsNotNull(destination, nameof(destination));
             Guard.IsNotNull(context, nameof(context));
 
             destination = new ProjectDto

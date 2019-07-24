@@ -18,9 +18,9 @@ namespace PostMortem.Data.MongoDb
             Guard.IsNotNull(options, nameof(options));
             Guard.IsNotNull(logger, nameof(logger));
 
-            MongoInternalIdentity internalIdentity = new MongoInternalIdentity(Constants.ADMIN, options.Value.Username);
-            PasswordEvidence passwordEvidence = new PasswordEvidence(options.Value.Password);
-            MongoCredential mongoCredential = new MongoCredential(options.Value.AuthMechanism, internalIdentity, passwordEvidence);
+            //MongoInternalIdentity internalIdentity = new MongoInternalIdentity(Constants.ADMIN, options.Value.Username);
+            //PasswordEvidence passwordEvidence = new PasswordEvidence(options.Value.Password);
+            //MongoCredential mongoCredential = new MongoCredential(options.Value.AuthMechanism, internalIdentity, passwordEvidence);
 
             MongoClientSettings settings = new MongoClientSettings
             {
