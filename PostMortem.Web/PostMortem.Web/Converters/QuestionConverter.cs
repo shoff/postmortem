@@ -19,6 +19,7 @@ namespace PostMortem.Web.Converters
             {
                 Importance = source.Importance,
                 QuestionId = source.QuestionId,
+                ProjectId = source.ProjectId,
                 QuestionText = source.QuestionText,
                 ResponseCount = source.ResponseCount,
                 Comments = source.Comments?.Select(c => context.Mapper.Map<CommentDto>(c)).ToList()

@@ -1,4 +1,6 @@
-﻿namespace PostMortem.Web.Dtos
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PostMortem.Web.Dtos
 {
     using System;
     using System.Collections.Generic;
@@ -11,6 +13,7 @@
     {
         
         public Guid QuestionId { get; set; }
+        //TODO: custom validation attribute to enforce a non-Guid.Empty value.
         public Guid ProjectId { get; set; }
         public string QuestionText { get; set; }
         public int ResponseCount { get; set; }

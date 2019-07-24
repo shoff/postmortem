@@ -67,9 +67,15 @@ namespace PostMortem.Web.Controllers
                 return this.BadRequest(this.ModelState);
             }
 
+            if (question.ProjectId == Guid.Empty)
+            {
+                return this.StatusCode(400,new []{$"The ProjectId must be set and not equal to {Guid.Empty}"});
+            }
+
             try
             {
-                var result = await this.mediator.Send(new CreateQuestionCommandArgs{Active = true, QuestionId = question.QuestionId, ProjectId = question.ProjectId, Importance = question.Importance, QuestionText = question.QuestionText, LastUpdated = DateTime.Now});
+                var questionId = question.QuestionId == Guid.Empty ? Guid.Empty : question.QuestionId;
+                var result = await this.mediator.Send(new CreateQuestionCommandArgs{Active = true, QuestionId = questionId, ProjectId = question.ProjectId, Importance = question.Importance, QuestionText = question.QuestionText, LastUpdated = DateTime.Now});
                 if (result.Outcome == Polly.OutcomeType.Successful)
                 {
                     var url = this.linkGenerator.GetPathByAction(
@@ -105,6 +111,20 @@ namespace PostMortem.Web.Controllers
 
             logger.LogError(500,$"{result.Outcome} : {result.FaultType}");
             logger.LogDebug(500,result.FinalException,$"{result.Outcome} : {result.FaultType}");
+            return new StatusCodeResult(500);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var result = await this.mediator.Send(new DeleteQuestionCommandArgs{QuestionId = id});
+            if (result.Outcome == OutcomeType.Successful)
+            {
+                return this.Ok();
+            }
+
+            logger.LogError(500,$"{result.Outcome} : {result.ExceptionType}");
+            logger.LogDebug(500,result.FinalException,$"{result.Outcome} : {result.ExceptionType}");
             return new StatusCodeResult(500);
         }
     }
