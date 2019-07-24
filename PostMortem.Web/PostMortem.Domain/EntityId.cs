@@ -12,7 +12,7 @@ namespace PostMortem.Domain
         public abstract string AsIdString();
         public override bool Equals(object obj)
         {
-            return obj is EntityId<TId> aggregateId && Equals(Id, aggregateId.Id);
+            return obj is EntityId<TId> entityId && Equals(Id, entityId.Id);
         }
         public override int GetHashCode()
         {

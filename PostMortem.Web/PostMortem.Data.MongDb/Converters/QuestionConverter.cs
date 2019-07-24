@@ -15,7 +15,7 @@
             {
                 Importance = 0,
                 ProjectId = source.ProjectId,
-                QuestionId = source.QuestionId.Id,
+                QuestionId = source.QuestionId,
                 QuestionText = source.QuestionText,
                 ResponseCount = 0
             };

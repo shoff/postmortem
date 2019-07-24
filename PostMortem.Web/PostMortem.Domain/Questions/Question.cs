@@ -48,7 +48,7 @@ namespace PostMortem.Domain.Questions
                     this.QuestionId = QuestionId.NewQuestionId();
                 }
 
-                this.comments.QuestionId = this.QuestionId.Id;
+                this.comments.QuestionId = this.QuestionId;
                 return this.comments;
             }
         }

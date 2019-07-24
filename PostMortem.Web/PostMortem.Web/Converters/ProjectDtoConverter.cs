@@ -18,7 +18,7 @@
             destination = new ProjectDto
             {
                 EndDate = source.EndDate,
-                ProjectId = source.ProjectId.Id,
+                ProjectId = source.ProjectId,
                 ProjectName = source.ProjectName,
                 Questions = source.Questions.Map(q=> context.Mapper.Map<QuestionDto>(q)).ToList()
             };
