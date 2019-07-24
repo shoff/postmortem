@@ -32,7 +32,7 @@ namespace PostMortem.Web.Controllers
             INameGeneratorClient nameGenerator,
             IHttpContextAccessor httpContextAccessor,
             ILogger<CommentsController> logger)
-            : base(httpContextAccessor, nameGenerator)
+            : base(httpContextAccessor, null)
         {
             this.mapper = Guard.IsNotNull(mapper, nameof(mapper));
             this.mediator = Guard.IsNotNull(mediator, nameof(mediator));
@@ -52,6 +52,8 @@ namespace PostMortem.Web.Controllers
                     return this.Ok(this.mapper.Map<CommentDto>(result.Result));
                 }
 
+                logger.LogError(500,$"{result.Outcome} : {result.FaultType}");
+                logger.LogDebug(500,result.FinalException,$"{result.Outcome} : {result.FaultType}");
                 return new StatusCodeResult(500);
             }
             catch (Exception e)
@@ -90,6 +92,8 @@ namespace PostMortem.Web.Controllers
                     return this.Created($"{this.HttpContext.Request.Scheme}//{this.HttpContext.Request.Host}{url}", comment);
                 }
 
+                logger.LogError(500,$"{result.Outcome} : {result.ExceptionType}");
+                logger.LogDebug(500,result.FinalException,$"{result.Outcome} : {result.ExceptionType}");
                 return new StatusCodeResult(500);
             }
             catch (Exception e)

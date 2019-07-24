@@ -35,7 +35,7 @@ namespace PostMortem.Web.Controllers
             INameGeneratorClient nameGenerator,
             IHttpContextAccessor httpContextAccessor,
             ILogger<QuestionsController> logger)
-            : base(httpContextAccessor, nameGenerator)
+            : base(httpContextAccessor, null)
         {
             this.mediator = Guard.IsNotNull(mediator, nameof(mediator));
             this.mapper = Guard.IsNotNull(mapper, nameof(mapper));
@@ -53,6 +53,8 @@ namespace PostMortem.Web.Controllers
                 return this.Ok(question);
             }
 
+            logger.LogError(500,$"{result.Outcome} : {result.FaultType}");
+            logger.LogDebug(500,result.FinalException,$"{result.Outcome} : {result.FaultType}");
             return new StatusCodeResult(500);
         }
 
@@ -79,6 +81,8 @@ namespace PostMortem.Web.Controllers
                     return this.Created($"{this.HttpContext.Request.Scheme}//{this.HttpContext.Request.Host}{url}", question);
                 }
 
+                logger.LogError(500,$"{result.Outcome} : {result.ExceptionType}");
+                logger.LogDebug(500,result.FinalException,$"{result.Outcome} : {result.ExceptionType}");
                 return new StatusCodeResult(500);
             }
             catch (Exception e)
@@ -99,6 +103,8 @@ namespace PostMortem.Web.Controllers
                 return this.Ok(comments);
             }
 
+            logger.LogError(500,$"{result.Outcome} : {result.FaultType}");
+            logger.LogDebug(500,result.FinalException,$"{result.Outcome} : {result.FaultType}");
             return new StatusCodeResult(500);
         }
     }

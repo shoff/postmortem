@@ -10,7 +10,7 @@
         public CommentDto Convert(Comment source, CommentDto destination, ResolutionContext context)
         {
             Guard.IsNotNull(source, nameof(source));
-            Guard.IsNotNull(destination, nameof(destination));
+//            Guard.IsNotNull(destination, nameof(destination));
             Guard.IsNotNull(context, nameof(context));
             
             destination = new CommentDto

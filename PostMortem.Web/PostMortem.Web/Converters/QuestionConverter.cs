@@ -1,4 +1,6 @@
-﻿namespace PostMortem.Web.Converters
+﻿using System.Linq;
+
+namespace PostMortem.Web.Converters
 {
     using AutoMapper;
     using ChaosMonkey.Guards;
@@ -11,13 +13,17 @@
         public QuestionDto Convert(Question source, QuestionDto destination, ResolutionContext context)
         {
             Guard.IsNotNull(source, nameof(source));
-            Guard.IsNotNull(destination, nameof(destination));
+            //Guard.IsNotNull(destination, nameof(destination)); //this breaks upsert
             Guard.IsNotNull(context, nameof(context));
-            destination.Importance = source.Importance;
-            destination.QuestionId = source.QuestionId;
-            destination.QuestionText = source.QuestionText;
-            destination.ResponseCount = source.ResponseCount;
-            source.Comments.Each(c => destination.Comments.Add(context.Mapper.Map<CommentDto>(c)));
+            destination = new QuestionDto
+            {
+                Importance = source.Importance,
+                QuestionId = source.QuestionId,
+                QuestionText = source.QuestionText,
+                ResponseCount = source.ResponseCount,
+                Comments = source.Comments?.Select(c => context.Mapper.Map<CommentDto>(c)).ToList()
+
+            };
             return destination;
         }
     }

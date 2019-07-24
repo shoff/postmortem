@@ -34,7 +34,7 @@ namespace PostMortem.Web.Controllers
             INameGeneratorClient nameGenerator,
             LinkGenerator linkGenerator,
             IHttpContextAccessor httpContextAccessor)
-            : base(httpContextAccessor, nameGenerator)
+            : base(httpContextAccessor, null)
         {
             this.mediator = Guard.IsNotNull(mediator, nameof(mediator));
             this.linkGenerator = Guard.IsNotNull(linkGenerator, nameof(linkGenerator));
@@ -65,7 +65,8 @@ namespace PostMortem.Web.Controllers
                 var project = this.mapper.Map<ProjectDto>(result.Result);
                 return this.Ok(project);
             }
-
+            logger.LogError(500,$"{result.Outcome} : {result.FaultType}");
+            logger.LogDebug(500,result.FinalException,$"{result.Outcome} : {result.FaultType}");
             return new StatusCodeResult(500);
         }
 
@@ -121,6 +122,8 @@ namespace PostMortem.Web.Controllers
                 return this.Ok(questions);
             }
 
+            logger.LogError(500,$"{result.Outcome} : {result.FaultType}");
+            logger.LogDebug(500,result.FinalException,$"{result.Outcome} : {result.FaultType}");
             return new StatusCodeResult(500);
         }
 

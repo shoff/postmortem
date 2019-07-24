@@ -11,16 +11,16 @@ namespace PostMortem.Data.MongoDb.Converters
         public DomainQuestion Convert(Question source, DomainQuestion destination, ResolutionContext context)
         {
             Guard.IsNotNull(source, nameof(source));
-            Guard.IsNotNull(destination, nameof(destination));
+            //Guard.IsNotNull(destination, nameof(destination)); // this breaks Upsert
             Guard.IsNotNull(context, nameof(context));
 
             destination = new DomainQuestion()
             {
-                Importance = 0,
+                Importance = source.Importance,
                 ProjectId = source.ProjectId,
-                QuestionId = new QuestionId(source.QuestionId),
+                QuestionId = source.QuestionId,
                 QuestionText = source.QuestionText,
-                ResponseCount = 0
+                ResponseCount = source.ResponseCount
             };
             return destination;
         }

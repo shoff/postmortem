@@ -17,17 +17,24 @@
             INameGeneratorClient nameGenerator)
         {
             this.httpContextAccessor = httpContextAccessor;
-            this.nameGenerator = Guard.IsNotNull(nameGenerator, nameof(nameGenerator));
+            // this.nameGenerator = Guard.IsNotNull(nameGenerator, nameof(nameGenerator));
             // so we can be anonymous
             this.username = httpContextAccessor.HttpContext.Request.Cookies["username"];
 
             if (string.IsNullOrWhiteSpace(this.username))
             {
-                this.username = this.nameGenerator.GetNameAsync().GetAwaiter().GetResult();
-
-                if (!string.IsNullOrWhiteSpace(this.username))
+                if (nameGenerator != null)
                 {
-                    this.username = this.username.Replace('\n', ' ').Trim();
+                    this.username = this.nameGenerator.GetNameAsync().GetAwaiter().GetResult();
+
+                    if (!string.IsNullOrWhiteSpace(this.username))
+                    {
+                        this.username = this.username.Replace('\n', ' ').Trim();
+                    }
+                }
+                else
+                {
+                    this.username = Guid.NewGuid().ToString();
                 }
 
                 this.Set("username", this.username, null);

@@ -45,16 +45,16 @@ namespace PostMortem.Infrastructure.Events.Projects
         {
             // TODO: do error checking.
             var project = await this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.projectRepository.GetByIdAsync(request.ProjectId));
-            var questionsPolicyResult = await this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.questionRepository.GetQuestionsForProjectAsync(request.ProjectId));
-            var questions = questionsPolicyResult.Result;
-            // project.AttachQuestions(questions)
-            foreach (var question in questions)
-            {
-                var commentsPolicyResult = await this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() =>
-                    this.commentRepository.GetCommentsForQuestionAsync(question.QuestionId));
-                var comments = commentsPolicyResult.Result;
-                //question.AttachComments(comments)
-            }
+            //var questionsPolicyResult = await this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.questionRepository.GetQuestionsForProjectAsync(request.ProjectId));
+            //var questions = questionsPolicyResult.Result;
+            //// project.AttachQuestions(questions)
+            //foreach (var question in questions)
+            //{
+            //    var commentsPolicyResult = await this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() =>
+            //        this.commentRepository.GetCommentsForQuestionAsync(question.QuestionId));
+            //    var comments = commentsPolicyResult.Result;
+            //    //question.AttachComments(comments)
+            //}
             return project;
         }
     }
