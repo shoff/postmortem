@@ -1,7 +1,9 @@
 ﻿using Polly;
+using PostMortem.Domain.Comments.Queries;
 using PostMortem.Domain.Projects;
 using PostMortem.Domain.Questions.Commands;
 using PostMortem.Domain.Questions.Queries;
+using Zatoichi.Common.Infrastructure.Extensions;
 
 namespace PostMortem.Web.Controllers
 {
@@ -87,6 +89,17 @@ namespace PostMortem.Web.Controllers
 
         }
 
+        [HttpGet("{questionId}/comments")]
+        public async Task<IActionResult> GetCommentsForQuestion(Guid questionId)
+        {
+            var result = await this.mediator.Send(new GetCommentsForQuestionQueryArgs{QuestionId = questionId});
+            if (result.Outcome == OutcomeType.Successful)
+            {
+                var comments = result.Result.Map(q => this.mapper.Map<CommentDto>(q));
+                return this.Ok(comments);
+            }
 
+            return new StatusCodeResult(500);
+        }
     }
 }

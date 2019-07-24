@@ -103,8 +103,8 @@ namespace PostMortem.Web.Controllers
             var result = await this.mediator.Send(new GetQuestionsForProjectIdQueryArgs{ProjectId = projectId});
             if (result.Outcome == OutcomeType.Successful)
             {
-                var projects = result.Result.Map(q => this.mapper.Map<QuestionDto>(q));
-                return this.Ok(projects);
+                var questions = result.Result.Map(q => this.mapper.Map<QuestionDto>(q));
+                return this.Ok(questions);
             }
 
             return new StatusCodeResult(500);
