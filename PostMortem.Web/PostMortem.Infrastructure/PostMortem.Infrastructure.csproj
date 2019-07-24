@@ -5,12 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PostMortem.Data.MongDb\PostMortem.Data.MongoDb.csproj" />
-    <ProjectReference Include="..\PostMortem.Domain\PostMortem.Domain.csproj" />
+    <Compile Remove="Converters\**" />
+    <EmbeddedResource Remove="Converters\**" />
+    <None Remove="Converters\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Converters\" />
+    <ProjectReference Include="..\PostMortem.Data.MongDb\PostMortem.Data.MongoDb.csproj" />
+    <ProjectReference Include="..\PostMortem.Domain\PostMortem.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

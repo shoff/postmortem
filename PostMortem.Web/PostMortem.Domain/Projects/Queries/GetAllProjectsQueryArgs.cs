@@ -4,7 +4,7 @@ using PostMortem.Domain.EventSourcing.Queries;
 
 namespace PostMortem.Domain.Projects
 {
-    public class GetAllProjectsQueryArgs : IQueryArgs<PolicyResult<IEnumerable<Project>>>
+    public class GetAllProjectsQueryArgs : QueryArgsBase<IEnumerable<Project>>
     {
 
     }

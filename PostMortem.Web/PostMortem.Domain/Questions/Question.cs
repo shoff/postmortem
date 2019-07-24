@@ -15,15 +15,6 @@ namespace PostMortem.Domain.Questions
 
     public class Question : IEntity<QuestionId>
     {
-        //private IEventBroker eventBroker;
-        IQuestionRepository repository;
-
-        public Question(IQuestionRepository repository)
-        {
-            
-            this.repository = Guard.IsNotNull(repository, nameof(repository));
-        }
-
         private readonly CommentCollection comments = new CommentCollection();
 
         public Question()

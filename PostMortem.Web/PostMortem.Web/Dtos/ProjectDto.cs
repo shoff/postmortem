@@ -5,7 +5,20 @@
 
     public class ProjectDto
     {
-        public Guid ProjectId { get; set; }
+        private Guid projectId;
+        public Guid ProjectId
+        {
+            get
+            {
+                if (this.projectId == Guid.Empty)
+                {
+                    this.projectId = Guid.NewGuid();
+                }
+
+                return this.projectId;
+            }
+            set => this.projectId = value;
+        }
         public string ProjectName { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }

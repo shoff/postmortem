@@ -1,4 +1,6 @@
-﻿using PostMortem.Domain.Questions;
+﻿using Polly;
+using PostMortem.Domain.Comments.Commands;
+using PostMortem.Domain.Comments.Queries;
 
 namespace PostMortem.Web.Controllers
 {
@@ -7,7 +9,6 @@ namespace PostMortem.Web.Controllers
     using AutoMapper;
     using ChaosMonkey.Guards;
     using Domain;
-    using Domain.Comments;
     using Dtos;
     using MediatR;
     using Microsoft.AspNetCore.Http;
@@ -40,25 +41,24 @@ namespace PostMortem.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetById(/*[FromRoute]Guid questionId,*/Guid id) /*Since comments aren't an aggregate root, shouldn't we provide the parent Id too?*/
+        public async Task<IActionResult> GetById(Guid id) 
         {
-            throw new NotImplementedException();
-            //try
-            //{
-            //    var result = await this.mediator.Send(Comment.GetCommentById(id));
+            try
+            {
+                var result = await this.mediator.Send(new GetCommentByIdQueryArgs {CommentId =id});
 
-            //    if (result.Outcome == Polly.OutcomeType.Successful)
-            //    {
-            //        return this.Ok(this.mapper.Map<CommentDto>(result.Result));
-            //    }
+                if (result.Outcome == Polly.OutcomeType.Successful)
+                {
+                    return this.Ok(this.mapper.Map<CommentDto>(result.Result));
+                }
 
-            //    return new StatusCodeResult(500);
-            //}
-            //catch (Exception e)
-            //{
-            //    this.logger.LogError(e, e.Message);
-            //    return new StatusCodeResult(500);
-            //}
+                return new StatusCodeResult(500);
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError(e, e.Message);
+                return new StatusCodeResult(500);
+            }
         }
 
         [HttpPost]
@@ -77,10 +77,9 @@ namespace PostMortem.Web.Controllers
                     comment.Commenter = this.username; // generated anonymous username
                 }
 
-                var question = new Question(comment.QuestionId);
-                var result = await question.AddCommentAsync(comment.CommentId, comment.CommentText, comment.DateAdded, comment.Commenter);
+                var result = await this.mediator.Send(new CreateCommentCommandArgs(mapper.Map<Domain.Comments.Comment>(comment)));
 
-                if (result.Outcome == Polly.OutcomeType.Successful)
+                if (result.Outcome == OutcomeType.Successful)
                 {
                     var url = this.linkGenerator.GetPathByAction(
                         this.HttpContext,

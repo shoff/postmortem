@@ -5,13 +5,12 @@ namespace PostMortem.Domain.Projects
     using System;
     using System.Collections.Generic;
     using ChaosMonkey.Guards;
-    using Events.Projects;
+    
     using Questions;
 
     public class Project : IEntity<ProjectId>
     {
         private readonly QuestionCollection questions = new QuestionCollection();
-        IProjectRepository repository;
 
         public Project()
             : this(new List<Question>(),null)
@@ -33,12 +32,12 @@ namespace PostMortem.Domain.Projects
         {
             get
             {
-                if (ProjectId == ProjectId.Empty)
+                if (ProjectId.Equals(ProjectId.Empty))
                 {
                     ProjectId = ProjectId.NewProjectId();
                 }
 
-                this.questions.ProjectId = ProjectId.Id;
+                this.questions.ProjectId = ProjectId;
                 return this.questions;
             }
         }

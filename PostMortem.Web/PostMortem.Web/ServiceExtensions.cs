@@ -1,4 +1,5 @@
 ﻿using PostMortem.Domain.Comments;
+using PostMortem.Domain.Events.Comments;
 using PostMortem.Domain.EventSourcing.Events;
 using PostMortem.Domain.Projects;
 using PostMortem.Domain.Questions;
@@ -7,14 +8,10 @@ namespace PostMortem.Web
 {
     using AutoMapper;
     using Converters;
-    using Data.EventSourcing;
     using Data.MongoDb;
     using Data.MongoDb.Config;
     using Domain;
-    using Domain.Events;
     using Infrastructure;
-    using Infrastructure.Events;
-    using Infrastructure.Events.Comments;
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
@@ -22,7 +19,7 @@ namespace PostMortem.Web
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Swashbuckle.AspNetCore.Swagger;
     using Zatoichi.Common.Infrastructure.Resilience;
-
+    using Domain.Comments.Events;
     public static class ServiceExtensions
     {
         public static IServiceCollection InitializeContainer(this IServiceCollection services,
@@ -37,15 +34,12 @@ namespace PostMortem.Web
             services.AddTransient<IPolicyFactory, AsyncPolicyFactory>();
             services.AddTransient<IProjectRepository, ProjectRepository>();
             services.AddTransient<IQuestionRepository, QuestionRepository>();
-            services.AddTransient<ICommentRepository, CommentRepository>();
+            services.AddTransient<ICommentRepository, CommentRepository>(); // TODO: Change to AggregateCommentRepository once implemented.
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.TryAddSingleton<IMongoDbContext, MongoDbContext>();
             services.AddHttpClient<INameGeneratorClient, NameGeneratorClient>();
-            services.AddMediatR(typeof(CommentUpdatedHandler).Assembly);
-            //services.AddMediatR(typeof(CommentDislikedEventArgs).Assembly);
+            services.AddMediatR(typeof(CommentLikedEventArgs).Assembly);
 
-            // event sourcing (may not need this)
-            //services.AddSingleton<IEventBroker, EventBroker>();
             return services;
         }
 

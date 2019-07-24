@@ -5,7 +5,7 @@ using PostMortem.Domain.EventSourcing.Events;
 
 namespace PostMortem.Domain.Comments
 {
-    public abstract class CommentEventArgsBase : EventArgsBase, IRequest<PolicyResult>
+    public abstract class CommentEventArgsBase : EventArgsBase
     {
         protected CommentEventArgsBase(Guid commentId)
         {

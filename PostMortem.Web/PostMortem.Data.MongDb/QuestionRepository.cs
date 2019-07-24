@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using PostMortem.Data.MongoDb.Config;
 using PostMortem.Domain;
+using PostMortem.Domain.Projects;
 using PostMortem.Domain.Questions;
 using DomainQuestion=PostMortem.Domain.Questions.Question;
 
@@ -21,5 +22,9 @@ namespace PostMortem.Data.MongoDb
         public override QuestionId GetEntityId(Question dto) => dto.QuestionId;
         public override Guid GetDtoId(Question dto) => dto.QuestionId;
 
+        public async Task<IEnumerable<DomainQuestion>> GetQuestionsForProjectAsync(ProjectId projectId)
+        {
+            return await FindAllAsync(q => q.ProjectId == projectId);
+        }
     }
 }

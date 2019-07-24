@@ -48,7 +48,7 @@ namespace PostMortem.Data.MongoDb
             return cursor.ToEnumerable();
         }
 
-        private static FilterDefinition<TDto> FilterBy(Expression<Func<TDto, bool>> predicate) =>
+        protected static FilterDefinition<TDto> FilterBy(Expression<Func<TDto, bool>> predicate) =>
             new ExpressionFilterDefinition<TDto>(predicate);
 
         public async Task<IEnumerable<TEntity>> GetAllAsync()

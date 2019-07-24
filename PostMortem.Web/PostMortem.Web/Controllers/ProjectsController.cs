@@ -1,4 +1,6 @@
-﻿namespace PostMortem.Web.Controllers
+﻿using PostMortem.Domain.Projects.Commands;
+
+namespace PostMortem.Web.Controllers
 {
     using System;
     using System.Threading.Tasks;
@@ -38,12 +40,12 @@
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            //var result = await this.mediator.Send(Project.CreateGetAllEventArgs());
-            //if (result.Outcome == OutcomeType.Successful)
-            //{
-            //    var projects = result.Result.Map(p => this.mapper.Map<ProjectDto>(p));
-            //    return this.Ok(projects);
-            //}
+            var result = await this.mediator.Send(new GetAllProjectsQueryArgs());
+            if (result.Outcome == OutcomeType.Successful)
+            {
+                var projects = result.Result.Map(p => this.mapper.Map<ProjectDto>(p));
+                return this.Ok(projects);
+            }
 
             return new StatusCodeResult(500);
         }
@@ -51,12 +53,12 @@
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            //var result = await this.mediator.Send(Project.CreateGetByIdEventArgs(new ProjectId(id)));
-            //if (result.Outcome == OutcomeType.Successful)
-            //{
-            //    var project = this.mapper.Map<ProjectDto>(result.Result);
-            //    return this.Ok(project);
-            //}
+            var result = await this.mediator.Send(new GetProjectByIdQueryArgs(id));
+            if (result.Outcome == OutcomeType.Successful)
+            {
+                var project = this.mapper.Map<ProjectDto>(result.Result);
+                return this.Ok(project);
+            }
 
             return new StatusCodeResult(500);
         }
@@ -79,18 +81,18 @@
                 ProjectName = project.ProjectName,
                 StartDate = project.StartDate
             };
-            //var result = await this.mediator.Send(Project.CreateProjectCreatedEventArgs(p));
+            var result = await this.mediator.Send(new CreateProjectCommandArgs{});
 
-            //if (result.Outcome == OutcomeType.Successful)
-            //{
-            //    var url = this.linkGenerator.GetPathByAction(
-            //        this.HttpContext,
-            //        controller: "Projects",
-            //        action: "GetById",
-            //        values: new {id = p.ProjectId});
+            if (result.Outcome == OutcomeType.Successful)
+            {
+                var url = this.linkGenerator.GetPathByAction(
+                    this.HttpContext,
+                    controller: "Projects",
+                    action: "GetById",
+                    values: new { id = p.ProjectId });
 
-            //    return this.Created($"{this.HttpContext.Request.Scheme}//{this.HttpContext.Request.Host}{url}", this.mapper.Map<Project>(p));
-            //}
+                return this.Created($"{this.HttpContext.Request.Scheme}//{this.HttpContext.Request.Host}{url}", this.mapper.Map<Project>(p));
+            }
 
             return new StatusCodeResult(500);
         }

@@ -1,12 +1,12 @@
 ﻿using System.Threading.Tasks;
 using ChaosMonkey.Guards;
 using Polly;
-using PostMortem.Domain.EventSourcing.Events;
+using PostMortem.Domain.Events.Comments;
+
 
 namespace PostMortem.Domain.Comments
 {
     using System;
-    using Events.Comments;
 
     public class Comment : EventsEntityBase<CommentId,CommentEventArgsBase>
     {
@@ -24,19 +24,16 @@ namespace PostMortem.Domain.Comments
         /// <summary>
         /// For initial creation from params
         /// </summary>
-        public Comment(CommentId commentId, Guid questionId, string commenter, string commentText, DateTime? dateAdded=null)
+        public Comment(CommentId commentId, Guid questionId, string commenter, string commentText, DateTime? dateAdded=null, int likes=0, int dislikes=0, bool generallyPositive=true)
         {
-            var initiArgs = new CommentCreatedEventArgs(commentId, questionId, commenter, commentText, dateAdded.HasValue ? dateAdded.Value : DateTime.Now);
-            Initialize(initiArgs);
-            AppendEvent(initiArgs);
+            var initArgs = new CommentCreatedEventArgs(commentId, questionId, commenter, commentText, 
+                dateAdded.HasValue ? dateAdded.Value : DateTime.Now,likes, dislikes, generallyPositive);
+            Initialize(initArgs);
+            AppendEvent(initArgs);
         }
 
         private CommentId commentId = CommentId.Empty;
         private string commentText;
-        private DateTime dateAdded;
-        private string commenter;
-        private int likes;
-        private int dislikes;
         private bool generallyPositive;
 
         public CommentId CommentId
@@ -62,39 +59,39 @@ namespace PostMortem.Domain.Comments
             {
                 var oldValue = commentText;
                 commentText = value;
-                AppendEvent(new CommentTextSetArgs(this.CommentId,oldValue,value));
+                if (oldValue != value)
+                {
+                    AppendEvent(new CommentTextSetArgs(this.CommentId, oldValue, value));
+                }
             }
         }
 
-        public DateTime DateAdded
-        {
-            get => dateAdded;
-            set => dateAdded = value;
-        }
+        public DateTime DateAdded { get; private set; }
 
-        public string Commenter
-        {
-            get => commenter;
-            set => commenter = value;
-        }
+        public string Commenter { get; private set; }
 
-        public int Likes
-        {
-            get => likes;
-        }
+        public int Likes { get; private set; }
 
-        public int Dislikes
-        {
-            get => dislikes;
-        }
+        public int Dislikes { get; private set; }
+
         public bool GenerallyPositive
         {
             get => generallyPositive;
-            set => generallyPositive = value;
+            set
+            {
+                var oldValue = generallyPositive;
+                generallyPositive = value;
+                if (oldValue != value)
+                {
+                    AppendEvent(new CommentGenerallyPositiveSetArgs(this.CommentId, oldValue, value));
+                }
+            }
         }
+
         public override CommentId GetEntityId() => CommentId;
         public override void ReplayEvent(CommentEventArgsBase eventArgs)
         {
+            // replaying an event should NOT regenerate the event.
             switch (eventArgs)
             {
                 case CommentCreatedEventArgs ca:
@@ -104,10 +101,10 @@ namespace PostMortem.Domain.Comments
                     generallyPositive = gps.NewValue;
                     break;
                 case CommentLikedEventArgs cl:
-                    likes++;
+                    Likes++;
                     break;
                 case CommentDislikedEventArgs cdl:
-                    dislikes++;
+                    Dislikes++;
                     break;
                 case CommentTextSetArgs cts:
                     commentText = cts.NewValue;
@@ -118,20 +115,30 @@ namespace PostMortem.Domain.Comments
         private void Initialize(CommentCreatedEventArgs initArgs)
         {
             this.QuestionId = initArgs.QuestionId;
-            this.commenter = initArgs.Commenter;
-            this.dateAdded = initArgs.DateAdded;
+            this.Commenter = initArgs.Commenter;
+            this.DateAdded = initArgs.DateAdded;
             this.commentText = initArgs.CommentText;
+            this.Likes = initArgs.Likes;
+            this.Dislikes = initArgs.Dislikes;
+            this.generallyPositive = initArgs.GenerallyPositive;
         }
 
         public void Like()
         {
-            likes++;
+            Likes++;
+            SetGenerallyPositive();
             AppendEvent(new CommentLikedEventArgs(this.CommentId));
+        }
+
+        private void SetGenerallyPositive()
+        {
+            GenerallyPositive = Likes >= Dislikes;
         }
 
         public void Dislike()
         {
-            dislikes++;
+            Dislikes++;
+            SetGenerallyPositive();
             AppendEvent(new CommentDislikedEventArgs(this.CommentId));
         }
 
