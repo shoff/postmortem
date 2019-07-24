@@ -11,4 +11,9 @@ namespace PostMortem.Domain.Projects.Commands
         public DateTime? EndDate { get; set; }
 
     }
+    public class DeleteProjectCommandArgs : CommandArgsBase
+    {
+        public ProjectId ProjectId { get; set; }
+
+    }
 }

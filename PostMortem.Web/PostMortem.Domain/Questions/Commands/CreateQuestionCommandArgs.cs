@@ -5,7 +5,21 @@ using PostMortem.Domain.EventSourcing.Commands;
 
 namespace PostMortem.Domain.Questions.Commands
 {
-    class CreateQuestionCommandArgs : CommandArgsBase
+    public class CreateQuestionCommandArgs : CommandArgsBase
     {
+        public QuestionId QuestionId { get; set; }
+        public Guid ProjectId { get; set; }
+        public string QuestionText { get; set; }
+        public int Importance { get; set; }
+        public bool Active { get; set; } = true;
+        public DateTime? LastUpdated { get; set; }
+
     }
+
+    public class DeleteQuestionCommandArgs : CommandArgsBase
+    {
+        public QuestionId QuestionId { get; set; }
+    }
+
+
 }

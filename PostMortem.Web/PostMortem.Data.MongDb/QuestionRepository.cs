@@ -19,7 +19,6 @@ namespace PostMortem.Data.MongoDb
         {
         }
 
-        public override QuestionId GetEntityId(Question dto) => dto.QuestionId;
         public override Guid GetDtoId(Question dto) => dto.QuestionId;
 
         public async Task<IEnumerable<DomainQuestion>> GetQuestionsForProjectAsync(ProjectId projectId)

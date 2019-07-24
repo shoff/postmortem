@@ -12,9 +12,9 @@ namespace PostMortem.Infrastructure.Events.Projects
     using Polly;
 
     public class ProjectCommandHandler : 
-        ICommandHandler<AddQuestionToProjectCommandArgs>,
         ICommandHandler<CreateProjectCommandArgs>,
-        ICommandHandler<UpdateProjectDetailsCommandArgs>
+        ICommandHandler<UpdateProjectDetailsCommandArgs>,
+        ICommandHandler<DeleteProjectCommandArgs>
     {
         private readonly IExecutionPolicies executionPolicies;
         private readonly IProjectRepository repository;
@@ -26,12 +26,6 @@ namespace PostMortem.Infrastructure.Events.Projects
             this.executionPolicies = Guard.IsNotNull(executionPolicies, nameof(executionPolicies));
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
-        public Task<PolicyResult> Handle(AddQuestionToProjectCommandArgs request, CancellationToken cancellationToken)
-        {
-            // TODO: move to Question command handler.
-            // return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.SaveAsync(request.Question));
-            throw new NotImplementedException();
-        }
 
         public Task<PolicyResult> Handle(UpdateProjectDetailsCommandArgs request, CancellationToken cancellationToken)
         {
@@ -41,6 +35,11 @@ namespace PostMortem.Infrastructure.Events.Projects
         public Task<PolicyResult> Handle(CreateProjectCommandArgs request, CancellationToken cancellationToken)
         {
             return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.SaveAsync(new Project {EndDate = request.EndDate, ProjectId = request.ProjectId, ProjectName = request.ProjectName, StartDate = request.StartDate}));
+        }
+
+        public Task<PolicyResult> Handle(DeleteProjectCommandArgs request, CancellationToken cancellationToken)
+        {
+            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.DeleteByIdAsync(request.ProjectId));
         }
     }
 }

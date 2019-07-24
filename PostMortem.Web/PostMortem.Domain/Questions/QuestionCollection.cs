@@ -62,7 +62,7 @@
             if (this.projectId == null || this.projectId == Guid.Empty)
             {
                 throw new ApplicationException(
-                    "Cannot add questions unless the ProjectId property has first been assigned.");
+                    "Cannot add questions unless the CommentId property has first been assigned.");
             }
 
             item.ProjectId = this.projectId;
@@ -80,7 +80,7 @@
                 if (this.projectId == null || this.projectId == Guid.Empty)
                 {
                     throw new ApplicationException(
-                        "Cannot add questions unless the ProjectId property has first been assigned.");
+                        "Cannot add questions unless the CommentId property has first been assigned.");
                 }
 
                 value.ProjectId = this.ProjectId;
@@ -88,7 +88,7 @@
             }
         }
 
-        public void AddRange(ICollection<Question> dtos)
+        public void AddRange(IEnumerable<Question> dtos)
         {
             Guard.IsNotNull(dtos, nameof(dtos));
             if (this.projectId == null || this.projectId == Guid.Empty)
@@ -97,7 +97,7 @@
                     "Cannot add questions unless the Project property has first been assigned.");
             }
 
-            dtos.Each(dto => dto.ProjectId = this.projectId);
+            dtos.Each(dto => dto.ProjectId = this.projectId); //TODO: Is this even needed?
             this.questions.AddRange(dtos);
         }
     }

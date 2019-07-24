@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using PostMortem.Domain.Comments;
 using PostMortem.Domain.EventSourcing.Queries;
 using PostMortem.Domain.Projects;
+using PostMortem.Domain.Questions;
 
 namespace PostMortem.Infrastructure.Events.Projects
 {
@@ -18,24 +20,42 @@ namespace PostMortem.Infrastructure.Events.Projects
         IQueryHandler<GetProjectByIdQueryArgs,Project>
     {
         private readonly IExecutionPolicies executionPolicies;
-        private readonly IProjectRepository repository;
+        private readonly IProjectRepository projectRepository;
+        private IQuestionRepository questionRepository;
+        private ICommentRepository commentRepository;
 
         public ProjectQueryHandler(
-            IProjectRepository repository,
+            IProjectRepository projectRepository,
+            IQuestionRepository questionRepository,
+            ICommentRepository commentRepository,
             IExecutionPolicies executionPolicies)
         {
             this.executionPolicies = Guard.IsNotNull(executionPolicies, nameof(executionPolicies));
-            this.repository = Guard.IsNotNull(repository, nameof(repository));
+            this.projectRepository = Guard.IsNotNull(projectRepository, nameof(projectRepository));
+            this.questionRepository = Guard.IsNotNull(questionRepository, nameof(questionRepository));
+            this.commentRepository = Guard.IsNotNull(commentRepository, nameof(commentRepository));
         }
 
-        public Task<PolicyResult<IEnumerable<Project>>> Handle(GetAllProjectsQueryArgs request, CancellationToken cancellationToken)
+        public async Task<PolicyResult<IEnumerable<Project>>> Handle(GetAllProjectsQueryArgs request, CancellationToken cancellationToken)
         {
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.GetAllAsync());
+            return await this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.projectRepository.GetAllAsync());
         }
 
-        public Task<PolicyResult<Project>> Handle(GetProjectByIdQueryArgs request, CancellationToken cancellationToken)
+        public async Task<PolicyResult<Project>> Handle(GetProjectByIdQueryArgs request, CancellationToken cancellationToken)
         {
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.GetByIdAsync(request.ProjectId));
+            // TODO: do error checking.
+            var project = await this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.projectRepository.GetByIdAsync(request.ProjectId));
+            var questionsPolicyResult = await this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.questionRepository.GetQuestionsForProjectAsync(request.ProjectId));
+            var questions = questionsPolicyResult.Result;
+            // project.AttachQuestions(questions)
+            foreach (var question in questions)
+            {
+                var commentsPolicyResult = await this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() =>
+                    this.commentRepository.GetCommentsForQuestionAsync(question.QuestionId));
+                var comments = commentsPolicyResult.Result;
+                //question.AttachComments(comments)
+            }
+            return project;
         }
     }
 }

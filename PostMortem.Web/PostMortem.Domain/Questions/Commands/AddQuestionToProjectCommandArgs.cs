@@ -2,9 +2,9 @@
 
 namespace PostMortem.Domain.Questions.Commands
 {
-    public class AddQuestionCommandArgs : CommandArgsBase
+    public class AddQuestionToProjectCommandArgs : CommandArgsBase
     {
-        public AddQuestionCommandArgs(Question question) => Question = question;
+        public AddQuestionToProjectCommandArgs(Question question) => Question = question;
         public Question Question { get; private set; }
     }
 }

@@ -12,8 +12,4 @@
     <PackageReference Include="Zatoichi.ExpressionSerializer" Version="1.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Questions\Queries\" />
-  </ItemGroup>
-
 </Project>

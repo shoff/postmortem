@@ -100,7 +100,7 @@
             }
         }
 
-        public void AddRange(ICollection<Comment> comments)
+        public void AddRange(IEnumerable<Comment> comments)
         {
             Guard.IsNotNull(comments, nameof(comments));
             if (this.questionId == null || this.questionId == Guid.Empty)

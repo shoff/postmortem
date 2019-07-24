@@ -60,7 +60,7 @@ namespace PostMortem.Data.MongoDb
 
         public async Task<TEntity> GetByIdAsync(TEntityId id)
         {
-            return await Collection.Find(x => GetEntityId(x).Equals(id))
+            return await Collection.Find(x => GetDtoId(x).Equals(id.Id))
                 .Project(x => Mapper.Map<TDto, TEntity>(x))
                 .SingleAsync();
         }
@@ -73,7 +73,11 @@ namespace PostMortem.Data.MongoDb
                 new UpdateOptions {IsUpsert = true});
         }
 
-        public abstract TEntityId GetEntityId(TDto dto);
+        public async Task DeleteByIdAsync(TEntityId id)
+        {
+            await Collection.DeleteOneAsync(dto => GetDtoId(dto).Equals(id.Id));
+        }
+
         public abstract TId GetDtoId(TDto dto);
     }
 }

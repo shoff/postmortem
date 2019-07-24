@@ -63,7 +63,7 @@ namespace PostMortem.Data.MongoDb
     //            var projects = this.database.GetCollection<Project>(Constants.PROJECTS_COLLECTION);
     //            var mongoProject = this.mapper.Map<Project>(project);
     //            await projects.InsertOneAsync(mongoProject);
-    //            return project.ProjectId.Id;
+    //            return project.CommentId.Id;
     //        }
     //        catch (Exception e)
     //        {
@@ -76,18 +76,18 @@ namespace PostMortem.Data.MongoDb
     //    {
     //        // https://docs.mongodb.com/manual/tutorial/model-referenced-one-to-many-relationships-between-documents/
     //        var projects = this.database.GetCollection<Project>(Constants.PROJECTS_COLLECTION);
-    //        var proj = await projects.FindAsync(p => p.ProjectId == projectId).ConfigureAwait(false);
+    //        var proj = await projects.FindAsync(p => p.CommentId == projectId).ConfigureAwait(false);
     //        var project = proj.FirstOrDefault();
 
     //        if (project == null)
     //        {
     //            return (null);
     //        }
-    //        var questions = await this.GetQuestionsByProjectIdAsync(project.ProjectId);
+    //        var questions = await this.GetQuestionsByProjectIdAsync(project.CommentId);
     //        var domainProject = new DomainProject(questions)
     //        {
     //            EndDate = project.EndDate,
-    //            ProjectId = new ProjectId(project.ProjectId),
+    //            CommentId = new CommentId(project.CommentId),
     //            ProjectName = project.ProjectName,
     //            StartDate = project.StartDate
     //        };
@@ -118,7 +118,7 @@ namespace PostMortem.Data.MongoDb
     //            {
     //                Active = question.Active,
     //                Importance = question.Importance,
-    //                ProjectId = question.ProjectId,
+    //                CommentId = question.CommentId,
     //                QuestionId = new QuestionId(question.QuestionId),
     //                QuestionText = question.QuestionText,
     //                ResponseCount = question.ResponseCount
@@ -133,7 +133,7 @@ namespace PostMortem.Data.MongoDb
     //        {
     //            Active = question.Active,
     //            Importance = question.Importance,
-    //            ProjectId = question.ProjectId,
+    //            CommentId = question.CommentId,
     //            QuestionId = new QuestionId(question.QuestionId),
     //            QuestionText = question.QuestionText,
     //            ResponseCount = question.ResponseCount
@@ -189,7 +189,7 @@ namespace PostMortem.Data.MongoDb
     //        var questionCollection = this.database.GetCollection<Question>(Constants.QUESTIONS_COLLECTION);
     //        var commentCollection = this.database.GetCollection<Comment>(Constants.COMMENTS_COLLECTION);
 
-    //        var mongoQuestions = await questionCollection.FindAsync(f => f.ProjectId == projectId).ConfigureAwait(false);
+    //        var mongoQuestions = await questionCollection.FindAsync(f => f.CommentId == projectId).ConfigureAwait(false);
     //        var questions = await mongoQuestions.ToListAsync();
 
     //        List<DomainQuestion> domainQuestions = new List<DomainQuestion>();
@@ -201,7 +201,7 @@ namespace PostMortem.Data.MongoDb
     //            var dc = new DomainQuestion(comments)
     //            {
     //                Importance = question.Importance,
-    //                ProjectId = question.ProjectId,
+    //                CommentId = question.CommentId,
     //                QuestionId = new QuestionId(question.QuestionId),
     //                QuestionText = question.QuestionText,
     //                ResponseCount = question.ResponseCount

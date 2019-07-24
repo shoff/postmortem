@@ -1,8 +1,5 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Polly;
-using PostMortem.Domain.Events.Comments;
-using PostMortem.Domain.EventSourcing.Events;
 
 namespace PostMortem.Domain.Questions
 {
@@ -10,7 +7,6 @@ namespace PostMortem.Domain.Questions
     using System.Collections.Generic;
     using ChaosMonkey.Guards;
     using Comments;
-    using Events.Questions;
 
 
     public class Question : IEntity<QuestionId>
@@ -53,12 +49,10 @@ namespace PostMortem.Domain.Questions
             }
         }
 
-        public async Task<PolicyResult<Comment>> AddCommentAsync(Guid commentId,string commentText, DateTime dateAdded, string commenter )
+        public void AttachComments(IEnumerable<Comment> comments)
         {
-            var comment = new Comment(commentId, this.QuestionId, commenter, commentText, dateAdded);
-            this.comments.Add(comment);
-            // TODO wrap in polly policy and save the question and comment.
-            throw new NotImplementedException();
+            this.comments.Clear();
+            this.comments.AddRange(comments);
         }
 
         public QuestionId GetEntityId() => QuestionId;

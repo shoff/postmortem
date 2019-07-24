@@ -1,5 +1,7 @@
-﻿using PostMortem.Domain.Events.Questions;
+﻿using Polly;
+using PostMortem.Domain.Projects;
 using PostMortem.Domain.Questions.Commands;
+using PostMortem.Domain.Questions.Queries;
 
 namespace PostMortem.Web.Controllers
 {
@@ -8,7 +10,6 @@ namespace PostMortem.Web.Controllers
     using AutoMapper;
     using ChaosMonkey.Guards;
     using Domain;
-    using Domain.Questions;
     using Dtos;
     using MediatR;
     using Microsoft.AspNetCore.Http;
@@ -40,10 +41,17 @@ namespace PostMortem.Web.Controllers
             this.logger = Guard.IsNotNull(logger, nameof(logger));
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            throw new NotImplementedException();
+            var result = await this.mediator.Send(new GetQuestionByIdQueryArgs{QuestionId = id});
+            if (result.Outcome == OutcomeType.Successful)
+            {
+                var question = this.mapper.Map<QuestionDto>(result.Result);
+                return this.Ok(question);
+            }
+
+            return new StatusCodeResult(500);
         }
 
         [HttpPost]
@@ -57,7 +65,7 @@ namespace PostMortem.Web.Controllers
 
             try
             {
-                var result = await this.mediator.Send(new AddQuestionCommandArgs(question));
+                var result = await this.mediator.Send(new CreateQuestionCommandArgs{Active = true, QuestionId = question.QuestionId, ProjectId = question.ProjectId, Importance = question.Importance, QuestionText = question.QuestionText, LastUpdated = DateTime.Now});
                 if (result.Outcome == Polly.OutcomeType.Successful)
                 {
                     var url = this.linkGenerator.GetPathByAction(
@@ -78,5 +86,7 @@ namespace PostMortem.Web.Controllers
             }
 
         }
+
+
     }
 }

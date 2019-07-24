@@ -25,5 +25,6 @@ namespace PostMortem.Domain.Comments.Commands
         public string Commenter { get;  private set; }
         public int Dislikes { get; private set; }
         public int Likes { get; private set; }
-        public bool GenerallyPositive { get; private set; }    }
+        public bool GenerallyPositive { get; private set; }
+    }
 }

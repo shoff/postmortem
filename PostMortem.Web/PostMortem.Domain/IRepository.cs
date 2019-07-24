@@ -18,8 +18,7 @@ namespace PostMortem.Domain
         Task<TEntity> GetByIdAsync(TEntityId id);
 
         Task SaveAsync(TEntity entity);
-        //void Delete(TEntity entity);
-        //void DeleteById(TEntityId commentId);
+        Task DeleteByIdAsync(TEntityId id);
     }
 
     

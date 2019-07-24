@@ -17,7 +17,6 @@ namespace PostMortem.Data.MongoDb
         {
         }
 
-        public override CommentId GetEntityId(Comment dto) => dto.CommentId;
         public override Guid GetDtoId(Comment dto) => dto.CommentId;
 
         public async Task<IEnumerable<DomainComment>> GetCommentsForQuestionAsync(QuestionId questionId)

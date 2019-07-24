@@ -1,4 +1,5 @@
 ﻿using PostMortem.Domain.Projects.Commands;
+using PostMortem.Domain.Questions.Queries;
 
 namespace PostMortem.Web.Controllers
 {
@@ -63,7 +64,6 @@ namespace PostMortem.Web.Controllers
             return new StatusCodeResult(500);
         }
 
-
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] CreateProjectDto project)
         {
@@ -96,6 +96,20 @@ namespace PostMortem.Web.Controllers
 
             return new StatusCodeResult(500);
         }
+
+        [HttpGet("{projectId}/questions")]
+        public async Task<IActionResult> GetQuestionsForProject(Guid projectId)
+        {
+            var result = await this.mediator.Send(new GetQuestionsForProjectIdQueryArgs{ProjectId = projectId});
+            if (result.Outcome == OutcomeType.Successful)
+            {
+                var projects = result.Result.Map(q => this.mapper.Map<QuestionDto>(q));
+                return this.Ok(projects);
+            }
+
+            return new StatusCodeResult(500);
+        }
+
     }
 
 }
