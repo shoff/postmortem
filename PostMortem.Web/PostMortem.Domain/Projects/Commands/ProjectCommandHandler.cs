@@ -1,16 +1,13 @@
-﻿using ChaosMonkey.Guards;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using ChaosMonkey.Guards;
+using MediatR;
+using Polly;
 using PostMortem.Domain.EventSourcing.Commands;
-using PostMortem.Domain.Projects;
-using PostMortem.Domain.Projects.Commands;
 using Zatoichi.Common.Infrastructure.Resilience;
 
-namespace PostMortem.Infrastructure.Events.Projects
+namespace PostMortem.Domain.Projects.Commands
 {
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Polly;
-
     public class ProjectCommandHandler : 
         ICommandHandler<CreateProjectCommandArgs>,
         ICommandHandler<UpdateProjectDetailsCommandArgs>,
@@ -18,13 +15,15 @@ namespace PostMortem.Infrastructure.Events.Projects
     {
         private readonly IExecutionPolicies executionPolicies;
         private readonly IProjectRepository repository;
-
+        private readonly IMediator mediator;
         public ProjectCommandHandler(
+            IMediator mediator,
             IProjectRepository repository,
             IExecutionPolicies executionPolicies)
         {
             this.executionPolicies = Guard.IsNotNull(executionPolicies, nameof(executionPolicies));
             this.repository = Guard.IsNotNull(repository, nameof(repository));
+            this.mediator = Guard.IsNotNull(mediator, nameof(mediator));
         }
 
         public Task<PolicyResult> Handle(UpdateProjectDetailsCommandArgs request, CancellationToken cancellationToken)
@@ -39,7 +38,12 @@ namespace PostMortem.Infrastructure.Events.Projects
 
         public Task<PolicyResult> Handle(DeleteProjectCommandArgs request, CancellationToken cancellationToken)
         {
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.DeleteByIdAsync(request.ProjectId));
+            // TODO: propagate deletion to all affected dependencies. (Questions and comments)
+            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() =>
+            {
+                this.repository.DeleteByIdAsync(request.ProjectId);
+                return this.repository.DeleteByIdAsync(request.ProjectId);
+            });
         }
     }
 }

@@ -42,6 +42,11 @@ namespace PostMortem.Domain.Projects
             }
         }
 
+        public void AttachQuestions(IEnumerable<Question> questions)
+        {
+            this.questions.Clear();
+            this.questions.AddRange(questions);
+        }
         public ProjectId GetEntityId() => ProjectId;
     }
 }

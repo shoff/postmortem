@@ -45,8 +45,9 @@ namespace PostMortem.Data.MongoDb
 
         public async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TDto, bool>> predicate)
         {
+            // perform the mapping during retrieval from Mongo
             var cursor = await Collection.FindAsync(FilterBy(predicate), mapToEntity);
-            return cursor.ToEnumerable();
+            return cursor.ToEnumerable().ToList();
         }
 
         protected static FilterDefinition<TDto> FilterBy(Expression<Func<TDto, bool>> predicate) =>
@@ -54,9 +55,7 @@ namespace PostMortem.Data.MongoDb
 
         public async Task<IEnumerable<TEntity>> GetAllAsync()
         {
-            // perform the mapping during retrieval from Mongo
-            var cursor = await Collection.FindAsync(filter: FilterDefinition<TDto>.Empty, mapToEntity);
-            return cursor.ToEnumerable();
+            return await FindAllAsync(@true=>true);
         }
 
         public async Task<TEntity> GetByIdAsync(TEntityId id)

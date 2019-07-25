@@ -17,9 +17,11 @@ namespace PostMortem.Data.MongoDb.Converters
 
             destination = new Project
             {
+                StartDate = source.StartDate,
                 EndDate = source.EndDate,
                 ProjectId = source.ProjectId,
-                ProjectName = source.ProjectName
+                ProjectName = source.ProjectName,
+                //CreatedBy = source // add this property to DomainProject
             };
             return destination;
         }

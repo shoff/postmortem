@@ -1,4 +1,6 @@
-﻿namespace PostMortem.Web.Converters
+﻿using System.Collections.Generic;
+
+namespace PostMortem.Web.Converters
 {
     using System.Linq;
     using AutoMapper;
@@ -17,10 +19,11 @@
 
             destination = new ProjectDto
             {
+                StartDate = source.StartDate,
                 EndDate = source.EndDate,
                 ProjectId = source.ProjectId,
                 ProjectName = source.ProjectName,
-                Questions = source.Questions.Map(q=> context.Mapper.Map<QuestionDto>(q)).ToList()
+                Questions = source.Questions?.Select(q=> context.Mapper.Map<QuestionDto>(q)).ToList() ?? new List<QuestionDto>()
             };
             return destination;
         }

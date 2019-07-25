@@ -1,6 +1,10 @@
-﻿using Polly;
+﻿using System.Linq;
+using Polly;
 using PostMortem.Domain.Comments.Commands;
 using PostMortem.Domain.Comments.Queries;
+using PostMortem.Domain.Projects.Commands;
+using PostMortem.Domain.Questions.Queries;
+using Zatoichi.Common.Infrastructure.Extensions;
 
 namespace PostMortem.Web.Controllers
 {
@@ -41,6 +45,21 @@ namespace PostMortem.Web.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> ListAll()
+        {
+            var result = await this.mediator.Send(new GetAllCommentsQueryArgs());
+            if (result.Outcome == OutcomeType.Successful)
+            {
+                var comments = result.Result?.Select(c => this.mapper.Map<CommentDto>(c));
+                return this.Ok(comments);
+            }
+
+            logger.LogError(500,$"{result.Outcome} : {result.FaultType}");
+            logger.LogDebug(500,result.FinalException,$"{result.Outcome} : {result.FaultType}");
+            return new StatusCodeResult(500);
+        }
+
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id) 
         {
             try
@@ -103,5 +122,20 @@ namespace PostMortem.Web.Controllers
             }
 
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var result = await this.mediator.Send(new DeleteCommentCommandArgs{CommentId = id});
+            if (result.Outcome == OutcomeType.Successful)
+            {
+                return this.Ok();
+            }
+
+            logger.LogError(500,$"{result.Outcome} : {result.ExceptionType}");
+            logger.LogDebug(500,result.FinalException,$"{result.Outcome} : {result.ExceptionType}");
+            return new StatusCodeResult(500);
+        }
+
     }
 }

@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Linq;
+using Microsoft.Extensions.Logging;
 using PostMortem.Domain.Projects.Commands;
+using PostMortem.Domain.Questions.Commands;
 using PostMortem.Domain.Questions.Queries;
 
 namespace PostMortem.Web.Controllers
@@ -48,7 +50,7 @@ namespace PostMortem.Web.Controllers
             var result = await this.mediator.Send(new GetAllProjectsQueryArgs());
             if (result.Outcome == OutcomeType.Successful)
             {
-                var projects = result.Result.Map(p => this.mapper.Map<ProjectDto>(p));
+                var projects = result.Result?.Select(p => this.mapper.Map<ProjectDto>(p))  ?? new ProjectDto[]{};
                 return this.Ok(projects);
             }
             logger.LogError(500,$"{result.Outcome} : {result.FaultType}");
@@ -80,6 +82,7 @@ namespace PostMortem.Web.Controllers
             }
 
             project.CreatedBy = this.username;
+
             var cmd = new CreateProjectCommandArgs
             {
                 ProjectId = new ProjectId(Guid.NewGuid()),
@@ -87,7 +90,7 @@ namespace PostMortem.Web.Controllers
                 ProjectName = project.ProjectName,
                 StartDate = project.StartDate
             };
-            var p = new Project
+            var p = new ProjectDto
             {
                 ProjectId = cmd.ProjectId,
                 EndDate = cmd.EndDate,
@@ -103,7 +106,6 @@ namespace PostMortem.Web.Controllers
                     controller: "Projects",
                     action: "GetById",
                     values: new { id = cmd.ProjectId });
-                // TODO: retreive it from the DB???
                 return this.Created($"{this.HttpContext.Request.Scheme}//{this.HttpContext.Request.Host}{url}", p);
             }
 
@@ -118,12 +120,26 @@ namespace PostMortem.Web.Controllers
             var result = await this.mediator.Send(new GetQuestionsForProjectIdQueryArgs{ProjectId = projectId});
             if (result.Outcome == OutcomeType.Successful)
             {
-                var questions = result.Result.Map(q => this.mapper.Map<QuestionDto>(q));
+                var questions = result.Result?.Select(q => this.mapper.Map<QuestionDto>(q)) ?? new QuestionDto[]{};
                 return this.Ok(questions);
             }
 
             logger.LogError(500,$"{result.Outcome} : {result.FaultType}");
             logger.LogDebug(500,result.FinalException,$"{result.Outcome} : {result.FaultType}");
+            return new StatusCodeResult(500);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var result = await this.mediator.Send(new DeleteProjectCommandArgs{ProjectId = id});
+            if (result.Outcome == OutcomeType.Successful)
+            {
+                return this.Ok();
+            }
+
+            logger.LogError(500,$"{result.Outcome} : {result.ExceptionType}");
+            logger.LogDebug(500,result.FinalException,$"{result.Outcome} : {result.ExceptionType}");
             return new StatusCodeResult(500);
         }
 

@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using PostMortem.Domain.Comments;
+using PostMortem.Domain.Comments.Queries;
 using PostMortem.Domain.EventSourcing.Queries;
 using PostMortem.Domain.Projects;
 using PostMortem.Domain.Questions;
+using PostMortem.Domain.Questions.Queries;
 
 namespace PostMortem.Infrastructure.Events.Projects
 {
@@ -21,41 +23,59 @@ namespace PostMortem.Infrastructure.Events.Projects
     {
         private readonly IExecutionPolicies executionPolicies;
         private readonly IProjectRepository projectRepository;
-        private IQuestionRepository questionRepository;
-        private ICommentRepository commentRepository;
+        private readonly IMediator mediator;
 
         public ProjectQueryHandler(
+            IMediator mediator,
             IProjectRepository projectRepository,
-            IQuestionRepository questionRepository,
-            ICommentRepository commentRepository,
             IExecutionPolicies executionPolicies)
         {
             this.executionPolicies = Guard.IsNotNull(executionPolicies, nameof(executionPolicies));
             this.projectRepository = Guard.IsNotNull(projectRepository, nameof(projectRepository));
-            this.questionRepository = Guard.IsNotNull(questionRepository, nameof(questionRepository));
-            this.commentRepository = Guard.IsNotNull(commentRepository, nameof(commentRepository));
+            this.mediator = Guard.IsNotNull(mediator, nameof(mediator));
         }
 
         public async Task<PolicyResult<IEnumerable<Project>>> Handle(GetAllProjectsQueryArgs request, CancellationToken cancellationToken)
         {
-            return await this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.projectRepository.GetAllAsync());
+            //TODO: optionally hydrate all projects.
+            var policyResult=await this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.projectRepository.GetAllAsync());
+            if (policyResult.Outcome == OutcomeType.Successful && policyResult.Result != null)
+            {
+                await PopulateQuestions(policyResult.Result);
+            }
+
+            return policyResult;
         }
 
         public async Task<PolicyResult<Project>> Handle(GetProjectByIdQueryArgs request, CancellationToken cancellationToken)
         {
             // TODO: do error checking.
-            var project = await this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.projectRepository.GetByIdAsync(request.ProjectId));
-            //var questionsPolicyResult = await this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.questionRepository.GetQuestionsForProjectAsync(request.ProjectId));
-            //var questions = questionsPolicyResult.Result;
-            //// project.AttachQuestions(questions)
-            //foreach (var question in questions)
-            //{
-            //    var commentsPolicyResult = await this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() =>
-            //        this.commentRepository.GetCommentsForQuestionAsync(question.QuestionId));
-            //    var comments = commentsPolicyResult.Result;
-            //    //question.AttachComments(comments)
-            //}
-            return project;
+            var policyResult = await this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.projectRepository.GetByIdAsync(request.ProjectId));
+            if (policyResult.Outcome == OutcomeType.Successful && policyResult.Result != null)
+            {
+                await PopulateQuestions(policyResult.Result);
+            }
+            return policyResult;
         }
+
+        private async Task PopulateQuestions(Project project)
+        {
+            var questionsResult=await mediator.Send(new GetQuestionsForProjectIdQueryArgs {ProjectId = project.ProjectId});
+            if (questionsResult.Outcome==OutcomeType.Successful && questionsResult.Result!=null)
+            {
+                project.AttachQuestions(questionsResult.Result);
+            }
+        }
+
+        private async Task PopulateQuestions(IEnumerable<Project> projects)
+        {
+            // TODO: get all questions in one go, and use linq on in memory collection to resolve the associations?
+            // For now just populate one at a time.
+            foreach (var project in projects)
+            {
+                await PopulateQuestions(project);
+            }
+        }
+
     }
 }
