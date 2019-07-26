@@ -1,4 +1,6 @@
-﻿using PostMortem.Data.NEventStore;
+﻿using NEventStore;
+using PostMortem.Data.NEventStore;
+using PostMortem.Data.NEventStore.Config;
 using PostMortem.Domain.Comments;
 using PostMortem.Domain.Events.Comments;
 using PostMortem.Domain.Projects;
@@ -19,7 +21,7 @@ namespace PostMortem.Web
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Swashbuckle.AspNetCore.Swagger;
     using Zatoichi.Common.Infrastructure.Resilience;
-    using Domain.Comments.Events;
+    
     public static class ServiceExtensions
     {
         public static IServiceCollection InitializeContainer(this IServiceCollection services,
@@ -37,6 +39,7 @@ namespace PostMortem.Web
             services.AddTransient<ICommentRepository, CommentRepository>(); 
             services.AddTransient<ICommentEventStoreRepository, CommentEventStoreRepository>(); 
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.TryAddSingleton<IStoreEvents, MongDbStoreEvents>();
             services.TryAddSingleton<IMongoDbContext, MongoDbContext>();
             services.AddHttpClient<INameGeneratorClient, NameGeneratorClient>();
             services.AddMediatR(typeof(CommentLikedEventArgs).Assembly);
@@ -48,6 +51,7 @@ namespace PostMortem.Web
         {
             services.AddOptions();
             services.Configure<MongoOptions>(configuration.GetSection("MongoOptions"));
+            services.Configure<MongoDbStoreEventsOptions>(configuration.GetSection("MongoDbStoreEventsOptions"));
             services.Configure<PolicyOptions>(configuration.GetSection("PolicyOptions"));
             return services;
 
