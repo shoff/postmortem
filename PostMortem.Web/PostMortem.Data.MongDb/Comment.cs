@@ -1,4 +1,6 @@
-﻿namespace PostMortem.Data.MongoDb
+﻿using MongoDB.Bson;
+
+namespace PostMortem.Data.MongoDb
 {
     using System;
     using System.ComponentModel.DataAnnotations;
@@ -7,7 +9,7 @@
     public class Comment
     {
         [BsonId]
-        //[Range(0, 50000)]
+
         public Guid CommentId { get; set; }
         
         [Required]

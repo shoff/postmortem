@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using ChaosMonkey.Guards;
 using Microsoft.Extensions.Logging;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using PostMortem.Domain;
 using PostMortem.Infrastructure;
@@ -23,7 +22,7 @@ namespace PostMortem.Data.MongoDb
         protected IMapper Mapper { get; private set; }
         private readonly FindOptions<TDto, TEntity> mapToEntity;
 
-        private readonly ILogger<MongoDbRepositoryBase<TEntity, TEntityId, TDto, TId>> logger;
+        private readonly ILogger<MongoDbRepositoryBase<TEntity, TEntityId, TDto, TId>> logger; //TODO: log various actions.
 
         protected MongoDbRepositoryBase(IMongoDatabase mongoDatabase,
             IMapper mapper,
@@ -46,38 +45,40 @@ namespace PostMortem.Data.MongoDb
 
         public async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TDto, bool>> predicate)
         {
+            //TODO: find a way to do this without async/await (performance improvement)
             // perform the mapping during retrieval from Mongo
             var cursor = await Collection.FindAsync(FilterBy(predicate), mapToEntity);
-            return cursor.ToEnumerable().ToList();
+            return cursor.ToEnumerable().ToList(); // force enumeration so the results can be enumerated multiple times.
         }
 
         protected static FilterDefinition<TDto> FilterBy(Expression<Func<TDto, bool>> predicate) =>
             new ExpressionFilterDefinition<TDto>(predicate);
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync()
+        public Task<IEnumerable<TEntity>> GetAllAsync()
         {
-            return await FindAllAsync(@true=>true);
+            return FindAllAsync(@true=>true);
         }
 
         public async Task<TEntity> GetByIdAsync(TEntityId id)
         {
-            return await Collection.Find(GetIdFilter(id))
-                .Project(x => Mapper.Map<TDto, TEntity>(x))
+            var filter = GetIdFilter(id);
+            var dto= await Collection.Find(filter)
                 .SingleAsync();
+            return Mapper.Map<TDto, TEntity>(dto);
         }
 
-        public async Task SaveAsync(TEntity entity)
+        public Task SaveAsync(TEntity entity)
         {
             var repl = Mapper.Map<TEntity, TDto>(entity);
-            var replaceOneResult = await Collection.ReplaceOneAsync(
+            return Collection.ReplaceOneAsync(
                 GetIdFilter(entity.GetEntityId()),
                 repl, 
                 new UpdateOptions {IsUpsert = true,});
         }
 
-        public async Task DeleteByIdAsync(TEntityId id)
+        public Task DeleteByIdAsync(TEntityId id)
         {
-            await Collection.DeleteOneAsync(GetIdFilter(id));
+            return Collection.DeleteOneAsync(GetIdFilter(id));
         }
 
         protected virtual FilterDefinition<TDto> GetIdFilter(TEntityId id) => Builders<TDto>.Filter.Eq("_id", id.Id);

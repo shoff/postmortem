@@ -12,7 +12,7 @@ namespace PostMortem.Domain.Questions
 
     public class Question : IEntity<QuestionId>
     {
-        private readonly CommentCollection comments = new CommentCollection();
+        private readonly List<Comment> comments = new List<Comment>();
 
         public Question()
             : this(new List<Comment>()) { }
@@ -46,7 +46,6 @@ namespace PostMortem.Domain.Questions
                     this.QuestionId = QuestionId.NewQuestionId();
                 }
 
-                this.comments.QuestionId = this.QuestionId;
                 return this.comments;
             }
         }

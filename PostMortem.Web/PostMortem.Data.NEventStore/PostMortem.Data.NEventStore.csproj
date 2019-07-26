@@ -26,4 +26,8 @@
     <ProjectReference Include="..\PostMortem.Domain\PostMortem.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Helpers\" />
+  </ItemGroup>
+
 </Project>

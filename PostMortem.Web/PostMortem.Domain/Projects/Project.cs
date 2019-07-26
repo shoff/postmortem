@@ -10,7 +10,7 @@ namespace PostMortem.Domain.Projects
 
     public class Project : IEntity<ProjectId>
     {
-        private readonly QuestionCollection questions = new QuestionCollection();
+        private readonly List<Question> questions = new List<Question>();
 
         public Project()
             : this(new List<Question>())
@@ -37,7 +37,6 @@ namespace PostMortem.Domain.Projects
                     ProjectId = ProjectId.NewProjectId();
                 }
 
-                this.questions.ProjectId = ProjectId;
                 return this.questions;
             }
         }

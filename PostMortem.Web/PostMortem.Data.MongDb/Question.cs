@@ -1,4 +1,6 @@
-﻿namespace PostMortem.Data.MongoDb
+﻿using MongoDB.Bson;
+
+namespace PostMortem.Data.MongoDb
 {
     using System;
     using System.Collections.Generic;

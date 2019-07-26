@@ -28,7 +28,7 @@ namespace PostMortem.Domain.Comments.Events
             return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() =>
             {
                 var comment = new Comment(request.CommentId,request.QuestionId,request.Commenter,request.CommentText,request.DateAdded,request.Likes,request.Dislikes,request.GenerallyPositive);
-                this.eventStore.SaveAsync(comment).RunSynchronously();
+                this.eventStore.SaveAsync(comment).GetAwaiter().GetResult();
                 return this.repository.SaveAsync(comment);
             });
         }

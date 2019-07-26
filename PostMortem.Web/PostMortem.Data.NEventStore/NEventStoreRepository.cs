@@ -12,7 +12,7 @@ namespace PostMortem.Data.NEventStore
     using ChaosMonkey.Guards;
     using PostMortem.Infrastructure;
 
-    public class NEventStoreRepository<TEntity,TEntityId,TEventArgs> : IEventStoreRepository<TEntity,TEntityId,TEventArgs> 
+    public abstract class NEventStoreRepository<TEntity,TEntityId,TEventArgs> : IEventStoreRepository<TEntity,TEntityId,TEventArgs> 
         where TEventArgs : class,IEventArgs
         where TEntity : IEventsEntity<TEntityId,TEventArgs>,new()
         where TEntityId : IEntityId
@@ -34,7 +34,7 @@ namespace PostMortem.Data.NEventStore
         {
             return Task.Run(() =>
             {
-                using (var eventStream = eventStore.OpenStream(GetBucketId(typeof(TEntity)), entity.GetEntityId().AsIdString(), int.MinValue, int.MaxValue))
+                using (var eventStream = eventStore.OpenStream(BucketName, GetStreamName(entity), int.MinValue, int.MaxValue))
                 {
                     foreach (var eventArgs in entity.GetPendingEvents())
                     {
@@ -46,11 +46,9 @@ namespace PostMortem.Data.NEventStore
                 }
             });
         }
+        protected virtual string GetStreamName(TEntity entity) => entity.GetEntityId().AsIdString();
 
-        private string GetBucketId(Type type)
-        {
-            return type.ToString();
-        }
+        protected virtual string BucketName => typeof(TEntity).ToString();
 
         string Serialize(TEventArgs eventArgs)
         {
@@ -64,7 +62,7 @@ namespace PostMortem.Data.NEventStore
 
         IEnumerable<TEventArgs> LoadEvents(TEntityId id)
         {
-            var commits = eventStore.Advanced.GetFrom(GetBucketId(typeof(TEntity)), id.AsIdString(),int.MinValue,int.MaxValue);
+            var commits = eventStore.Advanced.GetFrom(BucketName, id.AsIdString(),int.MinValue,int.MaxValue);
             foreach (var commit in commits)
             {
                 foreach (var e in commit.Events)
@@ -89,7 +87,7 @@ namespace PostMortem.Data.NEventStore
         {
             return Task.Run(() =>
             {
-                eventStore.Advanced.DeleteStream(GetBucketId(typeof(TEntity)), id.AsIdString());
+                eventStore.Advanced.DeleteStream(BucketName, id.AsIdString());
             });
         }
     }

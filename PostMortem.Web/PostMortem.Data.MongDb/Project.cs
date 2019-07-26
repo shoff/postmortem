@@ -1,4 +1,6 @@
-﻿namespace PostMortem.Data.MongoDb
+﻿using MongoDB.Bson;
+
+namespace PostMortem.Data.MongoDb
 {
     using System;
     using MongoDB.Bson.Serialization.Attributes;
@@ -6,6 +8,7 @@
     public class Project
     {
         [BsonId]
+
         public Guid ProjectId { get; set; }
 
         [BsonElement("project_name")]

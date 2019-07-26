@@ -35,7 +35,7 @@ namespace PostMortem.Data.NEventStore
         {
             // from MongoDb's documentation the connections string
             // mongodb://[username:password@]host1[:port1][,...hostN[:portN]][/[database][?options]]
-            return $"mongodb://{options.Host}:{options.Port}/{options.DefaultDb}";
+            return $"mongodb://{options.MongoHost}:{options.Port}/{options.DefaultDb}";
         }
 
         public void Dispose()
