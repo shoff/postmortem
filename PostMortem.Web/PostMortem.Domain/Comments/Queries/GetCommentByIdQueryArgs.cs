@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text;
-using PostMortem.Domain.EventSourcing.Commands;
-using PostMortem.Domain.EventSourcing.Queries;
+using PostMortem.Infrastructure.Queries;
 
 namespace PostMortem.Domain.Comments.Queries
 {

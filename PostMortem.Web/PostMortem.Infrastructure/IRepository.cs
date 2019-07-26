@@ -1,13 +1,10 @@
-﻿using PostMortem.Domain.EventSourcing.Events;
+﻿using PostMortem.Infrastructure;
 
 namespace PostMortem.Domain
 {
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Comments;
-    using Projects;
-    using Questions;
 
     public interface IRepository<TEntity, in TEntityId>
         where TEntityId :IEntityId

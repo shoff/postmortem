@@ -1,26 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
-using PostMortem.Domain.EventSourcing.Events;
 
-namespace PostMortem.Domain
+namespace PostMortem.Infrastructure.Events
 {
-    public interface IEntity<TEntityId>
-        where TEntityId : IEntityId
-    {
-        TEntityId GetEntityId();
-    }
-
-    public interface IEventsEntity<TEntityId, TEventArgs> : IEntity<TEntityId>
-        where TEntityId : IEntityId
-        where TEventArgs : IEventArgs
-    {
-        IEnumerable<TEventArgs> GetPendingEvents();
-        void ClearPendingEvents();
-        void ReplayEvent(TEventArgs eventArgs);
-    }
-
     public abstract class EventsEntityBase<TEntityId, TEventArgs> : IEventsEntity<TEntityId,TEventArgs>
         where TEntityId : IEntityId
         where TEventArgs : IEventArgs

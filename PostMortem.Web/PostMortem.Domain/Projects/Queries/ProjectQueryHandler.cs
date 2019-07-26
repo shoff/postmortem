@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using PostMortem.Domain.Comments;
 using PostMortem.Domain.Comments.Queries;
-using PostMortem.Domain.EventSourcing.Queries;
 using PostMortem.Domain.Projects;
 using PostMortem.Domain.Questions;
 using PostMortem.Domain.Questions.Queries;
+using PostMortem.Infrastructure.Queries;
 
 namespace PostMortem.Infrastructure.Events.Projects
 {

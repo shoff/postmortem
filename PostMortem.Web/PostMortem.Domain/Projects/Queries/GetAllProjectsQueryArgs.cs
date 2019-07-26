@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Polly;
-using PostMortem.Domain.EventSourcing.Queries;
+using PostMortem.Infrastructure.Queries;
 
 namespace PostMortem.Domain.Projects
 {

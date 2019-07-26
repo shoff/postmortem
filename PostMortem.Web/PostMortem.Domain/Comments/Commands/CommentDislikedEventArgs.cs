@@ -1,7 +1,7 @@
 ﻿using System;
 using MediatR;
 using Polly;
-using PostMortem.Domain.EventSourcing.Commands;
+using PostMortem.Infrastructure.EventSourcing.Commands;
 
 namespace PostMortem.Domain.Comments
 {

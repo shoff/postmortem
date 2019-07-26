@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using ChaosMonkey.Guards;
 using MediatR;
 using Polly;
-using PostMortem.Domain.EventSourcing.Commands;
+using PostMortem.Infrastructure.EventSourcing.Commands;
 using Zatoichi.Common.Infrastructure.Resilience;
 
 namespace PostMortem.Domain.Projects.Commands

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using PostMortem.Domain;
+using PostMortem.Infrastructure;
 
 namespace PostMortem.Data.MongoDb
 {

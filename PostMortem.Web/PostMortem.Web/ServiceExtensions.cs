@@ -1,6 +1,6 @@
-﻿using PostMortem.Domain.Comments;
+﻿using PostMortem.Data.NEventStore;
+using PostMortem.Domain.Comments;
 using PostMortem.Domain.Events.Comments;
-using PostMortem.Domain.EventSourcing.Events;
 using PostMortem.Domain.Projects;
 using PostMortem.Domain.Questions;
 
@@ -34,7 +34,8 @@ namespace PostMortem.Web
             services.AddTransient<IPolicyFactory, AsyncPolicyFactory>();
             services.AddTransient<IProjectRepository, ProjectRepository>();
             services.AddTransient<IQuestionRepository, QuestionRepository>();
-            services.AddTransient<ICommentRepository, CommentRepository>(); // TODO: Change to AggregateCommentRepository once implemented.
+            services.AddTransient<ICommentRepository, CommentRepository>(); 
+            services.AddTransient<ICommentEventStoreRepository, CommentEventStoreRepository>(); 
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.TryAddSingleton<IMongoDbContext, MongoDbContext>();
             services.AddHttpClient<INameGeneratorClient, NameGeneratorClient>();

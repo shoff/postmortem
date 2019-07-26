@@ -4,7 +4,6 @@ using AutoMapper;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using PostMortem.Data.MongoDb.Config;
-using PostMortem.Domain.EventSourcing.Events;
 
 namespace PostMortem.Data.MongoDb
 {

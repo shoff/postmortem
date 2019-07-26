@@ -3,7 +3,6 @@
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Domain;
 
     public class NameGeneratorClient : INameGeneratorClient
     {

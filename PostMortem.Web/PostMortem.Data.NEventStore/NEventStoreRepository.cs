@@ -1,6 +1,6 @@
 ﻿
 using Newtonsoft.Json;
-using PostMortem.Domain.EventSourcing.Events;
+using PostMortem.Infrastructure.Events;
 
 namespace PostMortem.Data.NEventStore
 {
@@ -8,34 +8,42 @@ namespace PostMortem.Data.NEventStore
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Domain;
     using global::NEventStore;
     using ChaosMonkey.Guards;
+    using PostMortem.Infrastructure;
 
-    public partial class NEventStoreRepository
+    public class NEventStoreRepository<TEntity,TEntityId,TEventArgs> : IEventStoreRepository<TEntity,TEntityId,TEventArgs> 
+        where TEventArgs : class,IEventArgs
+        where TEntity : IEventsEntity<TEntityId,TEventArgs>,new()
+        where TEntityId : IEntityId
     {
         private readonly IStoreEvents eventStore;
-        private readonly ILogger<NEventStoreRepository> logger;
+        private readonly ILogger<NEventStoreRepository<TEntity,TEntityId,TEventArgs>> logger;
         private static readonly JsonSerializerSettings SerialzerSettings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.All
         };
 
-        public NEventStoreRepository(IStoreEvents eventStore, ILogger<NEventStoreRepository> logger)
+        public NEventStoreRepository(IStoreEvents eventStore, ILogger<NEventStoreRepository<TEntity,TEntityId,TEventArgs>> logger)
         {
             this.logger = Guard.IsNotNull(logger, nameof(logger));
             this.eventStore = Guard.IsNotNull(eventStore, nameof(eventStore));
         }
 
-        public Task SaveEventAsync(IEventArgs eventArgs)
+        public Task SaveAsync(TEntity entity)
         {
             return Task.Run(() =>
             {
-                //using (var store = eventStore.OpenStream(GetBucketId(typeof(TAgg)), eventArgs.Id.AsIdString(), int.MinValue, int.MaxValue))
-                //{
-                //    store.Add(new EventMessage {Body = Serialize<T, TAgg>(eventArgs)});
-                //    store.CommitChanges(Guid.NewGuid());
-                //}
+                using (var eventStream = eventStore.OpenStream(GetBucketId(typeof(TEntity)), entity.GetEntityId().AsIdString(), int.MinValue, int.MaxValue))
+                {
+                    foreach (var eventArgs in entity.GetPendingEvents())
+                    {
+                        eventStream.Add(new EventMessage { Body = Serialize(eventArgs) });
+                    }
+
+                    eventStream.CommitChanges(Guid.NewGuid());
+                    entity.ClearPendingEvents();
+                }
             });
         }
 
@@ -44,20 +52,19 @@ namespace PostMortem.Data.NEventStore
             return type.ToString();
         }
 
-        string Serialize(IEventArgs eventArgs)
+        string Serialize(TEventArgs eventArgs)
         {
             return JsonConvert.SerializeObject(eventArgs, Formatting.None,SerialzerSettings);
         }
 
-        IEventArgs Deserialize(string body)
+        TEventArgs Deserialize(string body)
         {
-            return JsonConvert.DeserializeObject(body,SerialzerSettings) as IEventArgs;
+            return JsonConvert.DeserializeObject(body,SerialzerSettings) as TEventArgs;
         }
 
-        public IEnumerable<IEventArgs> GetAllEvents<TId, TAgg>(TId id)
-            where TId : IEntityId
+        IEnumerable<TEventArgs> LoadEvents(TEntityId id)
         {
-            var commits = eventStore.Advanced.GetFrom(GetBucketId(typeof(TAgg)), id.AsIdString(),int.MinValue,int.MaxValue);
+            var commits = eventStore.Advanced.GetFrom(GetBucketId(typeof(TEntity)), id.AsIdString(),int.MinValue,int.MaxValue);
             foreach (var commit in commits)
             {
                 foreach (var e in commit.Events)
@@ -65,6 +72,25 @@ namespace PostMortem.Data.NEventStore
                     yield return Deserialize((string) e.Body);
                 }
             }
+        }
+
+        public TEntity GetById(TEntityId id)
+        {
+            var entity=new TEntity();
+            foreach (var eventArgs in LoadEvents(id))
+            {
+                entity.ReplayEvent(eventArgs);
+            }
+
+            return entity;
+        }
+
+        public Task DeleteByIdAsync(TEntityId id)
+        {
+            return Task.Run(() =>
+            {
+                eventStore.Advanced.DeleteStream(GetBucketId(typeof(TEntity)), id.AsIdString());
+            });
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using PostMortem.Domain.EventSourcing.Queries;
+using PostMortem.Infrastructure.Queries;
 
 namespace PostMortem.Domain.Questions.Queries
 {

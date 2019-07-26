@@ -1,5 +1,5 @@
 ﻿using System;
-using PostMortem.Domain.EventSourcing.Commands;
+using PostMortem.Infrastructure.EventSourcing.Commands;
 
 namespace PostMortem.Domain.Comments.Commands
 {
@@ -15,7 +15,7 @@ namespace PostMortem.Domain.Comments.Commands
             CommentText = comment.CommentText;
         }
 
-        public Guid CommentId { get; private set; }
-        public string CommentText { get; private set; }
+        public Guid CommentId { get; set; }
+        public string CommentText { get; set; }
     }
 }

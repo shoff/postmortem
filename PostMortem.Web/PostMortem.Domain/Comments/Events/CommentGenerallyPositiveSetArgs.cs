@@ -1,6 +1,7 @@
 ﻿using System;
 using PostMortem.Domain.Comments;
-using PostMortem.Domain.EventSourcing.Events;
+using PostMortem.Domain.Comments.Events;
+using PostMortem.Infrastructure.Events;
 
 namespace PostMortem.Domain.Events.Comments
 {

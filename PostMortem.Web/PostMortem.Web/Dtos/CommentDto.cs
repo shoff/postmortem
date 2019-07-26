@@ -2,7 +2,6 @@
 {
     using System;
     using System.ComponentModel.DataAnnotations;
-    using Domain.Comments;
 
     public class CommentDto
     {
@@ -33,20 +32,5 @@
         public int Likes { get; set; }
         public int Dislikes { get; set; }
 
-        //public static implicit operator Comment(CommentDto dto)
-        //{
-        //    var comment = new Comment(dto.CommentId,)
-        //    {
-        //        Commenter = dto.Commenter,
-        //        CommentId = new CommentId(dto.CommentId),
-        //        CommentText = dto.CommentText,
-        //        DateAdded = dto.DateAdded,
-        //        Dislikes = dto.Dislikes,
-        //        GenerallyPositive = dto.GenerallyPositive,
-        //        Likes = dto.Likes,
-        //        QuestionId = dto.QuestionId
-        //    };
-        //    return comment;
-        //}
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace PostMortem.Web.Controllers
+﻿using PostMortem.Infrastructure;
+
+namespace PostMortem.Web.Controllers
 {
     using System;
     using ChaosMonkey.Guards;

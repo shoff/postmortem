@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PostMortem.Domain.EventSourcing.Events
+﻿namespace PostMortem.Infrastructure.Events
 {
     public interface IUpdateEventArgs<out TProp> : IEventArgs
     {

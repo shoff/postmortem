@@ -6,7 +6,7 @@ using MediatR;
 using Polly;
 using PostMortem.Domain.Comments;
 using PostMortem.Domain.Comments.Queries;
-using PostMortem.Domain.EventSourcing.Queries;
+using PostMortem.Infrastructure.Queries;
 using Zatoichi.Common.Infrastructure.Resilience;
 
 namespace PostMortem.Domain.Questions.Queries

@@ -1,4 +1,4 @@
-﻿using PostMortem.Domain.EventSourcing.Events;
+﻿using PostMortem.Infrastructure;
 
 namespace PostMortem.Domain.Projects
 {

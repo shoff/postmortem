@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Polly;
 
-namespace PostMortem.Domain.EventSourcing.Queries
+namespace PostMortem.Infrastructure.Queries
 {
     public interface IQueryHandler<in TQueryArgs, TResult> : IRequestHandler<TQueryArgs, PolicyResult<TResult>>
         where TQueryArgs : IQueryArgs<TResult>

@@ -1,9 +1,8 @@
 ﻿using System;
-using MediatR;
-using Polly;
-using PostMortem.Domain.EventSourcing.Events;
+using PostMortem.Infrastructure;
+using PostMortem.Infrastructure.Events;
 
-namespace PostMortem.Domain.Comments
+namespace PostMortem.Domain.Comments.Events
 {
     public abstract class CommentEventArgsBase : EventArgsBase
     {

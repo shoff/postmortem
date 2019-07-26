@@ -6,7 +6,8 @@ namespace PostMortem.Data.MongoDb.Converters
     using ChaosMonkey.Guards;
     using DomainComment = Domain.Comments.Comment;
     
-    public class CommentConverter : ITypeConverter<DomainComment, Comment>
+    public class CommentConverter : ITypeConverter<DomainComment, Comment>, 
+                                    ITypeConverter<Comment,DomainComment>
     {
         public Comment Convert(DomainComment source, Comment destination, ResolutionContext context)
         {
@@ -26,6 +27,11 @@ namespace PostMortem.Data.MongoDb.Converters
                 QuestionId = source.QuestionId
             };
             return destination;
+        }
+
+        public DomainComment Convert(Comment source, DomainComment destination, ResolutionContext context)
+        {
+            return new DomainComment(source.CommentId,source.QuestionId, source.Commenter, source.CommentText,source.DateAdded, source.Likes, source.Dislikes, source.GenerallyPositive);
         }
     }
 }

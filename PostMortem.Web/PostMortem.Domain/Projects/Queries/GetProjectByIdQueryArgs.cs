@@ -1,7 +1,7 @@
 ﻿using System;
 using ChaosMonkey.Guards;
 using Polly;
-using PostMortem.Domain.EventSourcing.Queries;
+using PostMortem.Infrastructure.Queries;
 
 namespace PostMortem.Domain.Projects
 {

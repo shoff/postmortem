@@ -1,7 +1,7 @@
-﻿namespace PostMortem.Domain
-{
-    using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
+namespace PostMortem.Infrastructure
+{
     public interface INameGeneratorClient
     {
         Task<string> GetNameAsync();

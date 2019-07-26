@@ -5,9 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using ChaosMonkey.Guards;
 using Polly;
-using PostMortem.Domain.EventSourcing.Commands;
 using PostMortem.Domain.Projects;
 using PostMortem.Infrastructure.Events.Projects;
+using PostMortem.Infrastructure.EventSourcing.Commands;
 using Zatoichi.Common.Infrastructure.Resilience;
 
 namespace PostMortem.Domain.Questions.Commands

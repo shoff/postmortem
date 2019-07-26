@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PostMortem.Domain
+﻿namespace PostMortem.Infrastructure
 {
     public abstract class EntityId<TId> : IEntityId
         where TId : struct

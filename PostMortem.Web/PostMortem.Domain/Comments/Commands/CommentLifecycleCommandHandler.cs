@@ -1,10 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using ChaosMonkey.Guards;
-using MediatR;
 using Polly;
 using PostMortem.Domain.Comments.Commands;
-using PostMortem.Domain.EventSourcing.Commands;
+using PostMortem.Infrastructure.EventSourcing.Commands;
 using Zatoichi.Common.Infrastructure.Resilience;
 
 namespace PostMortem.Domain.Comments.Events
@@ -15,22 +14,32 @@ namespace PostMortem.Domain.Comments.Events
     {
         private readonly IExecutionPolicies executionPolicies;
         private readonly ICommentRepository repository;
+        private readonly ICommentEventStoreRepository eventStore;
 
-        public CommentLifecycleCommandHandler(ICommentRepository repository, IExecutionPolicies executionPolicies)
+        public CommentLifecycleCommandHandler(ICommentRepository repository, ICommentEventStoreRepository eventStore,IExecutionPolicies executionPolicies)
         {
             this.executionPolicies = Guard.IsNotNull(executionPolicies, nameof(executionPolicies));
+            this.eventStore = Guard.IsNotNull(eventStore, nameof(eventStore));
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
-        public async Task<PolicyResult> Handle(CreateCommentCommandArgs request, CancellationToken cancellationToken)
+        public Task<PolicyResult> Handle(CreateCommentCommandArgs request, CancellationToken cancellationToken)
         {
-            var comment = new Comment(request.CommentId,request.QuestionId,request.Commenter,request.CommentText,request.DateAdded,request.Likes,request.Dislikes,request.GenerallyPositive);
-            return await this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.SaveAsync(comment));
+            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() =>
+            {
+                var comment = new Comment(request.CommentId,request.QuestionId,request.Commenter,request.CommentText,request.DateAdded,request.Likes,request.Dislikes,request.GenerallyPositive);
+                this.eventStore.SaveAsync(comment).RunSynchronously();
+                return this.repository.SaveAsync(comment);
+            });
         }
 
-        public async Task<PolicyResult> Handle(DeleteCommentCommandArgs request, CancellationToken cancellationToken)
+        public Task<PolicyResult> Handle(DeleteCommentCommandArgs request, CancellationToken cancellationToken)
         {
-            return await this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.DeleteByIdAsync(request.CommentId));
+            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() =>
+            {
+                //this.eventStore.DeleteByIdAsync().RunSynchronously();
+                return this.repository.DeleteByIdAsync(request.CommentId);
+            });
         }
     }
 }

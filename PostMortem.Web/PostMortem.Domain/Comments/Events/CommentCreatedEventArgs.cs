@@ -1,4 +1,6 @@
-﻿namespace PostMortem.Domain.Events.Comments
+﻿using PostMortem.Domain.Comments.Events;
+
+namespace PostMortem.Domain.Events.Comments
 {
     using System;
     using Domain.Comments;

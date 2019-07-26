@@ -1,7 +1,10 @@
 ﻿using System.Threading.Tasks;
 using ChaosMonkey.Guards;
 using Polly;
+using PostMortem.Domain.Comments.Events;
 using PostMortem.Domain.Events.Comments;
+using PostMortem.Infrastructure;
+using PostMortem.Infrastructure.Events;
 
 
 namespace PostMortem.Domain.Comments
