@@ -7,12 +7,26 @@ namespace PostMortem.Infrastructure.Events
         where TEntityId : IEntityId
         where TEventArgs : IEventArgs
     {
-        public abstract TEntityId GetEntityId();
-        private List<TEventArgs> events=new List<TEventArgs>();
+        public EventsEntityBase(){ }
+        protected EventsEntityBase(IEnumerable<TEventArgs> buildFromEvents)
+        {
+            ReplayEvents(buildFromEvents);
+        }
 
-        protected void AppendEvent(TEventArgs @event) => events.Add(@event);
+        public abstract TEntityId GetEntityId();
+        private readonly List<TEventArgs> events=new List<TEventArgs>();
+
+        protected virtual void AppendEvent(TEventArgs @event) => events.Add(@event);
         public virtual IEnumerable<TEventArgs> GetPendingEvents() =>  new ReadOnlyCollection<TEventArgs>(events);
-        public void ClearPendingEvents() => events.Clear();
+        public virtual void ClearPendingEvents() => events.Clear();
         public abstract void ReplayEvent(TEventArgs eventArgs);
+
+        public void ReplayEvents(IEnumerable<TEventArgs> eventArgs)
+        {
+            foreach (var eventArg in eventArgs)
+            {
+                    ReplayEvent(eventArg);
+            }
+        }
     }
 }

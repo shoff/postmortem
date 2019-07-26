@@ -60,7 +60,7 @@ namespace PostMortem.Data.NEventStore
             return JsonConvert.DeserializeObject(body,SerialzerSettings) as TEventArgs;
         }
 
-        IEnumerable<TEventArgs> LoadEvents(TEntityId id)
+        public IEnumerable<TEventArgs> LoadEvents(TEntityId id)
         {
             var commits = eventStore.Advanced.GetFrom(BucketName, id.AsIdString(),int.MinValue,int.MaxValue);
             foreach (var commit in commits)
@@ -75,11 +75,8 @@ namespace PostMortem.Data.NEventStore
         public TEntity GetById(TEntityId id)
         {
             var entity=new TEntity();
-            foreach (var eventArgs in LoadEvents(id))
-            {
-                entity.ReplayEvent(eventArgs);
-            }
-
+            var events = LoadEvents(id);
+            entity.ReplayEvents(events);
             return entity;
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PostMortem.Infrastructure.Events
 {
@@ -9,6 +10,7 @@ namespace PostMortem.Infrastructure.Events
     {
         Task SaveAsync(TEntity entity);
         TEntity GetById(TEntityId id);
+        IEnumerable<TEventArgs> LoadEvents(TEntityId id);
         Task DeleteByIdAsync(TEntityId id);
     }
 }

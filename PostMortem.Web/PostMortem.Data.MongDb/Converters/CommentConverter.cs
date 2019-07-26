@@ -18,7 +18,7 @@ namespace PostMortem.Data.MongoDb.Converters
             destination = new Comment
             {
                 Commenter = source.Commenter,
-                CommentId = source.CommentId,
+                CommentId = source.CommentId.Id,
                 CommentText = source.CommentText,
                 DateAdded = source.DateAdded,
                 Dislikes = source.Dislikes,
@@ -31,7 +31,15 @@ namespace PostMortem.Data.MongoDb.Converters
 
         public DomainComment Convert(Comment source, DomainComment destination, ResolutionContext context)
         {
-            return new DomainComment(source.CommentId,source.QuestionId, source.Commenter, source.CommentText,source.DateAdded, source.Likes, source.Dislikes, source.GenerallyPositive);
+            return new DomainComment(
+                commentId:new CommentId(source.CommentId),
+                questionId:source.QuestionId, 
+                commenter:source.Commenter, 
+                commentText:source.CommentText,
+                dateAdded:source.DateAdded, 
+                likes:source.Likes, 
+                dislikes:source.Dislikes, 
+                generallyPositive:source.GenerallyPositive);
         }
     }
 }

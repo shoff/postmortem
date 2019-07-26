@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using ChaosMonkey.Guards;
 using Polly;
 using PostMortem.Domain.Comments.Events;
@@ -11,7 +12,7 @@ namespace PostMortem.Domain.Comments
 {
     using System;
 
-    public class Comment : EventsEntityBase<CommentId,CommentEventArgsBase>
+    public sealed class Comment : EventsEntityBase<CommentId,CommentEventArgsBase>
     {
         // for serialization
         public Comment(){}
@@ -24,6 +25,12 @@ namespace PostMortem.Domain.Comments
         {
             this.CommentId = commentId;
         }
+
+        public Comment(CommentId commentId, IEnumerable<CommentEventArgsBase> events) : base(events)
+        {
+            this.CommentId = commentId;
+        }
+
         /// <summary>
         /// For initial creation from params
         /// </summary>
@@ -117,6 +124,7 @@ namespace PostMortem.Domain.Comments
 
         private void Initialize(CommentCreatedEventArgs initArgs)
         {
+            this.CommentId = initArgs.CommentId;
             this.QuestionId = initArgs.QuestionId;
             this.Commenter = initArgs.Commenter;
             this.DateAdded = initArgs.DateAdded;

@@ -9,5 +9,6 @@ namespace PostMortem.Infrastructure.Events
         IEnumerable<TEventArgs> GetPendingEvents();
         void ClearPendingEvents();
         void ReplayEvent(TEventArgs eventArgs);
+        void ReplayEvents(IEnumerable<TEventArgs> eventArgs);
     }
 }
