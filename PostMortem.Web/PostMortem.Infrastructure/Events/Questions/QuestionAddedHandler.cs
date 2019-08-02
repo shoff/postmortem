@@ -5,7 +5,7 @@
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
     using Domain;
-    using Domain.Events.Questions;
+    using Domain.Questions.Events;
     using MediatR;
     using Polly;
     using Zatoichi.Common.Infrastructure.Resilience;

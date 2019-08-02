@@ -8,17 +8,22 @@
     public class Question
     {
         [BsonId]
-        public Guid QuestionId { get; set; }
+        public Guid Id { get; set; }
+
         [BsonElement("question_text")]
         public string QuestionText { get; set; }
+
         [BsonElement("response_count")]
         public int ResponseCount { get; set; }
-        [Range(1, 500)]
+
+        [BsonRequired]
         public Guid ProjectId { get; set; }
+
         [Range(1, 10)]
         [BsonElement("importance")]
         public int Importance { get; set; }
+
         [BsonElement("comments")]
-        public virtual ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
+        public ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
     }
 }

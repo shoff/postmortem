@@ -1,10 +1,10 @@
-﻿namespace PostMortem.Domain.Events.Questions
+﻿namespace PostMortem.Domain.Questions.Events
 {
     using System;
     using ChaosMonkey.Guards;
-    using Domain.Questions;
     using MediatR;
     using Polly;
+    using Questions;
 
     public class QuestionUpdatedEventArgs : EventArgs, IRequest<PolicyResult>
     {

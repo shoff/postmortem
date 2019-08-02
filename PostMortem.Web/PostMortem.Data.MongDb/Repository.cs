@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Threading.Tasks;
     using AutoMapper;
     using ChaosMonkey.Guards;
@@ -10,6 +11,7 @@
     using Domain;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using MongoDB.Bson;
     using MongoDB.Driver;
     using Zatoichi.Common.Infrastructure.Extensions;
 
@@ -81,13 +83,15 @@
                 return (null);
             }
             var questions = await this.GetQuestionsByProjectIdAsync(project.ProjectId);
-            var domainProject = new DomainProject(questions)
+
+            var domainProject = new DomainProject()
             {
                 EndDate = project.EndDate,
                 ProjectId = project.ProjectId,
                 ProjectName = project.ProjectName,
                 StartDate = project.StartDate
             };
+            domainProject.AddQuestions(questions);
             return domainProject;
         }
 
@@ -116,7 +120,7 @@
                 var questionCollection = this.database.GetCollection<Question>(Constants.QUESTIONS_COLLECTION);
                 var question = this.mapper.Map<Question>(domainQuestion);
                 questionCollection.InsertOne(question);
-                return Task.FromResult(question.QuestionId);
+                return Task.FromResult(question.Id);
             }
             catch (Exception e)
             {
@@ -139,21 +143,28 @@
         {
             var questionCollection = this.database.GetCollection<Question>(Constants.QUESTIONS_COLLECTION);
             var commentCollection = this.database.GetCollection<Comment>(Constants.COMMENTS_COLLECTION);
+            var projectCollection = this.database.GetCollection<Project>(Constants.PROJECTS_COLLECTION);
+
+            // TODO I hate this
+            var projectCursor = await projectCollection.FindAsync(f => f.ProjectId == projectId).ConfigureAwait(false);
+            var project = projectCursor.FirstOrDefault();
 
             var mongoQuestions = await questionCollection.FindAsync(f => f.ProjectId == projectId).ConfigureAwait(false);
             var questions = await mongoQuestions.ToListAsync();
 
+            var domainProject = this.mapper.Map<DomainProject>(project);
             List<DomainQuestion> domainQuestions = new List<DomainQuestion>();
 
             foreach (var question in questions)
             {
-                var mongoComments = await commentCollection.FindAsync(c => c.QuestionId == question.QuestionId).ConfigureAwait(false);
+                var mongoComments = await commentCollection.FindAsync(c => c.QuestionId == question.Id).ConfigureAwait(false);
                 var comments = mongoComments.ToList().Map(c=> this.mapper.Map<DomainComment>(c)).ToList();
-                var dc = new DomainQuestion(comments)
+                
+                var dc = new DomainQuestion(domainProject.GetOptions())
                 {
                     Importance = question.Importance,
                     ProjectId = question.ProjectId,
-                    QuestionId = question.QuestionId,
+                    QuestionId = question.Id,
                     QuestionText = question.QuestionText,
                     ResponseCount = question.ResponseCount
                 };
@@ -211,5 +222,65 @@
         {
             throw new NotImplementedException();
         }
+
+
+        public IQueryable<T> All<T>() where T : class, new()
+        {
+            return this.database.GetCollection<T>(typeof(T).Name).AsQueryable();
+        }
+
+        public IQueryable<T> Where<T>(Expression<Func<T, bool>> expression) where T : class, new()
+        {
+            Guard.IsNotNull(expression, nameof(expression));
+            this.logger.LogDebug($"Where:{expression.Body}");
+            return this.All<T>().Where(expression);
+        }
+
+        public void Delete<T>(Expression<Func<T, bool>> predicate) where T : class, new()
+        {
+            Guard.IsNotNull(predicate, nameof(predicate));
+            this.logger.LogDebug($"Delete:{predicate.Body}");
+
+            _ = this.database.GetCollection<T>(typeof(T).Name).DeleteMany(predicate);
+        }
+
+        public T Single<T>(Expression<Func<T, bool>> expression) where T : class, new()
+        {
+            Guard.IsNotNull(expression, nameof(expression));
+            this.logger.LogDebug($"Single:{expression.Body}");
+            return this.All<T>().Where(expression).SingleOrDefault();
+        }
+
+        public bool CollectionExists<T>() where T : class, new()
+        {
+            this.logger.LogDebug($"CollectionExists:{typeof(T).Name}");
+
+            return this.CollectionExists<T>(typeof(T).Name);
+        }
+
+        public bool CollectionExists<T>(string collectionName) where T : class, new()
+        {
+            Guard.IsNotNullOrWhitespace(collectionName, nameof(collectionName));
+            var collection = this.database.GetCollection<T>(collectionName);
+            var filter = new BsonDocument();
+            var totalCount = collection.CountDocuments(filter);
+            return totalCount > 0;
+        }
+
+        public void Add<T>(T item) where T : class, new()
+        {
+            Guard.IsNotDefault(item, nameof(item));
+            this.logger.LogDebug($"Add:{typeof(T).Name} {item.ToJson()}");
+            this.database.GetCollection<T>(typeof(T).Name).InsertOne(item);
+        }
+
+        public void Add<T>(IEnumerable<T> items) where T : class, new()
+        {
+            // ReSharper disable PossibleMultipleEnumeration
+            Guard.IsNotNullOrEmpty(items, nameof(items));
+            this.database.GetCollection<T>(typeof(T).Name).InsertMany(items);
+            // ReSharper restore PossibleMultipleEnumeration
+        }
+        public IMongoDatabase Database => this.database;
     }
 }

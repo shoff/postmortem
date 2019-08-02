@@ -4,12 +4,12 @@
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
     using Domain;
-    using Domain.Events.Comments;
+    using Domain.Comments.Events;
     using MediatR;
     using Polly;
     using Zatoichi.Common.Infrastructure.Resilience;
 
-    public class CommentUpdatedHandler : IRequestHandler<CommentUpdatedEventArgs, PolicyResult>
+    public class CommentUpdatedHandler : IRequestHandler<CommentCommandUpdatedEvent, PolicyResult>
     {
         private readonly IExecutionPolicies executionPolicies;
         private readonly IRepository repository;
@@ -22,7 +22,7 @@
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
-        public Task<PolicyResult> Handle(CommentUpdatedEventArgs request, CancellationToken cancellationToken)
+        public Task<PolicyResult> Handle(CommentCommandUpdatedEvent request, CancellationToken cancellationToken)
         {
             return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.UpdateCommentAsync(request.Comment));
         }

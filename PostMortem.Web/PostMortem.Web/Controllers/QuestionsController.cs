@@ -6,6 +6,7 @@
     using ChaosMonkey.Guards;
     using Domain;
     using Domain.Questions;
+    using Domain.Voters;
     using Dtos;
     using MediatR;
     using Microsoft.AspNetCore.Http;

@@ -1,4 +1,4 @@
-﻿namespace PostMortem.Domain
+﻿namespace PostMortem.Domain.Voters
 {
     using System.Threading.Tasks;
 

@@ -1,12 +1,24 @@
 ﻿namespace PostMortem.Domain.Comments
 {
     using System;
-    using Events.Comments;
+    using ChaosMonkey.Guards;
+    using Events;
+    using Questions;
 
     public class Comment
     {
         private Guid commentId = Guid.Empty;
+        private readonly int maxCommentTextLength;
+        public Comment(Question question)
+        {
+            Guard.IsNotNull(question, nameof(question));
 
+            this.maxCommentTextLength = question.Options.CommentMaximumLength;
+            this.QuestionId = question.QuestionId;
+            this.DateAdded = DateTime.UtcNow;
+            this.Likes = 0;
+            this.Dislikes = 0;
+        }
         public Guid CommentId
         {
             get
@@ -20,37 +32,56 @@
             }
             set => this.commentId = value;
         }
-
-        public Guid QuestionId { get; set; }
-        public string CommentText { get; set; }
-        public bool GenerallyPositive { get; set; }
-        public DateTime DateAdded { get; set; }
-        public string Commenter { get; set; }
-        public int Likes { get; set; }
-        public int Dislikes { get; set; }
-        public static CommentGetByIdEventArgs CreateGetByIdEventArgs(Guid commentId)
+        public Guid QuestionId { get; private set; }
+        public string CommentText { get; private set; } = string.Empty;
+        public bool GenerallyPositive { get; private set; } = true;
+        public DateTime DateAdded { get; private set; }
+        public string Commenter { get; private set; } = string.Empty;
+        public int Likes { get; private set; }
+        public int Dislikes { get; private set; }
+        public CommentCommandAddedEvent AddCommentText(string text)
         {
-            var eventArgs = new CommentGetByIdEventArgs(commentId);
+            Guard.IsLessThan(text?.Length ?? 0, this.maxCommentTextLength, nameof(text));
+            this.CommentText = $"{this.CommentText} {text}";
+            return CreateCommentAddedEvent(this);
+        }
+        public CommentCommandReplacedEvent ReplaceCommentText(string text)
+        {
+            Guard.IsLessThan(text?.Length ?? 0, this.maxCommentTextLength, nameof(text));
+            this.CommentText =text;
+            return CreateCommentReplacedEvent(this);
+        }
+        public CommentLikedEvent Like()
+        {
+            return CreateCommentLikedEvent(this);
+        }
+        public CommentDislikedEvent Dislike()
+        {
+            return CreateCommentDislikedEvent(this);
+        }
+        private static CommentCommandReplacedEvent CreateCommentReplacedEvent(Comment comment)
+        {
+            var eventArgs = new CommentCommandReplacedEvent(comment);
             return eventArgs;
         }
-        public static CommentAddedEventArgs CreateCommentAddedEventArgs(Comment comment)
+        private static CommentCommandAddedEvent CreateCommentAddedEvent(Comment comment)
         {
-            var eventArgs = new CommentAddedEventArgs(comment);
+            var eventArgs = new CommentCommandAddedEvent(comment);
             return eventArgs;
         }
-        public static CommentLikedEventArgs CreateCommentLikedEventArgs(Comment comment)
+        private static CommentLikedEvent CreateCommentLikedEvent(Comment comment)
         {
-            var eventArgs = new CommentLikedEventArgs(comment.CommentId);
+            var eventArgs = new CommentLikedEvent(comment);
             return eventArgs;
         }
-        public static CommentDislikedEventArgs CreateCommentDislikedEventArgs(Comment comment)
+        private static CommentDislikedEvent CreateCommentDislikedEvent(Comment comment)
         {
-            var eventArgs = new CommentDislikedEventArgs(comment.CommentId);
+            var eventArgs = new CommentDislikedEvent(comment);
             return eventArgs;
         }
-        public static CommentUpdatedEventArgs CreateCommentUpdatedEventArgs(Comment comment)
+        private static CommentCommandUpdatedEvent CreateCommentUpdatedEventArgs(Comment comment)
         {
-            var eventArgs = new CommentUpdatedEventArgs(comment);
+            var eventArgs = new CommentCommandUpdatedEvent(comment);
             return eventArgs;
         }
     }

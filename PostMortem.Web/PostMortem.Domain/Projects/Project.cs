@@ -3,7 +3,8 @@
     using System;
     using System.Collections.Generic;
     using ChaosMonkey.Guards;
-    using Events.Projects;
+    using Events;
+    using Microsoft.Extensions.Options;
     using Questions;
 
     public class Project
@@ -11,14 +12,7 @@
         private readonly QuestionCollection questions = new QuestionCollection();
 
         public Project()
-            : this(new List<Question>())
         {
-        }
-
-        public Project(ICollection<Question> questions)
-        {
-            Guard.IsNotNull(questions, nameof(questions));
-            this.questions.AddRange(questions);
         }
 
         public Guid ProjectId { get; set; }
@@ -50,6 +44,16 @@
         public static ProjectCreatedEventArgs CreateProjectCreatedEventArgs(Project project)
         {
             return new ProjectCreatedEventArgs(project);
+        }
+
+        public void AddQuestions(ICollection<Question> collection)
+        {
+            Guard.IsNotNull(collection, nameof(collection));
+            this.questions.AddRange(collection);
+        }
+        public IOptions<QuestionOptions> GetOptions()
+        {
+            throw new NotImplementedException();
         }
     }
 }

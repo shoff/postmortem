@@ -3,14 +3,13 @@
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Domain;
+    using Domain.Voters;
 
     public class NameGeneratorClient : INameGeneratorClient
     {
         // https://frightanic.com/goodies_content/docker-names.php
         private readonly HttpClient client;
-
-
+        
         public NameGeneratorClient(HttpClient httpClient)
         {
             httpClient.BaseAddress = new Uri("https://frightanic.com/goodies_content/docker-names.php");

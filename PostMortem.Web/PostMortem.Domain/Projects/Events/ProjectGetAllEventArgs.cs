@@ -1,9 +1,9 @@
-﻿namespace PostMortem.Domain.Events.Projects
+﻿namespace PostMortem.Domain.Projects.Events
 {
     using System.Collections.Generic;
-    using Domain.Projects;
     using MediatR;
     using Polly;
+    using Projects;
 
     public class ProjectGetAllEventArgs : IRequest<PolicyResult<ICollection<Project>>>
     {

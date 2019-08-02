@@ -31,11 +31,15 @@
 
         public void Add(Comment comment)
         {
+            Guard.IsNotNull(comment, nameof(comment));
             if (this.questionId == null || this.questionId == Guid.Empty)
             {
                 throw new ApplicationException(
                     "Cannot add comments unless the Question property has first been assigned.");
             }
+
+            // no way this can be null, ReSharper is just being dense
+            // ReSharper disable once PossibleNullReferenceException
             comment.QuestionId = this.questionId;
             this.comments.Add(comment);
         }
@@ -45,38 +49,44 @@
             this.comments.Clear();
         }
 
-        public bool Contains(Comment item)
+        public bool Contains(Comment comment)
         {
-            return this.comments.Contains(item);
+            Guard.IsNotNull(comment, nameof(comment));
+            return this.comments.Contains(comment);
         }
 
-        public void CopyTo(Comment[] array, int arrayIndex)
+        // ReSharper disable once ParameterHidesMember
+        public void CopyTo(Comment[] comments, int arrayIndex)
         {
-            this.comments.CopyTo(array, arrayIndex);
+            this.comments.CopyTo(comments, arrayIndex);
         }
 
-        public bool Remove(Comment item)
+        public bool Remove(Comment comment)
         {
-            return this.comments.Remove(item);
+            return this.comments.Remove(comment);
         }
 
         public int Count => this.comments.Count;
         public bool IsReadOnly => false;
-        public int IndexOf(Comment item)
+        public int IndexOf(Comment comment)
         {
-            return this.comments.IndexOf(item);
+            Guard.IsNotNull(comment, nameof(comment));
+            return this.comments.IndexOf(comment);
         }
 
-        public void Insert(int index, Comment item)
+        public void Insert(int index, Comment comment)
         {
+            Guard.IsNotNull(comment, nameof(comment));
             if (this.questionId == null || this.questionId == Guid.Empty)
             {
                 throw new ApplicationException(
                     "Cannot add comments unless the Question property has first been assigned.");
             }
 
-            item.QuestionId = this.questionId;
-            this.comments.Insert(index, item);
+            // no way this can be null, ReSharper is just being dense
+            // ReSharper disable once PossibleNullReferenceException
+            comment.QuestionId = this.questionId;
+            this.comments.Insert(index, comment);
         }
 
         public void RemoveAt(int index)

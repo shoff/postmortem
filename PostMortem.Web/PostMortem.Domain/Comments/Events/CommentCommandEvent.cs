@@ -1,13 +1,13 @@
-﻿namespace PostMortem.Domain.Events.Comments
+﻿namespace PostMortem.Domain.Comments.Events
 {
     using System;
     using ChaosMonkey.Guards;
-    using Domain.Comments;
+    using Comments;
     using MediatR;
 
-    public abstract class CommentEventArgs : EventArgs, INotification
+    public abstract class CommentCommandEvent : DomainEvent, INotification
     {
-        protected CommentEventArgs (Comment comment)
+        protected CommentCommandEvent(Comment comment)
         {
             this.Comment = Guard.IsNotNull(comment, nameof(comment));
         }

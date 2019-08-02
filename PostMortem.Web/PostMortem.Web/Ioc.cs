@@ -5,6 +5,8 @@
     using Data.MongoDb;
     using Data.MongoDb.Config;
     using Domain;
+    using Domain.Questions;
+    using Domain.Voters;
     using Infrastructure;
     using Infrastructure.Events.Comments;
     using MediatR;
@@ -37,6 +39,7 @@
         public static IServiceCollection InitializeOptions(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddOptions();
+            services.Configure<QuestionOptions>(configuration.GetSection("QuestionOptions"));
             services.Configure<MongoOptions>(configuration.GetSection("MongoOptions"));
             services.Configure<PolicyOptions>(configuration.GetSection("PolicyOptions"));
             return services;

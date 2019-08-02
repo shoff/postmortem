@@ -1,9 +1,9 @@
-﻿namespace PostMortem.Domain.Events.Projects
+﻿namespace PostMortem.Domain.Projects.Events
 {
     using ChaosMonkey.Guards;
-    using Domain.Projects;
     using MediatR;
     using Polly;
+    using Projects;
 
     public class ProjectUpdatedEventArgs : IRequest<PolicyResult>
     {

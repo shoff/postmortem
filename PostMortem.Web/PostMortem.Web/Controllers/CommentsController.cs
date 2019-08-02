@@ -6,6 +6,8 @@
     using ChaosMonkey.Guards;
     using Domain;
     using Domain.Comments;
+    using Domain.Comments.Events;
+    using Domain.Voters;
     using Dtos;
     using MediatR;
     using Microsoft.AspNetCore.Http;
@@ -17,12 +19,14 @@
     [ApiController]
     public class CommentsController : BaseController
     {
+        private readonly IEventFactory eventFactory;
         private readonly IMapper mapper;
         private readonly IMediator mediator;
         private readonly LinkGenerator linkGenerator;
         private readonly ILogger<CommentsController> logger;
 
         public CommentsController(
+            IEventFactory eventFactory,
             IMediator mediator,
             IMapper mapper,
             LinkGenerator linkGenerator,
@@ -31,6 +35,7 @@
             ILogger<CommentsController> logger)
             : base(httpContextAccessor, nameGenerator)
         {
+            this.eventFactory = Guard.IsNotNull(eventFactory, nameof(eventFactory));
             this.mapper = Guard.IsNotNull(mapper, nameof(mapper));
             this.mediator = Guard.IsNotNull(mediator, nameof(mediator));
             this.linkGenerator = Guard.IsNotNull(linkGenerator, nameof(linkGenerator));
@@ -42,8 +47,7 @@
         {
             try
             {
-                var result = await this.mediator.Send(Comment.CreateGetByIdEventArgs(id));
-
+                var result = await this.mediator.Send(this.mapper.Map<CommentGetByIdEvent>(id));
                 if (result.Outcome == Polly.OutcomeType.Successful)
                 {
                     return this.Ok(this.mapper.Map<CommentDto>(result.Result));
@@ -74,20 +78,20 @@
                     comment.Commenter = this.username; // generated anonymous username
                 }
 
-                var result = await this.mediator.Send(Comment.CreateCommentAddedEventArgs(comment));
+                await this.mediator.Publish(this.eventFactory.CreateEvent(comment));
                 // this.repository.AddCommentAsync(comment).ConfigureAwait(false);
 
-                if (result.Outcome == Polly.OutcomeType.Successful)
-                {
-                    var url = this.linkGenerator.GetPathByAction(
-                        this.HttpContext,
-                        controller: "Questions",
-                        action: "GetById",
-                        values: new { id = comment.CommentId });
+                //if (result.Outcome == Polly.OutcomeType.Successful)
+                //{
+                //    var url = this.linkGenerator.GetPathByAction(
+                //        this.HttpContext,
+                //        controller: "Questions",
+                //        action: "GetById",
+                //        values: new { id = comment.CommentId });
 
-                    return this.Created($"{this.HttpContext.Request.Scheme}//{this.HttpContext.Request.Host}{url}", comment);
-                }
-
+                //    return this.Created($"{this.HttpContext.Request.Scheme}//{this.HttpContext.Request.Host}{url}", comment);
+                //}
+                // TODO fix this
                 return new StatusCodeResult(500);
             }
             catch (Exception e)

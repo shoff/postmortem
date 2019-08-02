@@ -10,7 +10,7 @@
         [Range(0, 50000)]
         public Guid CommentId { get; set; }
         
-        [Required]
+        [BsonRequired]
         [StringLength(2000)]
         [BsonElement("comment_text")]
         public string CommentText { get; set; }
@@ -32,7 +32,7 @@
         [BsonElement("dislikes")]
         public int Dislikes { get; set; }
 
-        [Range(0, 500)]
+        [BsonRequired]
         [BsonElement("question_id")]
         public Guid QuestionId { get; set; }
     }

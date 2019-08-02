@@ -4,27 +4,40 @@
     using System.Collections.Generic;
     using ChaosMonkey.Guards;
     using Comments;
-    using Events.Questions;
+    using Events;
+    using Projects;
 
 
     public class Question
     {
+        private readonly int maximumQuestionLength;
         private readonly CommentCollection comments = new CommentCollection();
 
-        public Question()
-            : this(new List<Comment>()) { }
-
-        public Question(ICollection<Comment> comments)
+        public Question(Project project)
         {
-            Guard.IsNotNull(comments, nameof(comments));
-            this.comments.AddRange(comments);
+            Guard.IsNotNull(project, nameof(project));
+            this.Options = project.GetOptions().Value;
+            this.maximumQuestionLength = this.Options.QuestionMaximumLength;
+            this.ProjectId = project.ProjectId;
+        }
+
+        public Question AddQuestionText(string text)
+        {
+
         }
 
         public Guid QuestionId { get; set; }
-        public Guid ProjectId { get; set; }
-        public string QuestionText { get; set; }
-        public int ResponseCount { get; set; }
+
+        public Guid ProjectId { get; }
+
+        public string QuestionText { get; }
+
+        public int ResponseCount { get;  }
+
         public int Importance { get; set; }
+
+        
+        internal QuestionOptions Options { get; }
 
         public IReadOnlyCollection<Comment> Comments
         {
@@ -39,6 +52,8 @@
                 return this.comments;
             }
         }
+
+
 
         public static QuestionAddedEventArgs CreateQuestionAddedEventArgs(Question question)
         {

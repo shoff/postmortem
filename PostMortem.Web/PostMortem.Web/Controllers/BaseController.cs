@@ -3,6 +3,7 @@
     using System;
     using ChaosMonkey.Guards;
     using Domain;
+    using Domain.Voters;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
