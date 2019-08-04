@@ -21,20 +21,22 @@
             this.ProjectId = project.ProjectId;
         }
 
-        public Question AddQuestionText(string text)
+        public QuestionUpdatedEvent AddQuestionText(string text)
         {
-
+            Guard.IsLessThan(text?.Length ?? 0, this.maximumQuestionLength, nameof(text));
+            this.QuestionText = text;
+            return CreateQuestionUpdatedEvent(this);
         }
 
         public Guid QuestionId { get; set; }
 
         public Guid ProjectId { get; }
 
-        public string QuestionText { get; }
+        public string QuestionText { get; private set; } = string.Empty;
 
-        public int ResponseCount { get;  }
+        public int ResponseCount => this.comments.Count;
 
-        public int Importance { get; set; }
+        public int Importance { get; set; } 
 
         
         internal QuestionOptions Options { get; }
@@ -67,9 +69,9 @@
             return eventArgs;
         }
 
-        public static QuestionUpdatedEventArgs CreateQuestionUpdatedEventArgs(Question question)
+        private static QuestionUpdatedEvent CreateQuestionUpdatedEvent(Question question)
         {
-            var eventArgs = new QuestionUpdatedEventArgs(question);
+            var eventArgs = new QuestionUpdatedEvent(question);
             return eventArgs;
         }
     }

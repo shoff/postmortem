@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostMortem.Data.EventSourci
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8B64C9BD-7BF3-4BA0-B25D-6AB9DB5B89ED}"
 	ProjectSection(SolutionItems) = preProject
-		NuGet.Config = NuGet.Config
+		NuGet.Config.bak = NuGet.Config.bak
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostMortem.Dtos", "PostMortem.Dtos\PostMortem.Dtos.csproj", "{45E26EB9-3060-48F2-BE0F-3447F01AFF36}"

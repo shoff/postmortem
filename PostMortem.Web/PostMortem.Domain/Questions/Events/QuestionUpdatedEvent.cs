@@ -6,9 +6,9 @@
     using Polly;
     using Questions;
 
-    public class QuestionUpdatedEventArgs : EventArgs, IRequest<PolicyResult>
+    public class QuestionUpdatedEvent : EventArgs, IRequest<PolicyResult>
     {
-        public QuestionUpdatedEventArgs(Question question)
+        public QuestionUpdatedEvent(Question question)
         {
             this.Question = Guard.IsNotNull(question, nameof(question));
         }

@@ -1,8 +1,7 @@
-﻿namespace PostMortem.Web.Dtos
+﻿namespace PostMortem.Dtos
 {
     using System;
     using System.ComponentModel.DataAnnotations;
-    using Domain.Comments;
 
     public class CommentDto
     {
@@ -32,21 +31,5 @@
         public string Commenter { get; set; }
         public int Likes { get; set; }
         public int Dislikes { get; set; }
-
-        public static implicit operator Comment(CommentDto dto)
-        {
-            var comment = new Comment
-            {
-                Commenter = dto.Commenter,
-                CommentId = dto.CommentId,
-                CommentText = dto.CommentText,
-                DateAdded = dto.DateAdded,
-                Dislikes = dto.Dislikes,
-                GenerallyPositive = dto.GenerallyPositive,
-                Likes = dto.Likes,
-                QuestionId = dto.QuestionId
-            };
-            return comment;
-        }
     }
 }

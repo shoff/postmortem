@@ -3,7 +3,7 @@
     using AutoMapper;
     using ChaosMonkey.Guards;
     using Domain.Questions;
-    using Dtos;
+    using PostMortem.Dtos;
     using Zatoichi.Common.Infrastructure.Extensions;
 
     public class QuestionConverter : ITypeConverter<Question, QuestionDto>
@@ -13,7 +13,6 @@
             Guard.IsNotNull(source, nameof(source));
             Guard.IsNotNull(destination, nameof(destination));
             Guard.IsNotNull(context, nameof(context));
-            destination.Importance = source.Importance;
             destination.QuestionId = source.QuestionId;
             destination.QuestionText = source.QuestionText;
             destination.ResponseCount = source.ResponseCount;

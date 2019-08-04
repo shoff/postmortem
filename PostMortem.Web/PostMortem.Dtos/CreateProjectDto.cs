@@ -1,4 +1,4 @@
-﻿namespace PostMortem.Web.Dtos
+﻿namespace PostMortem.Dtos
 {
     using System;
     using Newtonsoft.Json;

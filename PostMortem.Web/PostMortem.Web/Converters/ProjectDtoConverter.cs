@@ -4,7 +4,7 @@
     using AutoMapper;
     using ChaosMonkey.Guards;
     using Domain.Projects;
-    using Dtos;
+    using PostMortem.Dtos;
     using Zatoichi.Common.Infrastructure.Extensions;
 
     public class ProjectDtoConverter : ITypeConverter<Project, ProjectDto>

@@ -4,7 +4,7 @@
     using AutoMapper;
     using Domain.Comments;
     using Domain.Questions;
-    using Dtos;
+    using PostMortem.Dtos;
     using Project = Domain.Projects.Project;
 
     public class ProjectProfile : Profile

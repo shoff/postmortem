@@ -4,15 +4,14 @@
     using System.Threading.Tasks;
     using AutoMapper;
     using ChaosMonkey.Guards;
-    using Domain;
     using Domain.Questions;
     using Domain.Voters;
-    using Dtos;
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Routing;
     using Microsoft.Extensions.Logging;
+    using PostMortem.Dtos;
 
     [Route("api/[controller]")]
     [ApiController]

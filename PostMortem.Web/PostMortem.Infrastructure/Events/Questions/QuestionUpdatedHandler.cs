@@ -9,7 +9,7 @@
     using Polly;
     using Zatoichi.Common.Infrastructure.Resilience;
 
-    public class QuestionUpdatedHandler : IRequestHandler<QuestionUpdatedEventArgs, PolicyResult>
+    public class QuestionUpdatedHandler : IRequestHandler<QuestionUpdatedEvent, PolicyResult>
     {
         private readonly IExecutionPolicies executionPolicies;
         private readonly IRepository repository;
@@ -22,7 +22,7 @@
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
-        public Task<PolicyResult> Handle(QuestionUpdatedEventArgs request, CancellationToken cancellationToken)
+        public Task<PolicyResult> Handle(QuestionUpdatedEvent request, CancellationToken cancellationToken)
         {
             return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.UpdateQuestionAsync(request.Question));
         }

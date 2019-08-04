@@ -4,11 +4,13 @@
     using ChaosMonkey.Guards;
     using Events;
     using Questions;
+    using Zatoichi.EventSourcing;
 
-    public class Comment
+    public class Comment 
     {
         private Guid commentId = Guid.Empty;
         private readonly int maxCommentTextLength;
+
         public Comment(Question question)
         {
             Guard.IsNotNull(question, nameof(question));
@@ -39,6 +41,7 @@
         public string Commenter { get; private set; } = string.Empty;
         public int Likes { get; private set; }
         public int Dislikes { get; private set; }
+
         public CommentCommandAddedEvent AddCommentText(string text)
         {
             Guard.IsLessThan(text?.Length ?? 0, this.maxCommentTextLength, nameof(text));
