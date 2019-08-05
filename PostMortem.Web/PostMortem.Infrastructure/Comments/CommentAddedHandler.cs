@@ -6,9 +6,10 @@
     using Domain;
     using Domain.Comments.Events;
     using MediatR;
+    using Polly;
     using Zatoichi.Common.Infrastructure.Resilience;
 
-    public class CommentAddedHandler : INotificationHandler<CommentCommandAddedEvent>
+    public class CommentAddedHandler : IRequestHandler<CommentCommandAddedEvent, PolicyResult>
     {
         private readonly IExecutionPolicies executionPolicies;
         private readonly IRepository repository;
@@ -21,16 +22,12 @@
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
-        //public Task<PolicyResult<Guid>> Handle(CommentCommandAddedEvent request, CancellationToken cancellationToken)
-        //{
-        //    return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync (()=> this.repository.AddCommentAsync(request.Comment));
-        //}
 
-        public Task Handle(CommentCommandAddedEvent notification, CancellationToken cancellationToken)
+        public async Task<PolicyResult> Handle(CommentCommandAddedEvent request, CancellationToken cancellationToken)
         {
-            this.executionPolicies.DbExecutionPolicy.ExecuteAsync(() => this.repository.AddCommentAsync(notification.Comment));
+            var result = await this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.AddCommentAsync(request.Comment));
             // TODO right here is possibly where we could raise a rabbit/kafka event to notify others of what just happened
-            return Task.CompletedTask;
+            return PolicyResult.Successful(result.Context);
         }
     }
 }

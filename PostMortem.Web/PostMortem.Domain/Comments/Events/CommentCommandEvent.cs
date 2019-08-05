@@ -4,8 +4,9 @@
     using ChaosMonkey.Guards;
     using Comments;
     using MediatR;
+    using Polly;
 
-    public abstract class CommentCommandEvent : DomainEvent, INotification
+    public abstract class CommentCommandEvent : IRequest<PolicyResult>
     {
         protected CommentCommandEvent(Comment comment)
         {

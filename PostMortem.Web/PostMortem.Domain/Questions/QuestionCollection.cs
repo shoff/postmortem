@@ -83,7 +83,6 @@
                         "Cannot add questions unless the Question property has first been assigned.");
                 }
 
-                value.ProjectId = this.ProjectId;
                 this.questions[index] = value;
             }
         }
@@ -97,7 +96,6 @@
                     "Cannot add questions unless the Project property has first been assigned.");
             }
 
-            dtos.Each(dto => dto.ProjectId = this.projectId);
             this.questions.AddRange(dtos);
         }
     }

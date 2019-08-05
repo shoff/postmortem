@@ -159,16 +159,17 @@
             {
                 var mongoComments = await commentCollection.FindAsync(c => c.QuestionId == question.Id).ConfigureAwait(false);
                 var comments = mongoComments.ToList().Map(c=> this.mapper.Map<DomainComment>(c)).ToList();
-                
-                var dc = new DomainQuestion(domainProject.GetOptions())
-                {
-                    Importance = question.Importance,
-                    ProjectId = question.ProjectId,
-                    QuestionId = question.Id,
-                    QuestionText = question.QuestionText,
-                    ResponseCount = question.ResponseCount
-                };
-                domainQuestions.Add(dc);
+
+                throw new NotImplementedException();
+                //var dc = new DomainQuestion(domainProject.GetOptions())
+                //{
+                //    Importance = question.Importance,
+                //    ProjectId = question.ProjectId,
+                //    QuestionId = question.Id,
+                //    QuestionText = question.QuestionText,
+                //    ResponseCount = question.ResponseCount
+                //};
+               // domainQuestions.Add(dc);
             }
 
             return domainQuestions;

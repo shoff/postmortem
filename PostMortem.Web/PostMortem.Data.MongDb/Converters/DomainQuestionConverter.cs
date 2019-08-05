@@ -1,5 +1,6 @@
 ﻿namespace PostMortem.Data.MongoDb.Converters
 {
+    using System;
     using AutoMapper;
     using ChaosMonkey.Guards;
     using DomainQuestion = Domain.Questions.Question;
@@ -12,14 +13,15 @@
             Guard.IsNotNull(destination, nameof(destination));
             Guard.IsNotNull(context, nameof(context));
 
-            destination = new DomainQuestion()
-            {
-                Importance = 0,
-                ProjectId = source.ProjectId,
-                QuestionId = source.Id,
-                QuestionText = source.QuestionText,
-                ResponseCount = 0
-            };
+            throw new NotImplementedException();
+            //destination = new DomainQuestion()
+            //{
+            //    Importance = 0,
+            //    ProjectId = source.ProjectId,
+            //    QuestionId = source.Id,
+            //    QuestionText = source.QuestionText,
+            //    ResponseCount = 0
+            //};
             return destination;
         }
     }

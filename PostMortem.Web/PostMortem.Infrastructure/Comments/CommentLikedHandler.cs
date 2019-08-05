@@ -5,11 +5,11 @@
     using ChaosMonkey.Guards;
     using Domain;
     using Domain.Comments.Events;
-    using MediatR;
     using Polly;
     using Zatoichi.Common.Infrastructure.Resilience;
+    using Zatoichi.EventSourcing.Commands;
 
-    public class CommentLikedHandler : IRequestHandler<CommentLikedEvent, PolicyResult>
+    public class CommentLikedHandler : ICommand
     {
         private readonly IExecutionPolicies executionPolicies;
         private readonly IRepository repository;
@@ -26,5 +26,7 @@
         {
             return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.LikeCommentAsync(request.CommentId));
         }
+
+        public string Description { get; set; } = "Comment liked command.";
     }
 }

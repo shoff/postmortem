@@ -1,17 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PostMortem.Data.MongDb\PostMortem.Data.MongoDb.csproj" />
-    <ProjectReference Include="..\PostMortem.Domain\PostMortem.Domain.csproj" />
-    <ProjectReference Include="..\PostMortem.Dtos\PostMortem.Dtos.csproj" />
+    <Compile Remove="Converters\**" />
+    <EmbeddedResource Remove="Converters\**" />
+    <None Remove="Converters\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Converters\" />
+    <ProjectReference Include="..\PostMortem.Data.MongDb\PostMortem.Data.MongoDb.csproj" />
+    <ProjectReference Include="..\PostMortem.Domain\PostMortem.Domain.csproj" />
+    <ProjectReference Include="..\PostMortem.Dtos\PostMortem.Dtos.csproj" />
   </ItemGroup>
 
   <ItemGroup>

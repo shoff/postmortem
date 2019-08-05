@@ -54,7 +54,7 @@
 
             try
             {
-                var result = await this.mediator.Send(Question.CreateQuestionAddedEventArgs(question));
+                var result = await this.mediator.Send(Question.CreateQuestionAddedEventArgs(this.mapper.Map<Question>(question)));
                 if (result.Outcome == Polly.OutcomeType.Successful)
                 {
                     var url = this.linkGenerator.GetPathByAction(

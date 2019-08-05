@@ -6,12 +6,13 @@
     using Questions;
     using Zatoichi.EventSourcing;
 
-    public class Comment 
+    public class Comment : EventEntity
     {
         private Guid commentId = Guid.Empty;
         private readonly int maxCommentTextLength;
 
-        public Comment(Question question)
+        public Comment(
+            Question question)
         {
             Guard.IsNotNull(question, nameof(question));
 
@@ -82,7 +83,7 @@
             var eventArgs = new CommentDislikedEvent(comment);
             return eventArgs;
         }
-        private static CommentCommandUpdatedEvent CreateCommentUpdatedEventArgs(Comment comment)
+        private static CommentCommandUpdatedEvent CreateCommentUpdatedEvent(Comment comment)
         {
             var eventArgs = new CommentCommandUpdatedEvent(comment);
             return eventArgs;
