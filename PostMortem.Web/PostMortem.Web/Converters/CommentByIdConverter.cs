@@ -2,7 +2,7 @@
 {
     using System;
     using AutoMapper;
-    using Domain.Comments.Events;
+    using Domain.Comments.Queries;
 
     public class CommentByIdConverter : ITypeConverter<Guid, CommentGetByIdEvent>
     {

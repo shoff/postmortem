@@ -1,10 +1,10 @@
-﻿namespace PostMortem.Infrastructure.Events.Comments
+﻿namespace PostMortem.Infrastructure.Comments
 {
     using System.Threading;
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
     using Domain;
-    using Domain.Comments.Events;
+    using Domain.Comments.Commands;
     using MediatR;
     using Polly;
     using Zatoichi.Common.Infrastructure.Resilience;

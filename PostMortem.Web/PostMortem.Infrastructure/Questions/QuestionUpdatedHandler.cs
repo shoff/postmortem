@@ -1,10 +1,10 @@
-﻿namespace PostMortem.Infrastructure.Events.Questions
+﻿namespace PostMortem.Infrastructure.Questions
 {
     using System.Threading;
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
     using Domain;
-    using Domain.Questions.Events;
+    using Domain.Questions.Commands;
     using MediatR;
     using Polly;
     using Zatoichi.Common.Infrastructure.Resilience;

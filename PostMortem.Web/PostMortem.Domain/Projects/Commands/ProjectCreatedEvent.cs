@@ -1,4 +1,4 @@
-﻿namespace PostMortem.Domain.Projects.Events
+﻿namespace PostMortem.Domain.Projects.Commands
 {
     using System;
     using ChaosMonkey.Guards;
@@ -6,9 +6,9 @@
     using Polly;
     using Projects;
 
-    public class ProjectCreatedEventArgs : IRequest<PolicyResult<Guid>>
+    public class ProjectCreatedEvent : IRequest<PolicyResult<Guid>>
     {
-        public ProjectCreatedEventArgs(Project project)
+        public ProjectCreatedEvent(Project project)
         {
             this.Project = Guard.IsNotNull(project, nameof(project));
         }

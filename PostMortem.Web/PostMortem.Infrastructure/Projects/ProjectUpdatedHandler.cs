@@ -1,15 +1,15 @@
-﻿namespace PostMortem.Infrastructure.Events.Projects
+﻿namespace PostMortem.Infrastructure.Projects
 {
     using System.Threading;
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
     using Domain;
-    using Domain.Projects.Events;
+    using Domain.Projects.Commands;
     using MediatR;
     using Polly;
     using Zatoichi.Common.Infrastructure.Resilience;
 
-    public class ProjectUpdatedHandler : IRequestHandler<ProjectUpdatedEventArgs, PolicyResult>
+    public class ProjectUpdatedHandler : IRequestHandler<ProjectUpdatedEvent, PolicyResult>
     {
         private readonly IExecutionPolicies executionPolicies;
         private readonly IRepository repository;
@@ -22,7 +22,7 @@
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
-        public Task<PolicyResult> Handle(ProjectUpdatedEventArgs request, CancellationToken cancellationToken)
+        public Task<PolicyResult> Handle(ProjectUpdatedEvent request, CancellationToken cancellationToken)
         {
             return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.UpdateProjectAsync(request.Project));
         }

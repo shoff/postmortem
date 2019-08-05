@@ -8,7 +8,7 @@
     using Domain.Questions;
     using Domain.Voters;
     using Infrastructure;
-    using Infrastructure.Events.Comments;
+    using Infrastructure.Comments;
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
@@ -35,6 +35,7 @@
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHttpClient<INameGeneratorClient, NameGeneratorClient>();
             services.AddMediatR(typeof(CommentAddedHandler).Assembly);
+            services.AddTransient<IEventBus, EventBus>();
             services.AddEventSourcing();
             services.AddMongoEventStore();
             return services;

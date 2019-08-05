@@ -3,8 +3,9 @@
     using System;
     using System.Collections.Generic;
     using ChaosMonkey.Guards;
-    using Events;
+    using Commands;
     using Microsoft.Extensions.Options;
+    using Queries;
     using Questions;
 
     public class Project
@@ -31,19 +32,19 @@
             }
         }
 
-        public static ProjectGetAllEventArgs CreateGetAllEventArgs()
+        public static ProjectGetAllEvent CreateGetAllEventArgs()
         {
-            return new ProjectGetAllEventArgs();
+            return new ProjectGetAllEvent();
         }
 
-        public static ProjectGetByIdEventArgs CreateGetByIdEventArgs(Guid projectId)
+        public static ProjectGetByIdEvent CreateGetByIdEventArgs(Guid projectId)
         {
-            return new ProjectGetByIdEventArgs(projectId);
+            return new ProjectGetByIdEvent(projectId);
         }
 
-        public static ProjectCreatedEventArgs CreateProjectCreatedEventArgs(Project project)
+        public static ProjectCreatedEvent CreateProjectCreatedEventArgs(Project project)
         {
-            return new ProjectCreatedEventArgs(project);
+            return new ProjectCreatedEvent(project);
         }
 
         public void AddQuestions(ICollection<Question> collection)

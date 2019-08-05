@@ -3,25 +3,30 @@
     using System;
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
+    using Domain;
+    using Domain.Comments.Queries;
     using Domain.Voters;
     using Dtos;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
+    using Zatoichi.Common.Infrastructure.Extensions;
 
     [Route("api/[controller]")]
     [ApiController]
     public class CommentsController : BaseController
     {
+        private readonly IEventBus eventBus;
         private readonly ILogger<CommentsController> logger;
 
         public CommentsController(
-            
+            IEventBus eventBus,
             INameGeneratorClient nameGenerator,
             IHttpContextAccessor httpContextAccessor,
             ILogger<CommentsController> logger)
             : base(httpContextAccessor, nameGenerator)
         {
+            this.eventBus = eventBus;
             this.logger = Guard.IsNotNull(logger, nameof(logger));
         }
 
@@ -30,13 +35,9 @@
         {
             try
             {
-                //var result = await this.mediator.Send<(this.mapper.Map<CommentGetByIdEvent>(id));
-                //if (result.Outcome == Polly.OutcomeType.Successful)
-                //{
-                //    return this.Ok(this.mapper.Map<CommentDto>(result.Result));
-                //}
-
-                return new StatusCodeResult(500);
+                var query = new CommentGetByIdEvent(id);
+                var result = await this.eventBus.Process(query);
+                return result.ToActionResult();
             }
             catch (Exception e)
             {

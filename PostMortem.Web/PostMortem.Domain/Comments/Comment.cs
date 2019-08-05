@@ -2,7 +2,7 @@
 {
     using System;
     using ChaosMonkey.Guards;
-    using Events;
+    using Commands;
     using Questions;
     using Zatoichi.EventSourcing;
 

@@ -3,8 +3,8 @@
     using System;
     using System.Collections.Generic;
     using ChaosMonkey.Guards;
+    using Commands;
     using Comments;
-    using Events;
     using Projects;
 
 

@@ -1,4 +1,4 @@
-﻿namespace PostMortem.Infrastructure.Events.Projects
+﻿namespace PostMortem.Infrastructure.Projects
 {
     public class ProjectByIdHandler
     {

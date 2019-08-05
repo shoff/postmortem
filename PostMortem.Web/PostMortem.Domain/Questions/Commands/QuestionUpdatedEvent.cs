@@ -1,4 +1,4 @@
-﻿namespace PostMortem.Domain.Questions.Events
+﻿namespace PostMortem.Domain.Questions.Commands
 {
     using System;
     using ChaosMonkey.Guards;
@@ -6,9 +6,9 @@
     using Polly;
     using Questions;
 
-    public class QuestionDeletedEventArgs : EventArgs, IRequest<PolicyResult>
+    public class QuestionUpdatedEvent : EventArgs, IRequest<PolicyResult>
     {
-        public QuestionDeletedEventArgs(Question question)
+        public QuestionUpdatedEvent(Question question)
         {
             this.Question = Guard.IsNotNull(question, nameof(question));
         }

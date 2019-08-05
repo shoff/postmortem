@@ -2,7 +2,8 @@
 {
     using System;
     using Comments;
-    using Comments.Events;
+    using Comments.Commands;
+    using Comments.Queries;
 
     public class EventFactory : IEventFactory
     {

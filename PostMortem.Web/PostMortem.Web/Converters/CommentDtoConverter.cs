@@ -3,7 +3,6 @@
     using AutoMapper;
     using ChaosMonkey.Guards;
     using Domain.Comments;
-    using Domain.Comments.Events;
     using Dtos;
 
     public class CommentDtoConverter : ITypeConverter<Comment, CommentDto>

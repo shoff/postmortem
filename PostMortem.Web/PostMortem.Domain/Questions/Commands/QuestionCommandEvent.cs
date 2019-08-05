@@ -1,14 +1,13 @@
-﻿namespace PostMortem.Domain.Comments.Events
+﻿namespace PostMortem.Domain.Questions.Commands
 {
     using System;
     using ChaosMonkey.Guards;
     using Comments;
     using MediatR;
-    using Polly;
 
-    public abstract class CommentCommandEvent : IRequest<PolicyResult>
+    public abstract class QuestionCommandEvent : DomainEvent, INotification
     {
-        protected CommentCommandEvent(Comment comment)
+        protected QuestionCommandEvent(Comment comment)
         {
             this.Comment = Guard.IsNotNull(comment, nameof(comment));
         }

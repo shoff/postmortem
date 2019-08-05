@@ -1,7 +1,7 @@
 ﻿namespace PostMortem.Domain
 {
     using System;
-    using Comments.Events;
+    using Comments.Queries;
 
     public interface IEventFactory
     {
