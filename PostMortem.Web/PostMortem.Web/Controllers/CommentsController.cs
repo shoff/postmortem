@@ -30,12 +30,12 @@
             this.logger = Guard.IsNotNull(logger, nameof(logger));
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetById(Guid id)
+        [HttpGet("{questionId}/{id}")]
+        public async Task<IActionResult> GetById(Guid questionId, Guid id)
         {
             try
             {
-                var query = new CommentGetByIdEvent(id);
+                var query = new GetCommentByIdQuery(questionId, id);
                 var result = await this.eventBus.Process(query);
                 return result.ToActionResult();
             }

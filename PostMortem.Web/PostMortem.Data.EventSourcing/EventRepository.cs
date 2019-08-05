@@ -7,9 +7,16 @@
     using Domain.Comments;
     using Domain.Projects;
     using Domain.Questions;
+    using Zatoichi.EventSourcing;
 
     public class EventRepository : IRepository
     {
+        private readonly IEventStore eventStore;
+
+        public EventRepository(IEventStore eventStore)
+        {
+            this.eventStore = eventStore;
+        }
 
         public Task<ICollection<Project>> GetAllProjectsAsync()
         {

@@ -6,6 +6,7 @@
     using Zatoichi.EventSourcing.Commands;
     using Zatoichi.EventSourcing.Queries;
 
+    // TODO this should ONLY be used to send messages to an message queue like kafka
     public class EventBus : IEventBus
     {
         private readonly IQueryBus queryBus;

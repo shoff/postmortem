@@ -7,7 +7,7 @@
         public CommentLikedEvent(Comment comment)
             : base(comment)
         {
-            CommentId = comment.CommentId;
+            this.CommentId = comment.CommentId;
         }
 
         public Guid CommentId { get; }

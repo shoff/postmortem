@@ -2,16 +2,27 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using ChaosMonkey.Guards;
     using Commands;
     using Comments;
+    using Comments.Queries;
+    using MediatR;
     using Projects;
-
-
-    public class Question
+    
+    public sealed class Question
     {
+        private readonly IMediator mediator;
         private readonly int maximumQuestionLength;
         private readonly CommentCollection comments = new CommentCollection();
+
+        public Question(IMediator mediator)
+        {
+            this.mediator = mediator;
+            // HACK HACK HACK HACK HACKEROOONI
+            this.QuestionId = Guid.NewGuid();
+            this.ProjectId = Guid.NewGuid();
+        }
 
         public Question(Project project)
         {
@@ -28,6 +39,13 @@
             return CreateQuestionUpdatedEvent(this);
         }
 
+        public Task<Comment> GetByIdAsync(Guid commentId)
+        {
+            var query = new GetCommentByIdQuery(this.QuestionId, commentId);
+            // TODO domain validation here?
+            return this.mediator.Send(query);
+        }
+
         public Guid QuestionId { get; set; }
 
         public Guid ProjectId { get; }
@@ -37,9 +55,8 @@
         public int ResponseCount => this.comments.Count;
 
         public int Importance { get; set; } 
-
         
-        internal QuestionOptions Options { get; }
+        public QuestionOptions Options { get; internal set; }
 
         public IReadOnlyCollection<Comment> Comments
         {
@@ -54,16 +71,14 @@
                 return this.comments;
             }
         }
-
-
-
-        public static QuestionAddedEvent CreateQuestionAddedEventArgs(Question question)
+        
+        public static QuestionAddedEvent CreateQuestionAddedEvent(Question question)
         {
             QuestionAddedEvent questionAddedEvent = new QuestionAddedEvent(question);
             return questionAddedEvent;
         }
 
-        public static QuestionDeletedEventArgs CreateQuestionDeletedEventArgs(Question question)
+        public static QuestionDeletedEventArgs CreateQuestionDeletedEvent(Question question)
         {
             var eventArgs = new QuestionDeletedEventArgs(question);
             return eventArgs;

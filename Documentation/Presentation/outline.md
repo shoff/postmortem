@@ -30,6 +30,7 @@
     * If an error is made in an event, a new event is appended to correct the mistake.
     * Just like an accountant's ledger, you are not allowed to update events.
 * Periodic snapshots of an entitie's state can be saved to help with performance issues.
+* Event validation **MUST** occur in the aggregate.
 
 ## CQRS
 
@@ -53,6 +54,14 @@
         * GetVehicleByManufacturerEvent
         * GetVehicleByYearEvent
 
+## EventStorming
+
+
+## Questions
+
+1. What and how should aggregates be created?
+2. What determines when an entity is or isn't an aggregate?
+    * __Almost every activity that results in the creation of an entity or storing of additional information can be traced to a transition from a previous business state. In any transition, the previous state is the aggregate root.__
 
 ## More Information
 
@@ -61,7 +70,7 @@
 * [NEventStore](http://neventstore.org/)
 * [EventSourcing Core](https://github.com/jacqueskang/EventSourcing/)
 * [AxonDB](https://axoniq.io/product-overview/axondb)
-
+* [Zatoichi Event Sourcing (nuget)](http://zatoichi.ddns.net:8080)
 
 ### Web Sites
 * [CQRS](https://martinfowler.com/bliki/CQRS.html)
@@ -75,7 +84,7 @@
 ### Pluralsight
 * [Modern Software Architecture: Domain Models, CQRS, and Event Sourcing - Dino Esposito](https://app.pluralsight.com/library/courses/modern-software-architecture-domain-models-cqrs-event-sourcing/table-of-contents)
 * [CQRS in Practice](https://app.pluralsight.com/library/courses/cqrs-in-practice/table-of-contents)
-
+* [Domain-Driven Design in Practice](https://app.pluralsight.com/library/courses/domain-driven-design-in-practice/table-of-contents)
 
 ### Books
 * [CQRS Documents by Greg Young](https://cqrs.files.wordpress.com/2010/11/cqrs_documents.pdf)

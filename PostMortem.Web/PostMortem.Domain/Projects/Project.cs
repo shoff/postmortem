@@ -8,7 +8,7 @@
     using Queries;
     using Questions;
 
-    public class Project
+    public sealed class Project
     {
         private readonly QuestionCollection questions = new QuestionCollection();
 
