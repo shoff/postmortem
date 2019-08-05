@@ -1,11 +1,9 @@
 ﻿namespace PostMortem.Domain.Comments.Events
 {
     using System;
-    using MediatR;
-    using Polly;
-    using Zatoichi.EventSourcing;
+    using Zatoichi.EventSourcing.Queries;
 
-    public abstract class CommentQueryEvent : Query<IQuery>, IRequest<PolicyResult<Comment>>
+    public abstract class CommentQueryEvent : Query<Comment>
     {
         public virtual DateTime CreatedDate => DateTime.UtcNow;
     }

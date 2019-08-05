@@ -19,8 +19,8 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .InitializeContainer(this.Configuration)
                 .InitializeOptions(this.Configuration)
+                .InitializeContainer(this.Configuration)
                 .InitializeSwagger()
                 .AddCors()
                 .AddMvc()

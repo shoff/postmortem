@@ -57,10 +57,10 @@
 
 
 
-        public static QuestionAddedEventArgs CreateQuestionAddedEventArgs(Question question)
+        public static QuestionAddedEvent CreateQuestionAddedEventArgs(Question question)
         {
-            QuestionAddedEventArgs eventArgs = new QuestionAddedEventArgs(question);
-            return eventArgs;
+            QuestionAddedEvent questionAddedEvent = new QuestionAddedEvent(question);
+            return questionAddedEvent;
         }
 
         public static QuestionDeletedEventArgs CreateQuestionDeletedEventArgs(Question question)
