@@ -8,7 +8,7 @@
     using Questions;
     using Zatoichi.EventSourcing;
 
-    public sealed class Comment : EventEntity
+    public sealed class Comment : IEventEntity
     {
         private Guid commentId = Guid.Empty;
         private readonly int maxCommentTextLength;
@@ -45,13 +45,7 @@
         {
             Guard.IsNotNull(disposition, nameof(disposition));
 
-            //var count = (from c in this.dispositions
-            //    where c.VoterId.Id == disposition.VoterId.Id && c.Liked == disposition.Liked
-            //    select c).ToArray().Length;
-
-            
             var count = this.dispositions.Count(v => v.VoterId.Id == disposition.VoterId.Id && (bool)v == (bool)disposition);
-
 
             if (!disposition)
             {
@@ -70,10 +64,10 @@
             // probably shouldn't publish an event if nothing here has been added...
             if (disposition.Liked)
             {
-                return new CommentLikedEvent(this);
+                return new CommentLikedEvent(this, disposition.VoterId);
             }
 
-            return new CommentDislikedEvent(this);
+            return new CommentDislikedEvent(this, disposition.VoterId);
 
         }
 
@@ -91,7 +85,7 @@
 
         public int Dislikes => this.dispositions.Sum(d => d.Liked ? 0 : 1);
 
-        public CommentCommandAddedEvent AddCommentText(string text)
+        public CommentAddedEvent AddCommentText(string text)
         {
             Guard.IsLessThan(text?.Length ?? 0, this.maxCommentTextLength, nameof(text));
             this.CommentText = $"{this.CommentText} {text}";
@@ -109,24 +103,9 @@
             var eventArgs = new CommentCommandReplacedEvent(comment);
             return eventArgs;
         }
-        private static CommentCommandAddedEvent CreateCommentAddedEvent(Comment comment)
+        private static CommentAddedEvent CreateCommentAddedEvent(Comment comment)
         {
-            var eventArgs = new CommentCommandAddedEvent(comment);
-            return eventArgs;
-        }
-        private static CommentLikedEvent CreateCommentLikedEvent(Comment comment)
-        {
-            var eventArgs = new CommentLikedEvent(comment);
-            return eventArgs;
-        }
-        private static CommentDislikedEvent CreateCommentDislikedEvent(Comment comment)
-        {
-            var eventArgs = new CommentDislikedEvent(comment);
-            return eventArgs;
-        }
-        private static CommentCommandUpdatedEvent CreateCommentUpdatedEvent(Comment comment)
-        {
-            var eventArgs = new CommentCommandUpdatedEvent(comment);
+            var eventArgs = new CommentAddedEvent(comment);
             return eventArgs;
         }
     }

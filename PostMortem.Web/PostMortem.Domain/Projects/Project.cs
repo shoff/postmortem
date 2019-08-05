@@ -7,8 +7,9 @@
     using Microsoft.Extensions.Options;
     using Queries;
     using Questions;
+    using Zatoichi.EventSourcing;
 
-    public sealed class Project
+    public sealed class Project : Aggregate
     {
         private readonly QuestionCollection questions = new QuestionCollection();
 
@@ -25,10 +26,13 @@
         {
             get
             {
-                if (ProjectId == Guid.Empty) ProjectId = Guid.NewGuid();
+                if (this.ProjectId == Guid.Empty)
+                {
+                    this.ProjectId = Guid.NewGuid();
+                }
 
-                questions.ProjectId = ProjectId;
-                return questions;
+                this.questions.ProjectId = this.ProjectId;
+                return this.questions;
             }
         }
 
@@ -56,5 +60,22 @@
         {
             throw new NotImplementedException();
         }
+
+        public override void ClearPendingEvents()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void ApplyEvents()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void AddEvents(ICollection<IEvent> events)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int PendingEventCount { get; }
     }
 }

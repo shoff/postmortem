@@ -7,5 +7,9 @@
         {
         }
 
+        public override void Apply()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

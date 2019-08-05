@@ -6,11 +6,13 @@
     using ChaosMonkey.Guards;
     using Commands;
     using Comments;
+    using Comments.Commands;
     using Comments.Queries;
     using MediatR;
     using Projects;
-    
-    public sealed class Question
+    using Zatoichi.EventSourcing;
+
+    public sealed class Question : Aggregate
     {
         private readonly IMediator mediator;
         private readonly int maximumQuestionLength;
@@ -46,18 +48,20 @@
             return this.mediator.Send(query);
         }
 
+        public CommentAddedEvent AddComment(Comment comment)
+        {
+            this.comments.Add(comment);
+            // Validation happens here
+            return new CommentAddedEvent(comment);
+
+        }
+
         public Guid QuestionId { get; set; }
-
         public Guid ProjectId { get; }
-
         public string QuestionText { get; private set; } = string.Empty;
-
         public int ResponseCount => this.comments.Count;
-
         public int Importance { get; set; } 
-        
         public QuestionOptions Options { get; internal set; }
-
         public IReadOnlyCollection<Comment> Comments
         {
             get
@@ -71,23 +75,33 @@
                 return this.comments;
             }
         }
-        
         public static QuestionAddedEvent CreateQuestionAddedEvent(Question question)
         {
             QuestionAddedEvent questionAddedEvent = new QuestionAddedEvent(question);
             return questionAddedEvent;
         }
-
         public static QuestionDeletedEventArgs CreateQuestionDeletedEvent(Question question)
         {
             var eventArgs = new QuestionDeletedEventArgs(question);
             return eventArgs;
         }
-
         private static QuestionUpdatedEvent CreateQuestionUpdatedEvent(Question question)
         {
             var eventArgs = new QuestionUpdatedEvent(question);
             return eventArgs;
         }
+        public override void ClearPendingEvents()
+        {
+            throw new NotImplementedException();
+        }
+        public override void ApplyEvents()
+        {
+            throw new NotImplementedException();
+        }
+        public override void AddEvents(ICollection<IEvent> events)
+        {
+            throw new NotImplementedException();
+        }
+        public override int PendingEventCount { get; }
     }
 }

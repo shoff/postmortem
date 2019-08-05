@@ -4,6 +4,7 @@
     using System.Threading.Tasks;
     using AutoMapper;
     using ChaosMonkey.Guards;
+    using Domain;
     using Domain.Questions;
     using Domain.Voters;
     using MediatR;
@@ -17,6 +18,7 @@
     [ApiController]
     public class QuestionsController : BaseController
     {
+        private readonly IRepository repository;
         private readonly IMediator mediator;
         private readonly IMapper mapper;
         private readonly LinkGenerator linkGenerator;
@@ -28,9 +30,11 @@
             LinkGenerator linkGenerator,
             INameGeneratorClient nameGenerator,
             IHttpContextAccessor httpContextAccessor,
+            IRepository repository,
             ILogger<QuestionsController> logger)
             : base(httpContextAccessor, nameGenerator)
         {
+            this.repository = Guard.IsNotNull(repository, nameof(repository));
             this.mediator = Guard.IsNotNull(mediator, nameof(mediator));
             this.mapper = Guard.IsNotNull(mapper, nameof(mapper));
             this.linkGenerator = Guard.IsNotNull(linkGenerator, nameof(linkGenerator));
@@ -47,6 +51,7 @@
         public async Task<IActionResult> Create([FromBody] QuestionDto question)
         {
             Guard.IsNotNull(question, nameof(question));
+
             if (!ModelState.IsValid)
             {
                 return this.BadRequest(this.ModelState);

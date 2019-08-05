@@ -9,7 +9,7 @@
     using Polly;
     using Zatoichi.Common.Infrastructure.Resilience;
 
-    public class CommentAddedHandler : IRequestHandler<CommentCommandAddedEvent, PolicyResult>
+    public class CommentAddedHandler : IRequestHandler<CommentAddedEvent, PolicyResult>
     {
         private readonly IExecutionPolicies executionPolicies;
         private readonly IRepository repository;
@@ -23,7 +23,7 @@
         }
 
 
-        public async Task<PolicyResult> Handle(CommentCommandAddedEvent request, CancellationToken cancellationToken)
+        public async Task<PolicyResult> Handle(CommentAddedEvent request, CancellationToken cancellationToken)
         {
             var result = await this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.AddCommentAsync(request.Comment));
             // TODO right here is possibly where we could raise a rabbit/kafka event to notify others of what just happened

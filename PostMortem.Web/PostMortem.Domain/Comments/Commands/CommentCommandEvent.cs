@@ -3,10 +3,10 @@
     using System;
     using ChaosMonkey.Guards;
     using Comments;
-    using MediatR;
-    using Polly;
+    using Zatoichi.EventSourcing;
+    using Zatoichi.EventSourcing.Commands;
 
-    public abstract class CommentCommandEvent : IRequest<PolicyResult>
+    public abstract class CommentCommandEvent : Event, ICommand
     {
         protected CommentCommandEvent(Comment comment)
         {
@@ -15,5 +15,6 @@
 
         public virtual DateTime CreatedDate => DateTime.UtcNow;
         public virtual Comment Comment { get; private set; }
+        public string Description { get; set; }
     }
 }
