@@ -1,11 +1,13 @@
 ﻿namespace PostMortem.Web.Controllers
 {
     using System;
+    using System.Net;
     using System.Threading.Tasks;
     using AutoMapper;
     using ChaosMonkey.Guards;
     using Domain;
-    using Domain.Questions;
+    using Domain.Questions.Commands;
+    using Domain.Questions.Queries;
     using Domain.Voters;
     using MediatR;
     using Microsoft.AspNetCore.Http;
@@ -13,6 +15,8 @@
     using Microsoft.AspNetCore.Routing;
     using Microsoft.Extensions.Logging;
     using PostMortem.Dtos;
+    using Zatoichi.Common.Infrastructure.Extensions;
+    using Zatoichi.Common.Infrastructure.Services;
 
     [Route("api/[controller]")]
     [ApiController]
@@ -44,7 +48,11 @@
         [HttpGet]
         public async Task<IActionResult> GetById(Guid id)
         {
-            throw new NotImplementedException();
+            // this is not exactly how I would like it
+            var request = new GetQuestionByIdQuery(id);
+            var result = await this.mediator.Send(request).ConfigureAwait(false);
+            var apiResult = new ApiResult<QuestionDto>(HttpStatusCode.OK, this.mapper.Map<QuestionDto>(result));
+            return apiResult.ToActionResult();
         }
 
         [HttpPost]
@@ -59,19 +67,11 @@
 
             try
             {
-                var result = await this.mediator.Send(Question.CreateQuestionAddedEvent(this.mapper.Map<Question>(question)));
-                if (result.Outcome == Polly.OutcomeType.Successful)
-                {
-                    var url = this.linkGenerator.GetPathByAction(
-                        this.HttpContext,
-                        controller: "Questions",
-                        action: "GetById",
-                        values: new { id = question.QuestionId });
+                var command = new AddQuestionCommand(question.QuestionId, question.ProjectId, question.QuestionText);
+                await this.mediator.Publish(command);
 
-                    return this.Created($"{this.HttpContext.Request.Scheme}//{this.HttpContext.Request.Host}{url}", question);
-                }
-
-                return new StatusCodeResult(500);
+                // TODO 
+                return new CreatedResult("", null);
             }
             catch (Exception e)
             {

@@ -9,7 +9,7 @@
     using Domain.Questions;
     using Zatoichi.EventSourcing;
 
-    public class EventRepository : IRepository
+    public class EventRepository 
     {
         private readonly IEventStore eventStore;
 

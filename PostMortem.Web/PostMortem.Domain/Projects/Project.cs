@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using ChaosMonkey.Guards;
     using Commands;
+    using MediatR;
     using Microsoft.Extensions.Options;
     using Queries;
     using Questions;
@@ -11,16 +12,27 @@
 
     public sealed class Project : Aggregate
     {
+
+        private readonly List<INotification> domainEvents;
         private readonly QuestionCollection questions = new QuestionCollection();
 
         public Project()
         {
+            this.ProjectId = Guid.NewGuid();
         }
 
-        public Guid ProjectId { get; set; }
-        public string ProjectName { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public Project(string projectName, DateTime startDate, DateTime? endDate, Guid? id)
+        {
+            this.ProjectId = id ?? Guid.NewGuid();
+            this.ProjectName = projectName;
+            this.StartDate = startDate;
+            this.EndDate = endDate;
+        }
+
+        public Guid ProjectId { get; private set; }
+        public string ProjectName { get; private set; }
+        public DateTime StartDate { get; private set; }
+        public DateTime? EndDate { get; private set; }
 
         public IReadOnlyCollection<Question> Questions
         {
@@ -40,12 +52,10 @@
         {
             return new ProjectGetAllEvent();
         }
-
         public static ProjectGetByIdEvent CreateGetByIdEventArgs(Guid projectId)
         {
             return new ProjectGetByIdEvent(projectId);
         }
-
         public static ProjectCreatedEvent CreateProjectCreatedEventArgs(Project project)
         {
             return new ProjectCreatedEvent(project);
@@ -56,6 +66,7 @@
             Guard.IsNotNull(collection, nameof(collection));
             this.questions.AddRange(collection);
         }
+
         public IOptions<QuestionOptions> GetOptions()
         {
             throw new NotImplementedException();
@@ -70,12 +81,6 @@
         {
             throw new NotImplementedException();
         }
-
-        public override void AddEvents(ICollection<IEvent> events)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override int PendingEventCount { get; }
+        
     }
 }

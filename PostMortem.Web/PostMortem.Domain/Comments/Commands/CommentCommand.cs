@@ -6,9 +6,9 @@
     using Zatoichi.EventSourcing;
     using Zatoichi.EventSourcing.Commands;
 
-    public abstract class CommentCommandEvent : Event, ICommand
+    public abstract class CommentCommand : Event, ICommand
     {
-        protected CommentCommandEvent(Comment comment)
+        protected CommentCommand(Comment comment)
         {
             this.Comment = Guard.IsNotNull(comment, nameof(comment));
         }

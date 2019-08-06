@@ -1,7 +1,15 @@
 ﻿namespace PostMortem.Domain.Questions.Queries
 {
-    public class GetQuestionByIdQuery
+    using System;
+    using MediatR;
+
+    public class GetQuestionByIdQuery : IRequest<Question>
     {
-        
+
+        public GetQuestionByIdQuery(Guid id)
+        {
+            Id = id;
+        }
+        public Guid Id { get; }
     }
 }

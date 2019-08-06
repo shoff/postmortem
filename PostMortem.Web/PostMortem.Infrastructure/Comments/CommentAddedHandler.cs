@@ -5,29 +5,44 @@
     using ChaosMonkey.Guards;
     using Domain;
     using Domain.Comments.Commands;
+    using Domain.Questions;
     using MediatR;
-    using Polly;
     using Zatoichi.Common.Infrastructure.Resilience;
+    using Zatoichi.EventSourcing;
 
-    public class CommentAddedHandler : IRequestHandler<CommentAddedEvent, PolicyResult>
+    public class CommentAddedHandler : INotificationHandler<AddCommentCommand>
     {
-        private readonly IExecutionPolicies executionPolicies;
         private readonly IRepository repository;
+        private readonly IExecutionPolicies executionPolicies;
+        private readonly IEventStore eventStore;
 
         public CommentAddedHandler(
             IRepository repository,
+            IEventStore eventStore,
             IExecutionPolicies executionPolicies)
         {
-            this.executionPolicies = Guard.IsNotNull(executionPolicies, nameof(executionPolicies));
             this.repository = Guard.IsNotNull(repository, nameof(repository));
+            this.executionPolicies = Guard.IsNotNull(executionPolicies, nameof(executionPolicies));
+            this.eventStore = Guard.IsNotNull(eventStore, nameof(eventStore));
         }
 
 
-        public async Task<PolicyResult> Handle(CommentAddedEvent request, CancellationToken cancellationToken)
+        public async Task Handle(AddCommentCommand notification, CancellationToken cancellationToken)
         {
-            var result = await this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.AddCommentAsync(request.Comment));
-            // TODO right here is possibly where we could raise a rabbit/kafka event to notify others of what just happened
-            return PolicyResult.Successful(result.Context);
+            var result = await this.executionPolicies.QueueExecutionPolicy.ExecuteAndCaptureAsync(async () =>
+            {
+                Question question = await this.repository.GetQuestionByIdAsync(notification.Comment.QuestionId);
+
+                if (question == null)
+                {
+                    // we have a domain rule that this handler only handles adding comments and that the question must
+                    // already exist.
+                    throw new QuestionNotFoundException();
+                }
+
+                question.AddComment(notification.Comment);
+            });
         }
+
     }
 }

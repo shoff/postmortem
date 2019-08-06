@@ -25,8 +25,8 @@
         public Guid QuestionId { get; set; }
         [StringLength(1024)]
         public string CommentText { get; set; }
+        // TODO I will add Machine Sentiment Learning to this property for my ML 80
         public bool GenerallyPositive { get; set; }
-
         public DateTime DateAdded { get; set; } = DateTime.UtcNow;
         public string Commenter { get; set; }
         public int Likes { get; set; }

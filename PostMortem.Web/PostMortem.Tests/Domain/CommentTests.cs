@@ -1,12 +1,10 @@
 ﻿namespace PostMortem.Tests.Domain
 {
     using System;
-    using System.Collections.Generic;
     using AutoFixture;
     using MediatR;
     using Moq;
     using PostMortem.Domain.Comments;
-    using PostMortem.Domain.Comments.Commands;
     using PostMortem.Domain.Questions;
     using PostMortem.Domain.Voters;
     using Xunit;
@@ -23,7 +21,7 @@
         {
             this.options = this.fixture.Create<QuestionOptions>();
             this.mediator = new Mock<IMediator>();
-            this.question = new Question(this.mediator.Object)
+            this.question = new Question()
             {
                 Options = this.options
             };

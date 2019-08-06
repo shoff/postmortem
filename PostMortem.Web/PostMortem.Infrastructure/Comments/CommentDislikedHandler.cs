@@ -6,10 +6,9 @@
     using Domain;
     using Domain.Comments.Commands;
     using MediatR;
-    using Polly;
     using Zatoichi.Common.Infrastructure.Resilience;
 
-    public class CommentDislikedHandler : IRequestHandler<CommentDislikedEvent, PolicyResult>
+    public class CommentDislikedHandler : INotificationHandler<DislikeCommentCommand>
     {
         private readonly IExecutionPolicies executionPolicies;
         private readonly IRepository repository;
@@ -22,9 +21,9 @@
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
-        public Task<PolicyResult> Handle(CommentDislikedEvent request, CancellationToken cancellationToken)
+        public Task Handle(DislikeCommentCommand notification, CancellationToken cancellationToken)
         {
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.DislikeCommentAsync(request.CommentId));
+            throw new System.NotImplementedException();
         }
     }
 }

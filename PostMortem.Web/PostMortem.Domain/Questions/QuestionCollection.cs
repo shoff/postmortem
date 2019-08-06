@@ -4,7 +4,6 @@
     using System.Collections;
     using System.Collections.Generic;
     using ChaosMonkey.Guards;
-    using Zatoichi.Common.Infrastructure.Extensions;
 
     public class QuestionCollection : IList<Question>, IReadOnlyCollection<Question>
     {
@@ -32,7 +31,6 @@
                 throw new ApplicationException(
                     "Cannot add questions unless the Project property has first been assigned.");
             }
-            question.QuestionId = this.projectId;
             this.questions.Add(question);
         }
         public void Clear()
@@ -65,7 +63,6 @@
                     "Cannot add questions unless the Question property has first been assigned.");
             }
 
-            item.QuestionId = this.projectId;
             this.questions.Insert(index, item);
         }
         public void RemoveAt(int index)

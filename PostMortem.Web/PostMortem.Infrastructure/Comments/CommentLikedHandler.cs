@@ -22,7 +22,7 @@
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
-        public Task<PolicyResult> Handle(CommentLikedEvent request, CancellationToken cancellationToken)
+        public Task<PolicyResult> Handle(LikeCommentCommand request, CancellationToken cancellationToken)
         {
             return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.LikeCommentAsync(request.CommentId));
         }

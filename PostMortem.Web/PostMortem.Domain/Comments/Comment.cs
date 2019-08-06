@@ -41,7 +41,7 @@
             set => this.commentId = value;
         }
 
-        public CommentCommandEvent Vote(Disposition disposition)
+        public CommentCommand Vote(Disposition disposition)
         {
             Guard.IsNotNull(disposition, nameof(disposition));
 
@@ -64,10 +64,10 @@
             // probably shouldn't publish an event if nothing here has been added...
             if (disposition.Liked)
             {
-                return new CommentLikedEvent(this, disposition.VoterId);
+                return new LikeCommentCommand(this, disposition.VoterId);
             }
 
-            return new CommentDislikedEvent(this, disposition.VoterId);
+            return new DislikeCommentCommand(this, disposition.VoterId);
 
         }
 
@@ -85,27 +85,27 @@
 
         public int Dislikes => this.dispositions.Sum(d => d.Liked ? 0 : 1);
 
-        public CommentAddedEvent AddCommentText(string text)
+        public AddCommentCommand AddCommentText(string text)
         {
             Guard.IsLessThan(text?.Length ?? 0, this.maxCommentTextLength, nameof(text));
             this.CommentText = $"{this.CommentText} {text}";
             return CreateCommentAddedEvent(this);
         }
-        public CommentCommandReplacedEvent ReplaceCommentText(string text)
+        public ReplaceCommentCommand ReplaceCommentText(string text)
         {
             Guard.IsLessThan(text?.Length ?? 0, this.maxCommentTextLength, nameof(text));
             this.CommentText = text;
             return CreateCommentReplacedEvent(this);
         }
 
-        private static CommentCommandReplacedEvent CreateCommentReplacedEvent(Comment comment)
+        private static ReplaceCommentCommand CreateCommentReplacedEvent(Comment comment)
         {
-            var eventArgs = new CommentCommandReplacedEvent(comment);
+            var eventArgs = new ReplaceCommentCommand(comment);
             return eventArgs;
         }
-        private static CommentAddedEvent CreateCommentAddedEvent(Comment comment)
+        private static AddCommentCommand CreateCommentAddedEvent(Comment comment)
         {
-            var eventArgs = new CommentAddedEvent(comment);
+            var eventArgs = new AddCommentCommand(comment);
             return eventArgs;
         }
     }

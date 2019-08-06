@@ -2,66 +2,63 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
     using ChaosMonkey.Guards;
     using Commands;
     using Comments;
     using Comments.Commands;
-    using Comments.Queries;
-    using MediatR;
+    using Newtonsoft.Json;
     using Projects;
     using Zatoichi.EventSourcing;
 
     public sealed class Question : Aggregate
     {
-        private readonly IMediator mediator;
         private readonly int maximumQuestionLength;
         private readonly CommentCollection comments = new CommentCollection();
 
-        public Question(IMediator mediator)
-        {
-            this.mediator = mediator;
-            // HACK HACK HACK HACK HACKEROOONI
-            this.QuestionId = Guid.NewGuid();
-            this.ProjectId = Guid.NewGuid();
-        }
+        [JsonConstructor]
+        public Question() { }
 
-        public Question(Project project)
+        public Question(Project project, Guid? id)
         {
             Guard.IsNotNull(project, nameof(project));
             this.Options = project.GetOptions().Value;
             this.maximumQuestionLength = this.Options.QuestionMaximumLength;
             this.ProjectId = project.ProjectId;
+            this.QuestionId = id ?? Guid.NewGuid();
         }
 
-        public QuestionUpdatedEvent AddQuestionText(string text)
+        public void AddQuestionText(string text)
         {
+            // Fowler states that the entity shouldn't validate things like string length,
+            // but well Fowler is a Brit and drinks tea, so we don't care what he says. :D
+            // Actually, we really shouldn't because if the spec changes then we have to 
+            // update our entity and then it becomes impossible to recreate from older events 
+            // without doing some crazy stuff
             Guard.IsLessThan(text?.Length ?? 0, this.maximumQuestionLength, nameof(text));
             this.QuestionText = text;
-            return CreateQuestionUpdatedEvent(this);
         }
 
-        public Task<Comment> GetByIdAsync(Guid commentId)
-        {
-            var query = new GetCommentByIdQuery(this.QuestionId, commentId);
-            // TODO domain validation here?
-            return this.mediator.Send(query);
-        }
-
-        public CommentAddedEvent AddComment(Comment comment)
+        public AddCommentCommand AddComment(Comment comment)
         {
             this.comments.Add(comment);
             // Validation happens here
-            return new CommentAddedEvent(comment);
-
+            return new AddCommentCommand(comment);
         }
 
-        public Guid QuestionId { get; set; }
-        public Guid ProjectId { get; }
+        [JsonProperty]
+        public Guid QuestionId { get; private set; }
+        [JsonProperty]
+        public Guid ProjectId { get; private set; }
+        [JsonProperty]
         public string QuestionText { get; private set; } = string.Empty;
+
         public int ResponseCount => this.comments.Count;
+
         public int Importance { get; set; } 
+
         public QuestionOptions Options { get; internal set; }
+
+        [JsonProperty]
         public IReadOnlyCollection<Comment> Comments
         {
             get
@@ -75,33 +72,34 @@
                 return this.comments;
             }
         }
-        public static QuestionAddedEvent CreateQuestionAddedEvent(Question question)
+
+        public static AddQuestionCommand CreateQuestionAddedEvent(Question question)
         {
-            QuestionAddedEvent questionAddedEvent = new QuestionAddedEvent(question);
-            return questionAddedEvent;
+            AddQuestionCommand addQuestionCommand = new AddQuestionCommand(question);
+            return addQuestionCommand;
         }
-        public static QuestionDeletedEventArgs CreateQuestionDeletedEvent(Question question)
+
+        public static DeleteQuestionCommand CreateQuestionDeletedEvent(Question question)
         {
-            var eventArgs = new QuestionDeletedEventArgs(question);
+            var eventArgs = new DeleteQuestionCommand(question);
             return eventArgs;
         }
-        private static QuestionUpdatedEvent CreateQuestionUpdatedEvent(Question question)
+
+        private static UpdateQuestionCommand CreateQuestionUpdatedEvent(Question question)
         {
-            var eventArgs = new QuestionUpdatedEvent(question);
+            var eventArgs = new UpdateQuestionCommand(question);
             return eventArgs;
         }
+
         public override void ClearPendingEvents()
         {
-            throw new NotImplementedException();
+            // TODO this can be used as sort of "commit transaction" 
         }
+
         public override void ApplyEvents()
         {
-            throw new NotImplementedException();
+            // only here to make debugging easier
+            base.ApplyEvents();
         }
-        public override void AddEvents(ICollection<IEvent> events)
-        {
-            throw new NotImplementedException();
-        }
-        public override int PendingEventCount { get; }
     }
 }

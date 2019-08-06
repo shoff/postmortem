@@ -6,10 +6,9 @@
     using Domain;
     using Domain.Questions.Commands;
     using MediatR;
-    using Polly;
     using Zatoichi.Common.Infrastructure.Resilience;
 
-    public class QuestionDeletedHandler : IRequestHandler<QuestionDeletedEventArgs, PolicyResult>
+    public class QuestionDeletedHandler : INotificationHandler<DeleteQuestionCommand>
     {
         private readonly IExecutionPolicies executionPolicies;
         private readonly IRepository repository;
@@ -22,9 +21,9 @@
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
-        public Task<PolicyResult> Handle(QuestionDeletedEventArgs request, CancellationToken cancellationToken)
+        public Task Handle(DeleteQuestionCommand notification, CancellationToken cancellationToken)
         {
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.DeleteQuestionAsync(request.Question.QuestionId));
+            throw new System.NotImplementedException();
         }
     }
 }

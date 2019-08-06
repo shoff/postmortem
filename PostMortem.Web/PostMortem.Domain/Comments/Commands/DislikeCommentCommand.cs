@@ -2,20 +2,21 @@
 {
     using System;
     using Voters;
+    using Zatoichi.EventSourcing;
 
-    public class CommentLikedEvent : CommentCommandEvent
+    public class DislikeCommentCommand : CommentCommand
     {
-        public CommentLikedEvent(Comment comment, IVoterId voterId)
+
+        public DislikeCommentCommand(Comment comment, IVoterId voterId) 
             : base(comment)
         {
-            this.VoterId = voterId;
             this.CommentId = comment.CommentId;
+            this.VoterId = voterId;
         }
 
-        public Guid CommentId { get; }
         public IVoterId VoterId { get; }
-
-        public override void Apply()
+        public Guid CommentId { get; }
+        public override void Apply(IEventEntity eventEntity)
         {
             throw new NotImplementedException();
         }

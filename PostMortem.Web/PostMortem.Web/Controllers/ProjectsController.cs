@@ -4,7 +4,6 @@
     using System.Threading.Tasks;
     using AutoMapper;
     using ChaosMonkey.Guards;
-    using Domain;
     using Domain.Projects;
     using Domain.Voters;
     using Dtos;
@@ -73,13 +72,7 @@
             }
 
             project.CreatedBy = this.username;
-            var p = new Project
-            {
-                ProjectId = Guid.NewGuid(),
-                EndDate = project.EndDate,
-                ProjectName = project.ProjectName,
-                StartDate = project.StartDate
-            };
+            var p = new Project(project.ProjectName, project.StartDate, project.EndDate, Guid.NewGuid());
             var result = await this.mediator.Send(Project.CreateProjectCreatedEventArgs(p));
 
             if (result.Outcome == OutcomeType.Successful)

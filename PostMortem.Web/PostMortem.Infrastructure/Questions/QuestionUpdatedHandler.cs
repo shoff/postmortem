@@ -6,10 +6,9 @@
     using Domain;
     using Domain.Questions.Commands;
     using MediatR;
-    using Polly;
     using Zatoichi.Common.Infrastructure.Resilience;
 
-    public class QuestionUpdatedHandler : IRequestHandler<QuestionUpdatedEvent, PolicyResult>
+    public class QuestionUpdatedHandler : INotificationHandler<UpdateQuestionCommand>
     {
         private readonly IExecutionPolicies executionPolicies;
         private readonly IRepository repository;
@@ -22,9 +21,9 @@
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
-        public Task<PolicyResult> Handle(QuestionUpdatedEvent request, CancellationToken cancellationToken)
+        Task INotificationHandler<UpdateQuestionCommand>.Handle(UpdateQuestionCommand notification, CancellationToken cancellationToken)
         {
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.UpdateQuestionAsync(request.Question));
+            throw new System.NotImplementedException();
         }
     }
 }

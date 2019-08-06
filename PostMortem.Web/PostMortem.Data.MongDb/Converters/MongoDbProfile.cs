@@ -10,6 +10,7 @@
         public MongoDbProfile()
         {
             this.CreateMap<DomainProject, Project>().ConvertUsing<ProjectConverter>();
+            this.CreateMap<Project, DomainProject>().ConvertUsing<DomainProjectConverter>();
             this.CreateMap<DomainComment, Comment>().ConvertUsing<CommentConverter>();
             this.CreateMap<DomainQuestion, Question>().ConvertUsing<QuestionConverter>();
         }

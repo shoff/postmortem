@@ -9,7 +9,7 @@
     using Polly;
     using Zatoichi.Common.Infrastructure.Resilience;
 
-    public class CommentUpdatedHandler : IRequestHandler<CommentCommandUpdatedEvent, PolicyResult>
+    public class CommentUpdatedHandler : INotificationHandler<AddCommentCommand>
     {
         private readonly IExecutionPolicies executionPolicies;
         private readonly IRepository repository;
@@ -22,9 +22,9 @@
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
-        public Task<PolicyResult> Handle(CommentCommandUpdatedEvent request, CancellationToken cancellationToken)
+        public Task Handle(AddCommentCommand notification, CancellationToken cancellationToken)
         {
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.UpdateCommentAsync(request.Comment));
+            throw new System.NotImplementedException();
         }
     }
 }

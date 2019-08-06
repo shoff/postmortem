@@ -84,13 +84,7 @@
             }
             var questions = await this.GetQuestionsByProjectIdAsync(project.ProjectId);
 
-            var domainProject = new DomainProject()
-            {
-                EndDate = project.EndDate,
-                ProjectId = project.ProjectId,
-                ProjectName = project.ProjectName,
-                StartDate = project.StartDate
-            };
+            var domainProject = new DomainProject(project.ProjectName, project.StartDate, project.EndDate, project.ProjectId);
             domainProject.AddQuestions(questions);
             return domainProject;
         }
@@ -224,7 +218,13 @@
             throw new NotImplementedException();
         }
 
-
+        public async Task<DomainQuestion> GetQuestionByIdAsync(Guid id)
+        {
+            var questionCursor = await this.Questions.FindAsync(q => q.Id == id).ConfigureAwait(false);
+            var question = questionCursor.FirstOrDefault();
+            return this.mapper.Map<DomainQuestion>(question);
+        }
+        
         public IQueryable<T> All<T>() where T : class, new()
         {
             return this.database.GetCollection<T>(typeof(T).Name).AsQueryable();
@@ -282,6 +282,10 @@
             this.database.GetCollection<T>(typeof(T).Name).InsertMany(items);
             // ReSharper restore PossibleMultipleEnumeration
         }
+
+        public IMongoCollection<Question> Questions => this.database.GetCollection<Question>(Constants.QUESTIONS_COLLECTION);
+        public IMongoCollection<Project> Projects => this.database.GetCollection<Project>(Constants.PROJECTS_COLLECTION);
+        
         public IMongoDatabase Database => this.database;
     }
 }

@@ -22,5 +22,6 @@
         Task DislikeCommentAsync(Guid commentId);
         Task UpdateQuestionAsync(Question question);
         Task UpdateProjectAsync(Project requestProject);
+        Task<Question> GetQuestionByIdAsync(Guid id);
     }
 }
