@@ -1,11 +1,14 @@
 ﻿namespace PostMortem.Domain.Comments
 {
     using System.Collections.Generic;
+    using Newtonsoft.Json;
     using Voters;
 
     public abstract class Disposition
     {
-        public IVoterId VoterId { get; }
+        [JsonProperty]
+        public IVoterId VoterId { get; private set; }
+        [JsonProperty]
         public bool Liked { get; protected set; }
         
         protected Disposition(

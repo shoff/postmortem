@@ -1,13 +1,19 @@
 ﻿namespace PostMortem.Domain.Comments.Commands
 {
     using System;
+    using ChaosMonkey.Guards;
+    using Voters;
     using Zatoichi.EventSourcing;
 
     public class ReplaceCommentCommand : CommentCommand
     {
-        public ReplaceCommentCommand(Comment comment) : base(comment)
+        public ReplaceCommentCommand(Guid commentId, IVoterId voterId)
+            : base(commentId)
         {
+            this.VoterId = Guard.IsNotNull(voterId, nameof(voterId));
         }
+
+        public IVoterId VoterId { get; }
 
         public override void Apply(IEventEntity eventEntity)
         {

@@ -6,6 +6,7 @@
     using Commands;
     using MediatR;
     using Microsoft.Extensions.Options;
+    using Newtonsoft.Json;
     using Queries;
     using Questions;
     using Zatoichi.EventSourcing;
@@ -16,34 +17,34 @@
         private readonly List<INotification> domainEvents;
         private readonly QuestionCollection questions = new QuestionCollection();
 
+        [JsonConstructor]
         public Project()
         {
-            this.ProjectId = Guid.NewGuid();
         }
 
         public Project(string projectName, DateTime startDate, DateTime? endDate, Guid? id)
         {
-            this.ProjectId = id ?? Guid.NewGuid();
+            this.ProjectId = new ProjectId(id ?? Guid.NewGuid());
             this.ProjectName = projectName;
             this.StartDate = startDate;
             this.EndDate = endDate;
         }
 
-        public Guid ProjectId { get; private set; }
+        [JsonProperty]
+        public IProjectId ProjectId { get; private set; }
+        [JsonProperty]
         public string ProjectName { get; private set; }
+        [JsonProperty]
         public DateTime StartDate { get; private set; }
+        [JsonProperty]
         public DateTime? EndDate { get; private set; }
 
+        [JsonProperty]
         public IReadOnlyCollection<Question> Questions
         {
             get
             {
-                if (this.ProjectId == Guid.Empty)
-                {
-                    this.ProjectId = Guid.NewGuid();
-                }
-
-                this.questions.ProjectId = this.ProjectId;
+                this.questions.ProjectId = this.ProjectId.Id;
                 return this.questions;
             }
         }

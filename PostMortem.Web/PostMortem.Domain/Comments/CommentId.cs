@@ -1,16 +1,16 @@
-﻿namespace PostMortem.Domain.Questions
+﻿namespace PostMortem.Domain.Comments
 {
     using System;
     using Newtonsoft.Json;
 
-    public class QuestionId : IQuestionId
+    public class CommentId : ICommentId
     {
-        public QuestionId(Guid id)
+        public CommentId(Guid id)
         {
             this.Id = id;
         }
+
         [JsonProperty]
         public Guid Id { get; private set; }
-
     }
 }

@@ -1,4 +1,5 @@
-﻿namespace PostMortem.Domain.Comments
+﻿// ReSharper disable ParameterHidesMember
+namespace PostMortem.Domain.Comments
 {
     using System;
     using System.Collections;
@@ -31,6 +32,11 @@
         public void Add(Comment comment)
         {
             Guard.IsNotNull(comment, nameof(comment));
+
+            if (comment.ParentId != null)
+            {
+
+            }
             this.comments.Add(comment);
         }
 
@@ -45,7 +51,6 @@
             return this.comments.Contains(comment);
         }
 
-        // ReSharper disable once ParameterHidesMember
         public void CopyTo(Comment[] comments, int arrayIndex)
         {
             this.comments.CopyTo(comments, arrayIndex);

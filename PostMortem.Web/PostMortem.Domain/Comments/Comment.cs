@@ -1,47 +1,45 @@
-﻿namespace PostMortem.Domain.Comments
+﻿// ReSharper disable InconsistentNaming
+namespace PostMortem.Domain.Comments
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using ChaosMonkey.Guards;
-    using Commands;
+    using Newtonsoft.Json;
     using Questions;
     using Zatoichi.EventSourcing;
 
     public sealed class Comment : IEventEntity
     {
-        private Guid commentId = Guid.Empty;
+        internal const string ANONYMOUS_COWARD = "anonymous";
         private readonly int maxCommentTextLength;
         private readonly int maximumDisLikesPerCommentPerVoter;
         private readonly int maximumLikesPerCommentPerVoter;
+
         private readonly HashSet<Disposition> dispositions = new HashSet<Disposition>();
 
         public Comment(
-            Question question)
+            int maximumDisLikesPerCommentPerVoter,
+            int maximumLikesPerCommentPerVoter,
+            int maxCommentTextLength,
+            string commentText,
+            string commenter,
+            IQuestionId questionId,
+            ICommentId parentId = null,
+            ICommentId commentId = null)
         {
-            Guard.IsNotNull(question, nameof(question));
-            this.maximumDisLikesPerCommentPerVoter = question.Options.MaximumDisLikesPerCommentPerVoter;
-            this.maximumLikesPerCommentPerVoter = question.Options.MaximumLikesPerCommentPerVoter;
-            this.maxCommentTextLength = question.Options.CommentMaximumLength;
-            this.QuestionId = question.QuestionId;
+            this.maximumDisLikesPerCommentPerVoter = maximumDisLikesPerCommentPerVoter;
+            this.maximumLikesPerCommentPerVoter = maximumLikesPerCommentPerVoter;
+            this.maxCommentTextLength = maxCommentTextLength;
+            this.CommentText = commentText ?? string.Empty;
+            this.QuestionId = questionId.Id;
+            this.ParentId = parentId;
+            this.CommentId = commentId ?? new CommentId(Guid.NewGuid());
+            this.Commenter = commenter ?? ANONYMOUS_COWARD;
             this.DateAdded = DateTime.UtcNow;
         }
 
-        public Guid CommentId
-        {
-            get
-            {
-                if (this.commentId == Guid.Empty)
-                {
-                    this.commentId = Guid.NewGuid();
-                }
-
-                return this.commentId;
-            }
-            set => this.commentId = value;
-        }
-
-        public CommentCommand Vote(Disposition disposition)
+        public void Vote(Disposition disposition)
         {
             Guard.IsNotNull(disposition, nameof(disposition));
 
@@ -61,52 +59,32 @@
                     this.dispositions.Add(disposition);
                 }
             }
-            // probably shouldn't publish an event if nothing here has been added...
-            if (disposition.Liked)
+        }
+
+        internal void UpdateCommentText(string text)
+        {
+            if (!string.IsNullOrWhiteSpace(text) && text.Length > this.maxCommentTextLength)
             {
-                return new LikeCommentCommand(this, disposition.VoterId);
+                text = text.Substring(0, this.maxCommentTextLength);
             }
-
-            return new DislikeCommentCommand(this, disposition.VoterId);
-
+            this.CommentText = text ?? string.Empty;
         }
-
+        [JsonProperty]
+        public int Order { get; internal set; }
+        [JsonProperty]
+        public ICommentId ParentId { get; internal set; }
+        [JsonProperty]
+        public ICommentId CommentId { get; private set; }
+        [JsonProperty]
         public Guid QuestionId { get; private set; }
-
-        public string CommentText { get; private set; } = string.Empty;
-
+        [JsonProperty]
+        public string CommentText { get; private set; }
         public bool GenerallyPositive => this.Likes > this.Dislikes;
-
+        [JsonProperty]
         public DateTime DateAdded { get; private set; }
-
-        public string Commenter { get; private set; } = string.Empty;
-
+        [JsonProperty]
+        public string Commenter { get; private set; }
         public int Likes => this.dispositions.Sum(d => d.Liked ? 1 : 0);
-
         public int Dislikes => this.dispositions.Sum(d => d.Liked ? 0 : 1);
-
-        public AddCommentCommand AddCommentText(string text)
-        {
-            Guard.IsLessThan(text?.Length ?? 0, this.maxCommentTextLength, nameof(text));
-            this.CommentText = $"{this.CommentText} {text}";
-            return CreateCommentAddedEvent(this);
-        }
-        public ReplaceCommentCommand ReplaceCommentText(string text)
-        {
-            Guard.IsLessThan(text?.Length ?? 0, this.maxCommentTextLength, nameof(text));
-            this.CommentText = text;
-            return CreateCommentReplacedEvent(this);
-        }
-
-        private static ReplaceCommentCommand CreateCommentReplacedEvent(Comment comment)
-        {
-            var eventArgs = new ReplaceCommentCommand(comment);
-            return eventArgs;
-        }
-        private static AddCommentCommand CreateCommentAddedEvent(Comment comment)
-        {
-            var eventArgs = new AddCommentCommand(comment);
-            return eventArgs;
-        }
     }
 }

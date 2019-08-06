@@ -2,76 +2,65 @@
 {
     using System;
     using System.Collections.Generic;
-    using ChaosMonkey.Guards;
     using Commands;
     using Comments;
     using Comments.Commands;
+    using Events;
+    using MediatR;
     using Newtonsoft.Json;
     using Projects;
     using Zatoichi.EventSourcing;
 
     public sealed class Question : Aggregate
     {
+
+        // TODO fix this tonight
+        private List<INotification> domainNotifications = new List<INotification>();
         private readonly int maximumQuestionLength;
+        [JsonProperty]
         private readonly CommentCollection comments = new CommentCollection();
 
-        [JsonConstructor]
         public Question() { }
 
-        public Question(Project project, Guid? id)
+        [JsonConstructor]
+        public Question(
+            string questionText,
+            QuestionOptions questionOptions, 
+            IProjectId projectId,  
+            IQuestionId questionId = null)
         {
-            Guard.IsNotNull(project, nameof(project));
-            this.Options = project.GetOptions().Value;
+            this.Options = questionOptions;
             this.maximumQuestionLength = this.Options.QuestionMaximumLength;
-            this.ProjectId = project.ProjectId;
-            this.QuestionId = id ?? Guid.NewGuid();
+            this.ProjectId = projectId.Id;
+            this.QuestionId = questionId ?? new QuestionId(Guid.NewGuid());
+            this.QuestionText = questionText;
         }
 
         public void AddQuestionText(string text)
         {
-            // Fowler states that the entity shouldn't validate things like string length,
-            // but well Fowler is a Brit and drinks tea, so we don't care what he says. :D
-            // Actually, we really shouldn't because if the spec changes then we have to 
-            // update our entity and then it becomes impossible to recreate from older events 
-            // without doing some crazy stuff
-            Guard.IsLessThan(text?.Length ?? 0, this.maximumQuestionLength, nameof(text));
             this.QuestionText = text;
+            this.domainNotifications.Add(new QuestionTextUpdated(this));
         }
 
-        public AddCommentCommand AddComment(Comment comment)
+        public void AddComment(Comment comment)
         {
             this.comments.Add(comment);
+            
             // Validation happens here
             return new AddCommentCommand(comment);
         }
 
         [JsonProperty]
-        public Guid QuestionId { get; private set; }
+        public IQuestionId QuestionId { get; private set; }
         [JsonProperty]
         public Guid ProjectId { get; private set; }
         [JsonProperty]
         public string QuestionText { get; private set; } = string.Empty;
-
         public int ResponseCount => this.comments.Count;
-
         public int Importance { get; set; } 
-
-        public QuestionOptions Options { get; internal set; }
-
         [JsonProperty]
-        public IReadOnlyCollection<Comment> Comments
-        {
-            get
-            {
-                if (this.QuestionId == Guid.Empty)
-                {
-                    this.QuestionId = Guid.NewGuid();
-                }
-
-                this.comments.QuestionId = this.QuestionId;
-                return this.comments;
-            }
-        }
+        public QuestionOptions Options { get; internal set; }
+        public IReadOnlyCollection<Comment> Comments => this.comments;
 
         public static AddQuestionCommand CreateQuestionAddedEvent(Question question)
         {

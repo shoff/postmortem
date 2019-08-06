@@ -31,7 +31,7 @@
         {
             var result = await this.executionPolicies.QueueExecutionPolicy.ExecuteAndCaptureAsync(async () =>
             {
-                Question question = await this.repository.GetQuestionByIdAsync(notification.Comment.QuestionId);
+                Question question = await this.repository.GetQuestionByIdAsync(notification..QuestionId);
 
                 if (question == null)
                 {

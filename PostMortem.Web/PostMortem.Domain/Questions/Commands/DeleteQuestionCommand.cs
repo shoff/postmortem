@@ -6,7 +6,7 @@
     public class DeleteQuestionCommand : QuestionCommand
     {
         public DeleteQuestionCommand(Question question)
-            : base(question.QuestionId, question.ProjectId, question.QuestionText)
+            : base(question.QuestionId.Id, question.ProjectId, question.QuestionText)
         {
         }
 

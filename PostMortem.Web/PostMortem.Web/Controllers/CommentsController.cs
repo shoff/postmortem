@@ -1,32 +1,38 @@
 ﻿namespace PostMortem.Web.Controllers
 {
     using System;
+    using System.Net;
     using System.Threading.Tasks;
+    using AutoMapper;
     using ChaosMonkey.Guards;
-    using Domain;
     using Domain.Comments.Queries;
     using Domain.Voters;
     using Dtos;
+    using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Zatoichi.Common.Infrastructure.Extensions;
+    using Zatoichi.Common.Infrastructure.Services;
 
     [Route("api/[controller]")]
     [ApiController]
     public class CommentsController : BaseController
     {
-        private readonly IEventBus eventBus;
+        private readonly IMediator mediator;
+        private readonly IMapper mapper;
         private readonly ILogger<CommentsController> logger;
 
         public CommentsController(
-            IEventBus eventBus,
+            IMediator mediator,
+            IMapper mapper,
             INameGeneratorClient nameGenerator,
             IHttpContextAccessor httpContextAccessor,
             ILogger<CommentsController> logger)
             : base(httpContextAccessor, nameGenerator)
         {
-            this.eventBus = eventBus;
+            this.mediator = mediator;
+            this.mapper = mapper;
             this.logger = Guard.IsNotNull(logger, nameof(logger));
         }
 
@@ -36,8 +42,10 @@
             try
             {
                 var query = new GetCommentByIdQuery(questionId, id);
-                var result = await this.eventBus.Process(query);
-                return result.ToActionResult();
+                var result = await this.mediator.Send(query).ConfigureAwait(false);
+                return new ApiResult<CommentDto>(
+                        HttpStatusCode.OK, this.mapper.Map<CommentDto>(result)).ToActionResult();
+                    
             }
             catch (Exception e)
             {

@@ -1,21 +1,21 @@
 ﻿namespace PostMortem.Domain.Comments.Commands
 {
     using System;
+    using ChaosMonkey.Guards;
     using Voters;
     using Zatoichi.EventSourcing;
 
     public class DislikeCommentCommand : CommentCommand
     {
 
-        public DislikeCommentCommand(Comment comment, IVoterId voterId) 
-            : base(comment)
+        public DislikeCommentCommand(Guid commentId, IVoterId voterId)
+            : base(commentId)
         {
-            this.CommentId = comment.CommentId;
-            this.VoterId = voterId;
+            this.VoterId = Guard.IsNotNull(voterId, nameof(voterId));
         }
 
         public IVoterId VoterId { get; }
-        public Guid CommentId { get; }
+
         public override void Apply(IEventEntity eventEntity)
         {
             throw new NotImplementedException();

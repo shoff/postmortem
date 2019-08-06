@@ -7,7 +7,7 @@
     public class AddQuestionCommand : QuestionCommand
     {
         public AddQuestionCommand(Question question)
-            : this(question.QuestionId, question.ProjectId, question.QuestionText)
+            : this(question.QuestionId.Id, question.ProjectId, question.QuestionText)
         {
         }
 

@@ -32,6 +32,14 @@
 * Periodic snapshots of an entitie's state can be saved to help with performance issues.
 * Event validation **MUST** occur in the aggregate.
 
+## DDD
+* DDD event madness 
+
+1. Domain events are just messages pushed to a domain event dispatcher, which could be implemented as an in-memory mediator based on an IoC container or any other method.
+
+1. Integration Events propagate committed transactions and updates to
+additional subsystems, whether they are other microservices, Bounded Contexts or even external applications. Hence, they should occur only if the entity is successfully persisted, otherwise it's as if the entire operation never happened.
+
 ## CQRS
 
 * CQRS basically says that you don’t want one system - reading and writing are different and you should make different decisions for reads and for writes.
@@ -61,7 +69,7 @@
 
 1. What and how should aggregates be created?
 2. What determines when an entity is or isn't an aggregate?
-    * __Almost every activity that results in the creation of an entity or storing of additional information can be traced to a transition from a previous business state. In any transition, the previous state is the aggregate root.__
+    * *Almost every activity that results in the creation of an entity or storing of additional information can be traced to a transition from a previous business state. In any transition, the previous state is the aggregate root.*
 
 ## More Information
 

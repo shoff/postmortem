@@ -3,10 +3,9 @@
     using System.Collections.Generic;
     using System.Linq;
     using AutoFixture;
-    using MediatR;
+    using Data.MongoDb;
     using Moq;
     using Newtonsoft.Json;
-    using PostMortem.Domain.Comments;
     using PostMortem.Domain.Comments.Commands;
     using PostMortem.Domain.Questions;
     using PostMortem.Domain.Voters;
@@ -14,11 +13,13 @@
     using Zatoichi.Common.Infrastructure.Extensions;
     using Zatoichi.Common.UnitTest;
     using Zatoichi.EventSourcing;
+    using Comment = PostMortem.Domain.Comments.Comment;
+    using Question = PostMortem.Domain.Questions.Question;
 
     public class QuestionTests : BaseTest
     {
+        private readonly Project project;
         private readonly QuestionOptions options;
-        private readonly Mock<IMediator> mediator;
         private readonly Question question;
 
         public QuestionTests()
