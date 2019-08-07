@@ -14,7 +14,6 @@
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Swashbuckle.AspNetCore.Swagger;
     using Zatoichi.Common.Infrastructure.Resilience;
-    using Zatoichi.EventSourcing;
     using Zatoichi.EventSourcing.MongoDb;
 
     public static class ServiceExtensions
@@ -33,7 +32,6 @@
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHttpClient<INameGeneratorClient, NameGeneratorClient>();
             services.AddMediatR(typeof(AddCommentHandler).Assembly);
-            services.AddEventSourcing();
             services.AddMongoEventStore();
             return services;
         }

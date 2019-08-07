@@ -86,24 +86,25 @@
             throw new NotImplementedException();
         }
 
-        public void StoreEvent<T>(Event @event)
+        public void StoreEvent<T>(DomainEvent domainEvent)
         {
             throw new NotImplementedException();
         }
 
-        public Task StoreEventAsync<T>(Event @event)
+        public Task StoreEventAsync<T>(DomainEvent domainEvent)
         {
             throw new NotImplementedException();
         }
 
-        public ICollection<Event> Where<T>(Expression<Func<Event, bool>> predicate)
+        public ICollection<DomainEvent> Where<T>(Expression<Func<DomainEvent, bool>> predicate)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ICollection<Event>> GetEventStream<TAggregate>(Guid id) where TAggregate : IAggregate, new()
+        Task<ICollection<DomainEvent>> IEventStore.GetEventStream<TAggregate>(Guid id)
         {
             throw new NotImplementedException();
         }
+
     }
 }

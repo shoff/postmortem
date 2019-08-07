@@ -2,7 +2,7 @@
 {
     using System;
     using ChaosMonkey.Guards;
-    using Domain.Voters;
+    using Infrastructure;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;

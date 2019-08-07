@@ -2,10 +2,9 @@
 {
     using System;
     using Newtonsoft.Json;
-    using Zatoichi.EventSourcing;
     using Zatoichi.EventSourcing.Commands;
 
-    public abstract class QuestionCommand : Event, ICommand
+    public abstract class QuestionCommand : ICommand
     {
         protected QuestionCommand(Guid questionId, Guid projectId, string questionText)
         {

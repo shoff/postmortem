@@ -11,7 +11,6 @@ namespace PostMortem.Domain.Comments
 
     public sealed class Comment : IEntity
     {
-        internal const string ANONYMOUS_COWARD = "anonymous";
         private readonly int maxCommentTextLength;
         private readonly int maximumDisLikesPerCommentPerVoter;
         private readonly int maximumLikesPerCommentPerVoter;
@@ -35,7 +34,7 @@ namespace PostMortem.Domain.Comments
             this.QuestionId = questionId.Id;
             this.ParentId = parentId;
             this.CommentId = commentId ?? new CommentId(Guid.NewGuid());
-            this.Commenter = commenter ?? ANONYMOUS_COWARD;
+            this.Commenter = commenter ?? Constants.ANONYMOUS_COWARD;
             this.DateAdded = DateTime.UtcNow;
         }
 

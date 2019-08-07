@@ -6,6 +6,7 @@
     using Comments.Events;
     using Events;
     using Newtonsoft.Json;
+    using Zatoichi.Common.Infrastructure.Extensions;
     using Zatoichi.EventSourcing;
 
     public sealed class Question : Aggregate
@@ -14,6 +15,7 @@
 
         [JsonProperty]
         private readonly CommentCollection comments = new CommentCollection();
+        public event EventHandler<QuestionTextUpdated> QuestionTextUpdatedEvent;
 
         public Question() { }
 
@@ -33,7 +35,9 @@
         public void AddQuestionText(string text)
         {
             this.QuestionText = text;
-            this.AddDomainEvent(new QuestionTextUpdated(this.QuestionId, text));
+            var domainEvent = new QuestionTextUpdated(this.QuestionId.Id, text);
+            this.AddDomainEvent(domainEvent);
+            this.QuestionTextUpdatedEvent.Raise(this, domainEvent);
         }
 
         public void AddComment(string commentText, string commenter, Guid? commentId = null, Guid? parentId = null)
@@ -78,7 +82,6 @@
         [JsonProperty]
         public QuestionOptions Options { get; internal set; }
         public IReadOnlyCollection<Comment> Comments => this.comments;
-
         public override void ClearPendingEvents()
         {
             lock (this.syncRoot)

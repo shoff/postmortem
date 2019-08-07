@@ -12,7 +12,6 @@
     using Domain.Comments.Events;
     using Domain.Questions;
     using Infrastructure;
-    using MediatR;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using MongoDB.Bson;

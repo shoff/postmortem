@@ -2,6 +2,6 @@
 {
     public interface IVoter
     {
-        VoterId VoterId { get; set; }
+        VoterId VoterId { get; }
     }
 }

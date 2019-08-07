@@ -2,14 +2,11 @@
 {
     public class Voter : IVoter
     {
-        private readonly INameGeneratorClient nameGeneratorClient;
-
-        public Voter(INameGeneratorClient nameGeneratorClient)
+        public Voter(string voterName)
         {
-            this.nameGeneratorClient = nameGeneratorClient;
-            this.VoterId.Id = this.nameGeneratorClient.GetNameAsync().GetAwaiter().GetResult();
+            this.VoterId = new VoterId(voterName);
         }
 
-        public VoterId VoterId { get; set; } = new VoterId();
+        public VoterId VoterId { get; private set; }
     }
 }

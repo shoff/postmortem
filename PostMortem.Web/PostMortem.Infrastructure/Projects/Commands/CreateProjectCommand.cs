@@ -3,12 +3,12 @@
     using System;
     using ChaosMonkey.Guards;
     using Newtonsoft.Json;
-    using Zatoichi.EventSourcing;
     using Zatoichi.EventSourcing.Commands;
 
-    public class CreateProjectCommand : Event, ICommand
+    public class CreateProjectCommand :  ICommand
     {
-        public CreateProjectCommand() { }
+        public CreateProjectCommand() 
+        { }
 
         [JsonConstructor]
         public CreateProjectCommand(

@@ -1,7 +1,21 @@
 ﻿namespace PostMortem.Domain.Voters
 {
-    public class VoterId : IVoterId
+    using System.Collections.Generic;
+    using Newtonsoft.Json;
+
+    public class VoterId : ValueObject, IVoterId
     {
-        public string Id { get; set; }
+        public VoterId(string id)
+        {
+            this.Id = id;
+        }
+
+        [JsonProperty]
+        public string Id { get; private set; }
+
+        protected override IEnumerable<object> GetAtomicValues()
+        {
+            yield return this.Id;
+        }
     }
 }

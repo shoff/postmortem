@@ -6,12 +6,14 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="8.1.1" />
-    <PackageReference Include="MediatR" Version="7.0.0" />
-    <PackageReference Include="Polly" Version="7.1.0" />
     <PackageReference Include="System.Runtime" Version="4.3.1" />
     <PackageReference Include="Zatoichi.Common.Infrastructure" Version="2.0.7" />
-    <PackageReference Include="Zatoichi.EventSourcing" Version="0.0.4.6" />
+    <PackageReference Include="Zatoichi.EventSourcing" Version="0.0.5.4" />
     <PackageReference Include="Zatoichi.ExpressionSerializer" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Projects\Events\" />
   </ItemGroup>
 
 </Project>

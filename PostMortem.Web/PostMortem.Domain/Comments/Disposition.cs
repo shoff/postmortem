@@ -8,6 +8,7 @@
     {
         [JsonProperty]
         public IVoterId VoterId { get; private set; }
+
         [JsonProperty]
         public bool Liked { get; protected set; }
         

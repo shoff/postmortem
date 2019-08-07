@@ -1,24 +1,19 @@
 ﻿namespace PostMortem.Tests.Domain
 {
     using System.Collections.Generic;
-    using System.Linq;
     using AutoFixture;
-    using Infrastructure.Comments.Commands;
-    using MediatR;
-    using Moq;
     using Newtonsoft.Json;
-    using PostMortem.Domain.Projects;
+    using PostMortem.Domain.Comments.Events;
     using PostMortem.Domain.Questions;
     using PostMortem.Domain.Voters;
     using Xunit;
-    using Zatoichi.Common.Infrastructure.Extensions;
     using Zatoichi.Common.UnitTest;
+    using Zatoichi.EventSourcing;
     using Comment = PostMortem.Domain.Comments.Comment;
     using Question = PostMortem.Domain.Questions.Question;
 
     public class QuestionTests : BaseTest
     {
-        private readonly Project project;
         private readonly QuestionOptions options;
         private readonly Question question;
 
@@ -43,8 +38,8 @@
         [Fact]
         public void Apply_Sets_The_Correct_Like_State()
         {
-            var voterId = new Mock<IVoterId>();
-            var likeEvents = new List<LikeCommentCommand>();
+            var voterId = new VoterId("user");
+            var likeEvents = new List<DomainEvent>();
             int i = 0;
             for (; i < 30 && i < this.options.MaximumLikesPerCommentPerVoter; i++)
             {
@@ -55,10 +50,10 @@
                     "comment text",
                     "me",
                     this.question.QuestionId);
-                likeEvents.Add(new LikeCommentCommand(comment.CommentId.Id, voterId.Object));
+                likeEvents.Add(new CommentLiked(comment.CommentId.Id, voterId.Id));
             }
 
-            this.question.AddEvents(likeEvents.Map(e => (INotification)e).ToList());
+            this.question.AddEvents(likeEvents);
             Assert.Equal(i, this.question.Comments.Count);
         }
     }

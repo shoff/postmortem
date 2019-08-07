@@ -1,12 +1,16 @@
 ﻿namespace PostMortem.Domain.Comments.Events
 {
     using System;
-    using MediatR;
     using Newtonsoft.Json;
+    using Zatoichi.EventSourcing;
 
-    public class CommentAdded : INotification
+    public sealed class CommentAdded : DomainEvent
     {
-        public CommentAdded() { }
+        public CommentAdded()
+            : base(VersionRegistry.GetLatestVersionInformation())
+        {
+            this.EventType = this.GetType().FullName;
+        }
 
         [JsonConstructor]
         public CommentAdded(
@@ -18,6 +22,7 @@
             Guid questionId,
             Guid commentId,
             Guid? parentId)
+            : base(VersionRegistry.GetLatestVersionInformation())
         {
             this.MaximumDisLikesPerCommentPerVoter = maximumDisLikesPerCommentPerVoter;
             this.MaximumLikesPerCommentPerVoter = maximumLikesPerCommentPerVoter;
@@ -28,6 +33,7 @@
             this.CommentId = commentId;
             this.ParentId = parentId;
             this.CommitDateTime = DateTime.UtcNow;
+            this.EventType = this.GetType().FullName;
         }
 
         [JsonProperty]
@@ -48,6 +54,9 @@
         public Guid CommentId { get; private set; }
         [JsonProperty]
         public Guid? ParentId { get; private set; }
-
+        [JsonProperty]
+        public override string Body { get; set; }
+        [JsonProperty]
+        public override string EventType { get; protected set; }
     }
 }

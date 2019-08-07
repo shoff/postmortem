@@ -6,6 +6,7 @@
     using ChaosMonkey.Guards;
     using Domain.Voters;
     using Dtos;
+    using Infrastructure;
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
