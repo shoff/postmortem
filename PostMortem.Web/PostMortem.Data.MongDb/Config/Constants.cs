@@ -7,6 +7,6 @@
         public const string PROJECTS_COLLECTION = "projects";
         public const string QUESTIONS_COLLECTION = "questions";
         public const string COMMENTS_COLLECTION = "comments";
-
+        public const string DOMAIN_EVENTS_COLLECTION = "domain_event";
     }
 }

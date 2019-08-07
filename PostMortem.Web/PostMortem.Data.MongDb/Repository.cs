@@ -234,9 +234,11 @@
             await commentCollection.ReplaceOneAsync(filter, comment).ConfigureAwait(false);
         }
 
-        public Task UpdateQuestionAsync(DomainQuestion question)
+        public async Task UpdateQuestionAsync(DomainQuestion question, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            Guard.IsNotNull(question, nameof(question));
+            var esEvents = question.DomainEvents.Map(d => this.mapper.Map<ESEvent>(d)).ToList();
+            await this.DomainEvents.InsertManyAsync(esEvents, this.doBypassMany, cancellationToken);
         }
 
         public Task UpdateProjectAsync(DomainProject requestProject)
@@ -327,7 +329,7 @@
             this.database.GetCollection<T>(typeof(T).Name).InsertMany(items);
             // ReSharper restore PossibleMultipleEnumeration
         }
-
+        private IMongoCollection<ESEvent> DomainEvents => this.database.GetCollection < ESEvent >(Constants.DOMAIN_EVENTS_COLLECTION);
         private IMongoCollection<Question> Questions => this.database.GetCollection<Question>(Constants.QUESTIONS_COLLECTION);
         private IMongoCollection<Project> Projects => this.database.GetCollection<Project>(Constants.PROJECTS_COLLECTION);
         private IMongoCollection<CommentAdded> CommentAddedEvents => this.database.GetCollection<CommentAdded>(typeof(CommentAdded).Name);

@@ -28,7 +28,7 @@
         [Fact]
         public void Questions_Are_Serializable()
         {
-            this.question.AddQuestionText("Woohoo!");
+            this.question.Update("Woohoo!", "joe");
             var json = JsonConvert.SerializeObject(this.question);
             var deserializedQuestion = JsonConvert.DeserializeObject<Question>(json);
             Assert.Equal(this.question.QuestionText, deserializedQuestion.QuestionText);

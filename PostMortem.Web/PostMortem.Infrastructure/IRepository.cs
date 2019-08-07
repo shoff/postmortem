@@ -25,7 +25,7 @@
         Task UpdateCommentAsync(Comment comment);
         Task LikeCommentAsync(Guid commentId);
         Task DislikeCommentAsync(Guid commentId);
-        Task UpdateQuestionAsync(Question question);
+        Task UpdateQuestionAsync(Question question, CancellationToken cancellationToken);
         Task UpdateProjectAsync(Project requestProject);
         Task<Question> GetQuestionByIdAsync(Guid id, bool getSnapshot = false);
     }

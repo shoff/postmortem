@@ -1,6 +1,5 @@
 ﻿namespace PostMortem.Data.MongoDb.Converters
 {
-    using System;
     using AutoMapper;
     using ChaosMonkey.Guards;
     using DomainProject = Domain.Projects.Project;

@@ -15,7 +15,7 @@
 
         [JsonProperty]
         private readonly CommentCollection comments = new CommentCollection();
-        public event EventHandler<QuestionTextUpdated> QuestionTextUpdatedEvent;
+        public event EventHandler<QuestionUpdated> QuestionTextUpdatedEvent;
 
         public Question() { }
 
@@ -32,10 +32,10 @@
             this.QuestionText = questionText;
         }
 
-        public void AddQuestionText(string text)
+        public void Update(string text, string author)
         {
             this.QuestionText = text;
-            var domainEvent = new QuestionTextUpdated(this.QuestionId.Id, text);
+            var domainEvent = new QuestionUpdated(this.QuestionId.Id, text, author);
             this.AddDomainEvent(domainEvent);
             this.QuestionTextUpdatedEvent.Raise(this, domainEvent);
         }
