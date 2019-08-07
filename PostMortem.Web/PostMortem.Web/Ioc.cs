@@ -3,7 +3,6 @@
     using AutoMapper;
     using Converters;
     using Data.MongoDb;
-    using Data.MongoDb.Config;
     using Domain;
     using Domain.Questions;
     using Domain.Voters;
@@ -45,7 +44,7 @@
         {
             services.AddOptions();
             services.Configure<QuestionOptions>(configuration.GetSection("QuestionOptions"));
-            services.Configure<MongoOptions>(configuration.GetSection("MongoOptions"));
+            services.Configure<Data.MongoDb.Config.MongoOptions>(configuration.GetSection("MongoOptions"));
             services.Configure<PolicyOptions>(configuration.GetSection("PolicyOptions"));
             return services;
         }

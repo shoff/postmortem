@@ -5,31 +5,39 @@
 
     public class CommentDto
     {
-        private Guid commentId;
-
-        public Guid CommentId
+        public CommentDto(Guid? commentId = null)
         {
-            get
+            // TODO need to figure out the best way to do this
+            if (commentId.HasValue)
             {
-                if (this.commentId == Guid.Empty)
-                {
-                    this.commentId = Guid.NewGuid();
-                }
-
-                return this.commentId;
+                this.CommentId = (Guid)commentId;
             }
-            set => this.commentId = value;
+            else
+            {
+                this.CommentId = Guid.Empty;
+            }
         }
+        public Guid CommentId { get; set; }
+        public Guid? ParentId { get; set; }
 
         [Required]
         public Guid QuestionId { get; set; }
+
+        [Required]
         [StringLength(1024)]
         public string CommentText { get; set; }
+
         // TODO I will add Machine Sentiment Learning to this property for my ML 80
         public bool GenerallyPositive { get; set; }
+
+        [DataType(DataType.DateTime)]
         public DateTime DateAdded { get; set; } = DateTime.UtcNow;
+
+        [StringLength(80)]
         public string Commenter { get; set; }
+
         public int Likes { get; set; }
+
         public int Dislikes { get; set; }
     }
 }

@@ -5,9 +5,9 @@
     using System.Threading.Tasks;
     using AutoMapper;
     using ChaosMonkey.Guards;
-    using Domain.Comments.Queries;
     using Domain.Voters;
     using Dtos;
+    using Infrastructure.Comments.Queries;
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;

@@ -4,15 +4,15 @@
     using System.Linq;
     using AutoFixture;
     using Data.MongoDb;
+    using Infrastructure.Comments.Commands;
+    using MediatR;
     using Moq;
     using Newtonsoft.Json;
-    using PostMortem.Domain.Comments.Commands;
     using PostMortem.Domain.Questions;
     using PostMortem.Domain.Voters;
     using Xunit;
     using Zatoichi.Common.Infrastructure.Extensions;
     using Zatoichi.Common.UnitTest;
-    using Zatoichi.EventSourcing;
     using Comment = PostMortem.Domain.Comments.Comment;
     using Question = PostMortem.Domain.Questions.Question;
 
@@ -48,11 +48,17 @@
             int i = 0;
             for (; i < 30 && i < this.options.MaximumLikesPerCommentPerVoter; i++)
             {
-                var comment = new Comment(this.question);
-                likeEvents.Add(new LikeCommentCommand(comment, voterId.Object));
+                var comment =  new Comment(
+                    this.question.Options.MaximumDisLikesPerCommentPerVoter,
+                    this.question.Options.MaximumLikesPerCommentPerVoter,
+                    this.question.Options.CommentMaximumLength,
+                    "comment text",
+                    "me",
+                    this.question.QuestionId);
+                likeEvents.Add(new LikeCommentCommand(comment.CommentId.Id, voterId.Object));
             }
 
-            this.question.AddEvents(likeEvents.Map(e => (Event)e).ToList());
+            this.question.AddEvents(likeEvents.Map(e => (INotification)e).ToList());
             Assert.Equal(i, this.question.Comments.Count);
         }
     }

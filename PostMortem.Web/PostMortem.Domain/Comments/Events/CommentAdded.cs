@@ -1,15 +1,53 @@
 ﻿namespace PostMortem.Domain.Comments.Events
 {
-    using ChaosMonkey.Guards;
+    using System;
     using MediatR;
+    using Newtonsoft.Json;
 
     public class CommentAdded : INotification
     {
-        public Comment Comment { get; }
+        public CommentAdded() { }
 
-        public CommentAdded(Comment comment)
+        [JsonConstructor]
+        public CommentAdded(
+            int maximumDisLikesPerCommentPerVoter,
+            int maximumLikesPerCommentPerVoter,
+            int questionMaximumLength,
+            string commentText,
+            string commenter,
+            Guid questionId,
+            Guid commentId,
+            Guid? parentId)
         {
-            Comment = Guard.IsNotNull(comment, nameof(comment));
+            this.MaximumDisLikesPerCommentPerVoter = maximumDisLikesPerCommentPerVoter;
+            this.MaximumLikesPerCommentPerVoter = maximumLikesPerCommentPerVoter;
+            this.QuestionMaximumLength = questionMaximumLength;
+            this.CommentText = commentText;
+            this.Commenter = commenter;
+            this.QuestionId = questionId;
+            this.CommentId = commentId;
+            this.ParentId = parentId;
+            this.CommitDateTime = DateTime.UtcNow;
         }
+
+        [JsonProperty]
+        public DateTime CommitDateTime { get; private set; }
+        [JsonProperty]
+        public int MaximumDisLikesPerCommentPerVoter { get; private set; }
+        [JsonProperty]
+        public int MaximumLikesPerCommentPerVoter { get; private set; }
+        [JsonProperty]
+        public int QuestionMaximumLength { get; private set; }
+        [JsonProperty]
+        public string CommentText { get; private set; }
+        [JsonProperty]
+        public string Commenter { get; private set; }
+        [JsonProperty]
+        public Guid QuestionId { get; private set; }
+        [JsonProperty]
+        public Guid CommentId { get; private set; }
+        [JsonProperty]
+        public Guid? ParentId { get; private set; }
+
     }
 }

@@ -5,9 +5,9 @@
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
     using Domain;
-    using Domain.Projects.Queries;
     using MediatR;
     using Polly;
+    using Queries;
     using Zatoichi.Common.Infrastructure.Resilience;
     using Project = Domain.Projects.Project;
 

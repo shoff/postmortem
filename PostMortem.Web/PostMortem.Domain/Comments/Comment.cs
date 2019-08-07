@@ -9,7 +9,7 @@ namespace PostMortem.Domain.Comments
     using Questions;
     using Zatoichi.EventSourcing;
 
-    public sealed class Comment : IEventEntity
+    public sealed class Comment : IEntity
     {
         internal const string ANONYMOUS_COWARD = "anonymous";
         private readonly int maxCommentTextLength;

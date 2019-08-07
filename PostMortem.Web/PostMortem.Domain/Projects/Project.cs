@@ -3,26 +3,24 @@
     using System;
     using System.Collections.Generic;
     using ChaosMonkey.Guards;
-    using Commands;
-    using MediatR;
-    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
-    using Queries;
     using Questions;
     using Zatoichi.EventSourcing;
 
     public sealed class Project : Aggregate
     {
-
-        private readonly List<INotification> domainEvents;
         private readonly QuestionCollection questions = new QuestionCollection();
 
-        [JsonConstructor]
         public Project()
         {
         }
 
-        public Project(string projectName, DateTime startDate, DateTime? endDate, Guid? id)
+        [JsonConstructor]
+        public Project(
+            string projectName, 
+            DateTime startDate, 
+            DateTime? endDate, 
+            Guid? id = null)
         {
             this.ProjectId = new ProjectId(id ?? Guid.NewGuid());
             this.ProjectName = projectName;
@@ -49,28 +47,10 @@
             }
         }
 
-        public static ProjectGetAllEvent CreateGetAllEventArgs()
-        {
-            return new ProjectGetAllEvent();
-        }
-        public static ProjectGetByIdEvent CreateGetByIdEventArgs(Guid projectId)
-        {
-            return new ProjectGetByIdEvent(projectId);
-        }
-        public static ProjectCreatedEvent CreateProjectCreatedEventArgs(Project project)
-        {
-            return new ProjectCreatedEvent(project);
-        }
-
         public void AddQuestions(ICollection<Question> collection)
         {
             Guard.IsNotNull(collection, nameof(collection));
             this.questions.AddRange(collection);
-        }
-
-        public IOptions<QuestionOptions> GetOptions()
-        {
-            throw new NotImplementedException();
         }
 
         public override void ClearPendingEvents()

@@ -6,8 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="Polly" Version="7.1.0" />
-    <PackageReference Include="Zatoichi.EventSourcing" Version="0.0.3.1" />
-    <PackageReference Include="Zatoichi.EventSourcing.MongoDb" Version="0.0.1.6" />
+    <PackageReference Include="Zatoichi.EventSourcing" Version="0.0.4.6" />
+    <PackageReference Include="Zatoichi.EventSourcing.MongoDb" Version="0.0.1.7" />
     <PackageReference Include="Zatoichi.ExpressionSerializer" Version="1.0.0" />
   </ItemGroup>
 

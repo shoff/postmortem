@@ -4,15 +4,13 @@
     using System.Threading.Tasks;
     using AutoMapper;
     using ChaosMonkey.Guards;
-    using Domain.Projects;
     using Domain.Voters;
     using Dtos;
+    using Infrastructure.Projects.Commands;
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Routing;
-    using Polly;
-    using Zatoichi.Common.Infrastructure.Extensions;
 
     [Route("api/[controller]")]
     [ApiController]
@@ -38,12 +36,12 @@
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var result = await this.mediator.Send(Project.CreateGetAllEventArgs());
-            if (result.Outcome == OutcomeType.Successful)
-            {
-                var projects = result.Result.Map(p => this.mapper.Map<ProjectDto>(p));
-                return this.Ok(projects);
-            }
+            //var result = await this.mediator.Send(Project.CreateGetAllEventArgs());
+            //if (result.Outcome == OutcomeType.Successful)
+            //{
+            //    var projects = result.Result.Map(p => this.mapper.Map<ProjectDto>(p));
+            //    return this.Ok(projects);
+            //}
 
             return new StatusCodeResult(500);
         }
@@ -51,12 +49,12 @@
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var result = await this.mediator.Send(Project.CreateGetByIdEventArgs(id));
-            if (result.Outcome == OutcomeType.Successful)
-            {
-                var project = this.mapper.Map<ProjectDto>(result.Result);
-                return this.Ok(project);
-            }
+            //var result = await this.mediator.Send(Project.CreateGetByIdEventArgs(id));
+            //if (result.Outcome == OutcomeType.Successful)
+            //{
+            //    var project = this.mapper.Map<ProjectDto>(result.Result);
+            //    return this.Ok(project);
+            //}
 
             return new StatusCodeResult(500);
         }
@@ -72,20 +70,8 @@
             }
 
             project.CreatedBy = this.username;
-            var p = new Project(project.ProjectName, project.StartDate, project.EndDate, Guid.NewGuid());
-            var result = await this.mediator.Send(Project.CreateProjectCreatedEventArgs(p));
-
-            if (result.Outcome == OutcomeType.Successful)
-            {
-                var url = this.linkGenerator.GetPathByAction(
-                    this.HttpContext,
-                    controller: "Projects",
-                    action: "GetById",
-                    values: new {id = p.ProjectId});
-
-                return this.Created($"{this.HttpContext.Request.Scheme}//{this.HttpContext.Request.Host}{url}", this.mapper.Map<Project>(p));
-            }
-
+            var p = new CreateProjectCommand(project.ProjectName, project.StartDate, project.EndDate, Guid.NewGuid());
+            await this.mediator.Publish(p);
             return new StatusCodeResult(500);
         }
     }

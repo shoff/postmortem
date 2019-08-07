@@ -20,5 +20,8 @@
         [BsonElement("created_by")]
         public string CreatedBy { get; set; }
 
+        [BsonElement("commit_date")]
+        public DateTime CommitDate { get; set; }
+
     }
 }

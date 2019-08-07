@@ -25,7 +25,25 @@
             {
                 Options = this.options
             };
-            this.comment = new Comment(this.question);
+
+            /*
+                int maximumDisLikesPerCommentPerVoter,
+                int maximumLikesPerCommentPerVoter,
+                int maxCommentTextLength,
+                string commentText,
+                string commenter,
+                IQuestionId questionId,
+                ICommentId parentId = null,
+                ICommentId commentId = null
+             */
+
+            this.comment = new Comment(
+                this.question.Options.MaximumDisLikesPerCommentPerVoter,
+                this.question.Options.MaximumLikesPerCommentPerVoter,
+                this.question.Options.CommentMaximumLength,
+                "comment text",
+                "me",
+                this.question.QuestionId);
         }
 
         [Fact]

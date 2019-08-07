@@ -2,20 +2,18 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq.Expressions;
     using System.Threading.Tasks;
-    using Domain;
     using Domain.Comments;
     using Domain.Projects;
     using Domain.Questions;
     using Zatoichi.EventSourcing;
 
-    public class EventRepository 
+    public class EventRepository : IEventStore
     {
-        private readonly IEventStore eventStore;
 
-        public EventRepository(IEventStore eventStore)
+        public EventRepository()
         {
-            this.eventStore = eventStore;
         }
 
         public Task<ICollection<Project>> GetAllProjectsAsync()
@@ -79,6 +77,31 @@
         }
 
         public Task UpdateProjectAsync(Project requestProject)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T GetLatestSnapShot<T>()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StoreEvent<T>(Event @event)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task StoreEventAsync<T>(Event @event)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICollection<Event> Where<T>(Expression<Func<Event, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ICollection<Event>> GetEventStream<TAggregate>(Guid id) where TAggregate : IAggregate, new()
         {
             throw new NotImplementedException();
         }

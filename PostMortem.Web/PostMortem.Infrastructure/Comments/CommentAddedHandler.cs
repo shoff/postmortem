@@ -3,8 +3,8 @@
     using System.Threading;
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
+    using Commands;
     using Domain;
-    using Domain.Comments.Commands;
     using Domain.Questions;
     using MediatR;
     using Zatoichi.Common.Infrastructure.Resilience;
@@ -26,23 +26,18 @@
             this.eventStore = Guard.IsNotNull(eventStore, nameof(eventStore));
         }
 
-
         public async Task Handle(AddCommentCommand notification, CancellationToken cancellationToken)
         {
-            var result = await this.executionPolicies.QueueExecutionPolicy.ExecuteAndCaptureAsync(async () =>
+            Question question = await this.repository.GetQuestionByIdAsync(notification.QuestionId);
+
+            if (question == null)
             {
-                Question question = await this.repository.GetQuestionByIdAsync(notification..QuestionId);
+                // we have a domain rule that this handler only handles adding comments and that the question must
+                // already exist.
+                throw new QuestionNotFoundException();
+            }
+            question.AddComment(notification.CommentText, notification.Commenter, notification.ParentId);
 
-                if (question == null)
-                {
-                    // we have a domain rule that this handler only handles adding comments and that the question must
-                    // already exist.
-                    throw new QuestionNotFoundException();
-                }
-
-                question.AddComment(notification.Comment);
-            });
         }
-
     }
 }

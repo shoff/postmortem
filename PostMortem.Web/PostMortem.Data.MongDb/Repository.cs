@@ -24,7 +24,7 @@
         private readonly IMapper mapper;
         private readonly ILogger<Repository> logger;
         private readonly IMongoDatabase database;
-        
+
         public Repository(
             IMapper mapper,
             ILogger<Repository> logger,
@@ -61,14 +61,16 @@
             {
                 var projects = this.database.GetCollection<Project>(Constants.PROJECTS_COLLECTION);
                 var mongoProject = this.mapper.Map<Project>(project);
-                await projects.InsertOneAsync(mongoProject);
-                return project.ProjectId;
+                await projects.InsertOneAsync(mongoProject).ConfigureAwait(false);
+
             }
             catch (Exception e)
             {
                 this.logger.LogError(e, e.Message);
                 throw;
-            }  
+            }
+
+            return project.ProjectId.Id;
         }
 
         public async Task<DomainProject> GetByProjectIdAsync(Guid projectId)
@@ -89,7 +91,7 @@
             return domainProject;
         }
 
-        public Task<Guid> AddCommentAsync(DomainComment domainComment)
+        public Task AddCommentAsync(DomainComment domainComment)
         {
             Guard.IsNotNull(domainComment, nameof(domainComment));
             try
@@ -106,7 +108,7 @@
             }
         }
 
-        public Task<Guid> AddQuestionAsync(DomainQuestion domainQuestion)
+        public Task AddQuestionAsync(DomainQuestion domainQuestion)
         {
             // TODO validate the projectId?
             try
@@ -133,6 +135,7 @@
             throw new NotImplementedException();
         }
 
+        // CODE SMELL 
         public async Task<ICollection<DomainQuestion>> GetQuestionsByProjectIdAsync(Guid projectId)
         {
             var questionCollection = this.database.GetCollection<Question>(Constants.QUESTIONS_COLLECTION);
@@ -188,7 +191,7 @@
 
             comment.Likes++;
             var filter = Builders<Comment>.Filter.Eq("comment_id", commentId);
-            await commentCollection.ReplaceOneAsync(filter, comment);
+            await commentCollection.ReplaceOneAsync(filter, comment).ConfigureAwait(false);
         }
 
         public async Task DislikeCommentAsync(Guid commentId)
@@ -205,7 +208,7 @@
 
             comment.Likes--;
             var filter = Builders<Comment>.Filter.Eq("comment_id", commentId);
-            await commentCollection.ReplaceOneAsync(filter, comment);
+            await commentCollection.ReplaceOneAsync(filter, comment).ConfigureAwait(false);
         }
 
         public Task UpdateQuestionAsync(DomainQuestion question)
@@ -214,6 +217,11 @@
         }
 
         public Task UpdateProjectAsync(DomainProject requestProject)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<DomainQuestion> GetQuestionByIdAsync(Guid id, bool getSnapshot = false)
         {
             throw new NotImplementedException();
         }

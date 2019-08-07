@@ -1,14 +1,27 @@
 ﻿namespace PostMortem.Domain.Questions.Events
 {
+    using System;
     using MediatR;
+    using Newtonsoft.Json;
 
     public class QuestionTextUpdated : INotification
     {
-        public Question Question { get; }
-
-        public QuestionTextUpdated(Question question)
+        public QuestionTextUpdated(
+            IQuestionId questionId,
+            string questionText)
         {
-            Question = question;
+            this.QuestionId = questionId;
+            this.QuestionText = questionText;
+            this.CommitDateTime = DateTime.UtcNow;
         }
+
+        [JsonProperty]
+        public DateTime CommitDateTime { get; private set; }
+
+        [JsonProperty]
+        public IQuestionId QuestionId { get; private set; }
+
+        [JsonProperty]
+        public string QuestionText { get; private set; }
     }
 }

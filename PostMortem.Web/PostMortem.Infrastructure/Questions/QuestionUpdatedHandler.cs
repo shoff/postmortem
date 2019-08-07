@@ -3,8 +3,8 @@
     using System.Threading;
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
+    using Commands;
     using Domain;
-    using Domain.Questions.Commands;
     using MediatR;
     using Zatoichi.Common.Infrastructure.Resilience;
 
@@ -21,7 +21,7 @@
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
-        Task INotificationHandler<UpdateQuestionCommand>.Handle(UpdateQuestionCommand notification, CancellationToken cancellationToken)
+        public Task Handle(UpdateQuestionCommand notification, CancellationToken cancellationToken)
         {
             throw new System.NotImplementedException();
         }

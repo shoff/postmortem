@@ -2,21 +2,15 @@
 {
     using System;
     using System.Collections.Generic;
-    using Commands;
     using Comments;
-    using Comments.Commands;
+    using Comments.Events;
     using Events;
-    using MediatR;
     using Newtonsoft.Json;
     using Projects;
     using Zatoichi.EventSourcing;
 
     public sealed class Question : Aggregate
     {
-
-        // TODO fix this tonight
-        private List<INotification> domainNotifications = new List<INotification>();
-        private readonly int maximumQuestionLength;
         [JsonProperty]
         private readonly CommentCollection comments = new CommentCollection();
 
@@ -30,7 +24,6 @@
             IQuestionId questionId = null)
         {
             this.Options = questionOptions;
-            this.maximumQuestionLength = this.Options.QuestionMaximumLength;
             this.ProjectId = projectId.Id;
             this.QuestionId = questionId ?? new QuestionId(Guid.NewGuid());
             this.QuestionText = questionText;
@@ -39,15 +32,35 @@
         public void AddQuestionText(string text)
         {
             this.QuestionText = text;
-            this.domainNotifications.Add(new QuestionTextUpdated(this));
+            this.AddDomainEvent(new QuestionTextUpdated(this.QuestionId, text));
         }
 
-        public void AddComment(Comment comment)
+        public void AddComment(string commentText, string commenter, Guid? parentId = null)
         {
-            this.comments.Add(comment);
+            var comment = new Comment(
+                this.Options.MaximumDisLikesPerCommentPerVoter,
+                this.Options.MaximumLikesPerCommentPerVoter,
+                this.Options.QuestionMaximumLength,
+                commentText,
+                commenter,
+                this.QuestionId,
+                new CommentId(Guid.NewGuid()))
+            {
+                ParentId = parentId != null ? new CommentId((Guid) parentId) : null
+            };
             
-            // Validation happens here
-            return new AddCommentCommand(comment);
+            this.comments.Add(comment); // pseudo snapshot :)
+
+            this.domainEvents.Enqueue(
+                new CommentAdded(
+                    this.Options.MaximumDisLikesPerCommentPerVoter,
+                    this.Options.MaximumLikesPerCommentPerVoter,
+                    this.Options.QuestionMaximumLength,
+                    commentText,
+                    commenter,
+                    this.QuestionId.Id,
+                    comment.CommentId.Id,
+                    parentId));
         }
 
         [JsonProperty]
@@ -61,24 +74,6 @@
         [JsonProperty]
         public QuestionOptions Options { get; internal set; }
         public IReadOnlyCollection<Comment> Comments => this.comments;
-
-        public static AddQuestionCommand CreateQuestionAddedEvent(Question question)
-        {
-            AddQuestionCommand addQuestionCommand = new AddQuestionCommand(question);
-            return addQuestionCommand;
-        }
-
-        public static DeleteQuestionCommand CreateQuestionDeletedEvent(Question question)
-        {
-            var eventArgs = new DeleteQuestionCommand(question);
-            return eventArgs;
-        }
-
-        private static UpdateQuestionCommand CreateQuestionUpdatedEvent(Question question)
-        {
-            var eventArgs = new UpdateQuestionCommand(question);
-            return eventArgs;
-        }
 
         public override void ClearPendingEvents()
         {

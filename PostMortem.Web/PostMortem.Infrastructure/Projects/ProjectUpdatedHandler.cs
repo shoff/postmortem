@@ -3,8 +3,8 @@
     using System.Threading;
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
+    using Commands;
     using Domain;
-    using Domain.Projects.Commands;
     using MediatR;
     using Polly;
     using Zatoichi.Common.Infrastructure.Resilience;

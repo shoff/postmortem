@@ -6,9 +6,9 @@
     using AutoMapper;
     using ChaosMonkey.Guards;
     using Domain;
-    using Domain.Questions.Commands;
-    using Domain.Questions.Queries;
     using Domain.Voters;
+    using Infrastructure.Questions.Commands;
+    using Infrastructure.Questions.Queries;
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;

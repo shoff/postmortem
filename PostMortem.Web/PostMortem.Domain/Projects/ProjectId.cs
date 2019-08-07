@@ -1,6 +1,7 @@
 ﻿namespace PostMortem.Domain.Projects
 {
     using System;
+    using Newtonsoft.Json;
 
     public class ProjectId : IProjectId
     {
@@ -9,6 +10,7 @@
             this.Id = id;
         }
 
-        public Guid Id { get; }
+        [JsonProperty]
+        public Guid Id { get; private set; }
     }
 }
