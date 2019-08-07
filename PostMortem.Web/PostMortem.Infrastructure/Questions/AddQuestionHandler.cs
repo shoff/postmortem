@@ -10,20 +10,27 @@
 
     public class AddQuestionHandler : INotificationHandler<AddQuestionCommand>
     {
-        private readonly IOptions<QuestionOptions> options;
         private readonly IRepository repository;
 
         public AddQuestionHandler(
-            IRepository repository,
-            IOptions<QuestionOptions> options)
+            IRepository repository)
         {
-            this.options = Guard.IsNotNull(options, nameof(options));
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
         public async Task Handle(AddQuestionCommand notification, CancellationToken cancellationToken)
         {
-            var question = new Question(notification.QuestionText, this.options.Value, notification.ProjectId);
+            /*
+                string questionText,
+                Guid projectId,
+                string author,
+                Guid? questionId = null
+             */
+            var question = new Question(
+                notification.QuestionText, 
+                notification.ProjectId,
+                notification.Author);
+            notification.QuestionId = question.QuestionId;
             await this.repository.AddQuestionAsync(question).ConfigureAwait(false);
         }
     }

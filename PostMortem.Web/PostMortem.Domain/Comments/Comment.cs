@@ -4,32 +4,22 @@ namespace PostMortem.Domain.Comments
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using ChaosMonkey.Guards;
     using Newtonsoft.Json;
     using Questions;
     using Zatoichi.EventSourcing;
 
     public sealed class Comment : IEntity
     {
-        private readonly int maxCommentTextLength;
-        private readonly int maximumDisLikesPerCommentPerVoter;
-        private readonly int maximumLikesPerCommentPerVoter;
-
         private readonly HashSet<Disposition> dispositions = new HashSet<Disposition>();
 
         public Comment(
-            int maximumDisLikesPerCommentPerVoter,
-            int maximumLikesPerCommentPerVoter,
-            int maxCommentTextLength,
+
             string commentText,
             string commenter,
             IQuestionId questionId,
             ICommentId parentId = null,
             ICommentId commentId = null)
         {
-            this.maximumDisLikesPerCommentPerVoter = maximumDisLikesPerCommentPerVoter;
-            this.maximumLikesPerCommentPerVoter = maximumLikesPerCommentPerVoter;
-            this.maxCommentTextLength = maxCommentTextLength;
             this.CommentText = commentText ?? string.Empty;
             this.QuestionId = questionId.Id;
             this.ParentId = parentId;
@@ -40,32 +30,11 @@ namespace PostMortem.Domain.Comments
 
         public void Vote(Disposition disposition)
         {
-            Guard.IsNotNull(disposition, nameof(disposition));
-
-            var count = this.dispositions.Count(v => v.VoterId.Id == disposition.VoterId.Id && (bool)v == (bool)disposition);
-
-            if (!disposition)
-            {
-                if (count < this.maximumDisLikesPerCommentPerVoter)
-                {
-                    this.dispositions.Add(disposition);
-                }
-            }
-            else
-            {
-                if (count < this.maximumLikesPerCommentPerVoter)
-                {
-                    this.dispositions.Add(disposition);
-                }
-            }
+            this.dispositions.Add(disposition);
         }
 
         internal void UpdateCommentText(string text)
         {
-            if (!string.IsNullOrWhiteSpace(text) && text.Length > this.maxCommentTextLength)
-            {
-                text = text.Substring(0, this.maxCommentTextLength);
-            }
             this.CommentText = text ?? string.Empty;
         }
         [JsonProperty]

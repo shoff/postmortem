@@ -22,11 +22,11 @@
         [JsonConstructor]
         public Question(
             string questionText,
-            QuestionOptions questionOptions,
             Guid projectId,
+            string author,
             Guid? questionId = null)
         {
-            this.Options = questionOptions;
+            this.Author = author;
             this.ProjectId = projectId;
             this.QuestionId = new QuestionId(questionId ?? Guid.NewGuid());
             this.QuestionText = questionText;
@@ -43,9 +43,6 @@
         public void AddComment(string commentText, string commenter, Guid? commentId = null, Guid? parentId = null)
         {
             var comment = new Comment(
-                this.Options.MaximumDisLikesPerCommentPerVoter,
-                this.Options.MaximumLikesPerCommentPerVoter,
-                this.Options.QuestionMaximumLength,
                 commentText,
                 commenter,
                 this.QuestionId,
@@ -60,9 +57,6 @@
             {
                 this.domainEvents.Enqueue(
                     new CommentAdded(
-                        this.Options.MaximumDisLikesPerCommentPerVoter,
-                        this.Options.MaximumLikesPerCommentPerVoter,
-                        this.Options.QuestionMaximumLength,
                         commentText,
                         commenter,
                         this.QuestionId.Id,
@@ -77,10 +71,10 @@
         public Guid ProjectId { get; private set; }
         [JsonProperty]
         public string QuestionText { get; private set; } = string.Empty;
+        [JsonProperty]
+        public string Author { get; private set; }
         public int ResponseCount => this.comments.Count;
         public int Importance { get; set; }
-        [JsonProperty]
-        public QuestionOptions Options { get; internal set; }
         public IReadOnlyCollection<Comment> Comments => this.comments;
         public override void ClearPendingEvents()
         {

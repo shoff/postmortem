@@ -2,13 +2,16 @@
 {
     using System;
     using System.Collections.Generic;
-    using ChaosMonkey.Guards;
     using Newtonsoft.Json;
     using Questions;
+    using Questions.Events;
+    using Zatoichi.Common.Infrastructure.Extensions;
     using Zatoichi.EventSourcing;
 
     public sealed class Project : Aggregate
     {
+        private readonly object syncRoot = new object();
+        [JsonProperty]
         private readonly QuestionCollection questions = new QuestionCollection();
 
         public Project()
@@ -43,30 +46,34 @@
         [JsonProperty]
         public string UpdatedBy { get; private set; }
         [JsonProperty]
-        public IReadOnlyCollection<Question> Questions
+        public IReadOnlyCollection<Question> Questions => this.questions;
+
+        public void AddQuestion(string questionText, string author)
         {
-            get
+            var question = new Question(questionText, this.ProjectId.Id, author);
+            var domainEvent = new QuestionAdded(this.ProjectId.Id, question.QuestionId.Id, questionText, author);
+
+            lock (this.syncRoot)
             {
-                this.questions.ProjectId = this.ProjectId.Id;
-                return this.questions;
+                this.domainEvents.Enqueue(domainEvent);
             }
+
+            this.QuestionAddedEvent.Raise(this, domainEvent);
         }
 
         public void AddQuestions(ICollection<Question> collection)
         {
-            Guard.IsNotNull(collection, nameof(collection));
             this.questions.AddRange(collection);
         }
 
         public override void ClearPendingEvents()
         {
-            throw new NotImplementedException();
+            lock (this.syncRoot)
+            {
+                this.domainEvents.Clear();
+            }
         }
 
-        public override void ApplyEvents()
-        {
-            throw new NotImplementedException();
-        }
-        
+        public event EventHandler<QuestionAdded> QuestionAddedEvent;
     }
 }

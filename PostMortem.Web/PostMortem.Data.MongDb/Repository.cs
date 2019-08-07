@@ -105,13 +105,13 @@
         public Task AddCommentAsync(CommentAdded comment, CancellationToken cancellationToken)
         {
             var collection = this.database.GetCollection<CommentAdded>(typeof(CommentAdded).Name);
-            return collection.InsertOneAsync(comment, doBypass, cancellationToken);
+            return collection.InsertOneAsync(comment, this.doBypass, cancellationToken);
         }
 
         public Task AddCommentsAsync(ICollection<CommentAdded> comments, CancellationToken cancellationToken)
         {
             var collection = this.database.GetCollection<CommentAdded>(typeof(CommentAdded).Name);
-            return collection.InsertManyAsync(comments, doBypassMany, cancellationToken);
+            return collection.InsertManyAsync(comments, this.doBypassMany, cancellationToken);
         }
 
         public Task AddCommentAsync(DomainComment domainComment)
@@ -252,7 +252,7 @@
             // var events = new List<INotification>();
             
             // get the initial question
-            var questionCursor = await Questions.FindAsync(q=>q.Id == id).ConfigureAwait(false);
+            var questionCursor = await this.Questions.FindAsync(q=>q.Id == id).ConfigureAwait(false);
             var question = questionCursor.FirstOrDefault();
             if (question == null)
             {

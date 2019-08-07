@@ -3,16 +3,13 @@
     using System;
     using System.Net;
     using System.Threading.Tasks;
-    using AutoMapper;
     using ChaosMonkey.Guards;
-    using Domain.Voters;
     using Infrastructure;
     using Infrastructure.Questions.Commands;
     using Infrastructure.Questions.Queries;
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Routing;
     using Microsoft.Extensions.Logging;
     using Dtos;
     using Zatoichi.Common.Infrastructure.Extensions;
@@ -22,30 +19,21 @@
     [ApiController]
     public class QuestionsController : BaseController
     {
-        private readonly IRepository repository;
         private readonly IMediator mediator;
-        private readonly IMapper mapper;
-        private readonly LinkGenerator linkGenerator;
         private readonly ILogger<QuestionsController> logger;
 
         public QuestionsController(
-            IMapper mapper,
             IMediator mediator,
-            LinkGenerator linkGenerator,
             INameGeneratorClient nameGenerator,
             IHttpContextAccessor httpContextAccessor,
-            IRepository repository,
             ILogger<QuestionsController> logger)
             : base(httpContextAccessor, nameGenerator)
         {
-            this.repository = Guard.IsNotNull(repository, nameof(repository));
             this.mediator = Guard.IsNotNull(mediator, nameof(mediator));
-            this.mapper = Guard.IsNotNull(mapper, nameof(mapper));
-            this.linkGenerator = Guard.IsNotNull(linkGenerator, nameof(linkGenerator));
             this.logger = Guard.IsNotNull(logger, nameof(logger));
         }
 
-        [HttpGet]
+        [HttpGet("{id}", Name = "GetQuestionById")]
         public async Task<IActionResult> GetQuestionById(Guid id)
         {
             // this is not exactly how I would like it
@@ -67,11 +55,11 @@
 
             try
             {
-                var command = new AddQuestionCommand(question.ProjectId, question.QuestionText);
+                var command = new AddQuestionCommand(question.ProjectId, question.QuestionText, this.voter.VoterId.Id);
                 await this.mediator.Publish(command);
-
-                // TODO 
-                return new CreatedResult("", null);
+                string id = command.QuestionId == null ? Guid.Empty.ToString() : command.QuestionId.Id.ToString();
+                string url = $"https://localhost:5500/api/question/GetQuestionById?id={id}";
+                return new CreatedResult(new Uri(url), id);
             }
             catch (Exception e)
             {

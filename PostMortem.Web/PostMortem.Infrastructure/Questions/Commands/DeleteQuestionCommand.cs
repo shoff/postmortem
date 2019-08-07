@@ -1,19 +1,25 @@
 ﻿namespace PostMortem.Infrastructure.Questions.Commands
 {
     using System;
-    using Domain.Questions;
-    using Zatoichi.EventSourcing;
+    using Newtonsoft.Json;
+    using Zatoichi.EventSourcing.Commands;
 
-    public class DeleteQuestionCommand : QuestionCommand
+    public class DeleteQuestionCommand : ICommand
     {
-        public DeleteQuestionCommand(Question question)
-            : base(question.QuestionId.Id, question.ProjectId, question.QuestionText)
+        public DeleteQuestionCommand(
+            Guid questionId,
+            string author)
         {
+            this.QuestionId = questionId;
+            this.Author = author;
+            this.Description = $"Marking question with Id {questionId} as deleted.";
         }
 
-        public void Apply(IEntity eventEntity)
-        {
-            throw new NotImplementedException();
-        }
+        [JsonProperty]
+        public Guid QuestionId { get; private set; }
+        [JsonProperty]
+        public string Author { get; private set; }
+        [JsonProperty]
+        public string Description { get; set; }
     }
 }

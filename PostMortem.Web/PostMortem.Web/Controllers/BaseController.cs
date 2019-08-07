@@ -2,6 +2,7 @@
 {
     using System;
     using ChaosMonkey.Guards;
+    using Domain.Voters;
     using Infrastructure;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@
 
     public abstract class BaseController : ControllerBase
     {
+        protected Voter voter;
         protected string username;
         protected readonly IHttpContextAccessor httpContextAccessor;
         private readonly INameGeneratorClient nameGenerator;
@@ -53,6 +55,8 @@
 
                 this.Set("username", this.username, null);
             }
+
+            this.voter = new Voter(this.username);
             this.logger?.LogInformation($"//---------------- Setting username to {this.username} ----------------/");
         }
 

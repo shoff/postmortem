@@ -22,7 +22,6 @@
             this.options = this.fixture.Create<QuestionOptions>();
             this.question = new Question
             {
-                Options = this.options
             };
         }
 
@@ -44,9 +43,6 @@
             for (; i < 30 && i < this.options.MaximumLikesPerCommentPerVoter; i++)
             {
                 var comment =  new Comment(
-                    this.question.Options.MaximumDisLikesPerCommentPerVoter,
-                    this.question.Options.MaximumLikesPerCommentPerVoter,
-                    this.question.Options.CommentMaximumLength,
                     "comment text",
                     "me",
                     this.question.QuestionId);

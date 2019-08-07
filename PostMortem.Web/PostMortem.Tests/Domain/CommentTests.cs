@@ -2,7 +2,6 @@
 {
     using System;
     using AutoFixture;
-    using MediatR;
     using Moq;
     using PostMortem.Domain.Comments;
     using PostMortem.Domain.Questions;
@@ -15,16 +14,11 @@
         private readonly QuestionOptions options;
         private readonly Comment comment;
         private readonly Question question;
-        private readonly Mock<IMediator> mediator;
 
         public CommentTests()
         {
             this.options = this.fixture.Create<QuestionOptions>();
-            this.mediator = new Mock<IMediator>();
-            this.question = new Question()
-            {
-                Options = this.options
-            };
+            this.question = new Question();
 
             /*
                 int maximumDisLikesPerCommentPerVoter,
@@ -38,9 +32,6 @@
              */
 
             this.comment = new Comment(
-                this.question.Options.MaximumDisLikesPerCommentPerVoter,
-                this.question.Options.MaximumLikesPerCommentPerVoter,
-                this.question.Options.CommentMaximumLength,
                 "comment text",
                 "me",
                 this.question.QuestionId);
@@ -60,7 +51,6 @@
         [Fact]
         public void Voter_May_Not_Exceed_Allowed_Likes_For_Any_Given_Comment()
         {
-
             var voterId = new Mock<IVoterId>();
             var id = Guid.NewGuid().ToString();
             voterId.SetupGet(i => i.Id).Returns(id);
@@ -89,6 +79,5 @@
             }
             Assert.Equal(this.options.MaximumDisLikesPerCommentPerVoter, this.comment.Dislikes);
         }
-
     }
 }

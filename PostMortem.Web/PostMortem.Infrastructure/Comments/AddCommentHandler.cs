@@ -1,28 +1,21 @@
 ﻿namespace PostMortem.Infrastructure.Comments
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
     using Commands;
     using Domain.Questions;
     using MediatR;
-    using Zatoichi.Common.Infrastructure.Resilience;
-    using Zatoichi.EventSourcing;
 
     public class AddCommentHandler : INotificationHandler<AddCommentCommand>
     {
         private readonly IRepository repository;
-        private readonly IExecutionPolicies executionPolicies;
-        private readonly IEventStore eventStore;
 
         public AddCommentHandler(
-            IRepository repository,
-            IEventStore eventStore,
-            IExecutionPolicies executionPolicies)
+            IRepository repository)
         {
             this.repository = Guard.IsNotNull(repository, nameof(repository));
-            this.executionPolicies = Guard.IsNotNull(executionPolicies, nameof(executionPolicies));
-            this.eventStore = Guard.IsNotNull(eventStore, nameof(eventStore));
         }
 
         public async Task Handle(AddCommentCommand notification, CancellationToken cancellationToken)
