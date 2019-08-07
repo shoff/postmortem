@@ -1,18 +1,23 @@
-﻿namespace PostMortem.Domain
+﻿namespace PostMortem.Infrastructure
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
-    using Comments;
-    using Projects;
-    using Questions;
+    using Domain.Comments;
+    using Domain.Comments.Events;
+    using Domain.Projects;
+    using Domain.Questions;
 
     public interface IRepository
     {
         Task<ICollection<Project>> GetAllProjectsAsync();
         Task<Guid> CreateProjectAsync(Project project);
         Task<Project> GetByProjectIdAsync(Guid projectId);
-        Task AddCommentAsync(Comment comment);
+
+        // Comments can only be added through the question as events
+        Task AddCommentAsync(CommentAdded comment, CancellationToken cancellationToken);
+        Task AddCommentsAsync(ICollection<CommentAdded> comments, CancellationToken cancellationToken);
         Task AddQuestionAsync(Question question);
         Task DeleteQuestionAsync(Guid questionId);
         Task DeleteCommentAsync(Guid questionId);

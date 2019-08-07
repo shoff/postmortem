@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PostMortem.Data.MongDb\PostMortem.Data.MongoDb.csproj" />
     <ProjectReference Include="..\PostMortem.Domain\PostMortem.Domain.csproj" />
     <ProjectReference Include="..\PostMortem.Dtos\PostMortem.Dtos.csproj" />
   </ItemGroup>

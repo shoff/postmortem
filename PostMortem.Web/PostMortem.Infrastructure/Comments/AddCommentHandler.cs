@@ -4,19 +4,18 @@
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
     using Commands;
-    using Domain;
     using Domain.Questions;
     using MediatR;
     using Zatoichi.Common.Infrastructure.Resilience;
     using Zatoichi.EventSourcing;
 
-    public class CommentAddedHandler : INotificationHandler<AddCommentCommand>
+    public class AddCommentHandler : INotificationHandler<AddCommentCommand>
     {
         private readonly IRepository repository;
         private readonly IExecutionPolicies executionPolicies;
         private readonly IEventStore eventStore;
 
-        public CommentAddedHandler(
+        public AddCommentHandler(
             IRepository repository,
             IEventStore eventStore,
             IExecutionPolicies executionPolicies)

@@ -2,11 +2,11 @@
 {
     using System;
     using Domain.Questions;
+    using Dtos;
     using MediatR;
 
-    public class GetQuestionByIdQuery : IRequest<Question>
+    public class GetQuestionByIdQuery : IRequest<QuestionDto>
     {
-
         public GetQuestionByIdQuery(Guid id)
         {
             this.Id = id;

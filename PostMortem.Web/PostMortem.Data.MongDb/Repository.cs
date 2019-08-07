@@ -4,11 +4,15 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using ChaosMonkey.Guards;
     using Config;
-    using Domain;
+    using Domain.Comments.Events;
+    using Domain.Questions;
+    using Infrastructure;
+    using MediatR;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using MongoDB.Bson;
@@ -24,6 +28,12 @@
         private readonly IMapper mapper;
         private readonly ILogger<Repository> logger;
         private readonly IMongoDatabase database;
+
+        private readonly InsertOneOptions doBypass = new InsertOneOptions {BypassDocumentValidation = true };
+        private readonly InsertOneOptions doNotBypass = new InsertOneOptions {BypassDocumentValidation = false };
+        private readonly InsertManyOptions doBypassMany = new InsertManyOptions { BypassDocumentValidation = true };
+        private readonly InsertManyOptions doNotBypassMany = new InsertManyOptions { BypassDocumentValidation = false };
+
 
         public Repository(
             IMapper mapper,
@@ -89,6 +99,18 @@
             var domainProject = new DomainProject(project.ProjectName, project.StartDate, project.EndDate, project.ProjectId);
             domainProject.AddQuestions(questions);
             return domainProject;
+        }
+
+        public Task AddCommentAsync(CommentAdded comment, CancellationToken cancellationToken)
+        {
+            var collection = this.database.GetCollection<CommentAdded>(typeof(CommentAdded).Name);
+            return collection.InsertOneAsync(comment, doBypass, cancellationToken);
+        }
+
+        public Task AddCommentsAsync(ICollection<CommentAdded> comments, CancellationToken cancellationToken)
+        {
+            var collection = this.database.GetCollection<CommentAdded>(typeof(CommentAdded).Name);
+            return collection.InsertManyAsync(comments, doBypassMany, cancellationToken);
         }
 
         public Task AddCommentAsync(DomainComment domainComment)
@@ -221,18 +243,32 @@
             throw new NotImplementedException();
         }
 
-        public Task<DomainQuestion> GetQuestionByIdAsync(Guid id, bool getSnapshot = false)
+        public async Task<DomainQuestion> GetQuestionByIdAsync(Guid id, bool getSnapshot = false)
         {
-            throw new NotImplementedException();
+            // here is where it get's tricky
+            // the idea for the List<INotification>() is to add all events that
+            // relate to the question, sort them, then add them in order, if I have time I'll pursue it later..
+            // var events = new List<INotification>();
+            
+            // get the initial question
+            var questionCursor = await Questions.FindAsync(q=>q.Id == id).ConfigureAwait(false);
+            var question = questionCursor.FirstOrDefault();
+            if (question == null)
+            {
+                throw new QuestionNotFoundException();
+            }
+
+            var questionEntity = this.mapper.Map<DomainQuestion>(question);
+
+            // ok so I know there are comment events not sure if this the best way to approach this, guess I'll find out :)
+            var commentsCursor = await this.CommentAddedEvents.FindAsync(c => c.QuestionId == id).ConfigureAwait(false);
+            await commentsCursor.ForEachAsync(c =>
+                questionEntity.AddComment(c.CommentText, c.Commenter, c.CommentId, c.ParentId));
+
+            questionEntity.ClearPendingEvents();
+            return questionEntity;
         }
 
-        public async Task<DomainQuestion> GetQuestionByIdAsync(Guid id)
-        {
-            var questionCursor = await this.Questions.FindAsync(q => q.Id == id).ConfigureAwait(false);
-            var question = questionCursor.FirstOrDefault();
-            return this.mapper.Map<DomainQuestion>(question);
-        }
-        
         public IQueryable<T> All<T>() where T : class, new()
         {
             return this.database.GetCollection<T>(typeof(T).Name).AsQueryable();
@@ -291,9 +327,9 @@
             // ReSharper restore PossibleMultipleEnumeration
         }
 
-        public IMongoCollection<Question> Questions => this.database.GetCollection<Question>(Constants.QUESTIONS_COLLECTION);
-        public IMongoCollection<Project> Projects => this.database.GetCollection<Project>(Constants.PROJECTS_COLLECTION);
-        
-        public IMongoDatabase Database => this.database;
+        private IMongoCollection<Question> Questions => this.database.GetCollection<Question>(Constants.QUESTIONS_COLLECTION);
+        private IMongoCollection<Project> Projects => this.database.GetCollection<Project>(Constants.PROJECTS_COLLECTION);
+        private IMongoCollection<CommentAdded> CommentAddedEvents => this.database.GetCollection<CommentAdded>(typeof(CommentAdded).Name);
+        private IMongoDatabase Database => this.database;
     }
 }

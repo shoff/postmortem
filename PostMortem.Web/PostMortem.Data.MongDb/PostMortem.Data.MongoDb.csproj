@@ -16,6 +16,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PostMortem.Domain\PostMortem.Domain.csproj" />
+    <ProjectReference Include="..\PostMortem.Dtos\PostMortem.Dtos.csproj" />
+    <ProjectReference Include="..\PostMortem.Infrastructure\PostMortem.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

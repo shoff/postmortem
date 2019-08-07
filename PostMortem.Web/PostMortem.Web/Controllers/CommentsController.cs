@@ -1,19 +1,15 @@
 ﻿namespace PostMortem.Web.Controllers
 {
     using System;
-    using System.Net;
     using System.Threading.Tasks;
     using AutoMapper;
     using ChaosMonkey.Guards;
     using Domain.Voters;
     using Dtos;
-    using Infrastructure.Comments.Queries;
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using Zatoichi.Common.Infrastructure.Extensions;
-    using Zatoichi.Common.Infrastructure.Services;
 
     [Route("api/[controller]")]
     [ApiController]
@@ -34,24 +30,6 @@
             this.mediator = mediator;
             this.mapper = mapper;
             this.logger = Guard.IsNotNull(logger, nameof(logger));
-        }
-
-        [HttpGet("{questionId}/{id}")]
-        public async Task<IActionResult> GetById(Guid questionId, Guid id)
-        {
-            try
-            {
-                var query = new GetCommentByIdQuery(questionId, id);
-                var result = await this.mediator.Send(query).ConfigureAwait(false);
-                return new ApiResult<CommentDto>(
-                        HttpStatusCode.OK, this.mapper.Map<CommentDto>(result)).ToActionResult();
-                    
-            }
-            catch (Exception e)
-            {
-                this.logger.LogError(e, e.Message);
-                return new StatusCodeResult(500);
-            }
         }
 
         [HttpPost]
@@ -78,7 +56,7 @@
                 //    var url = this.linkGenerator.GetPathByAction(
                 //        this.HttpContext,
                 //        controller: "Questions",
-                //        action: "GetById",
+                //        action: "GetForQuestion",
                 //        values: new { id = comment.CommentId });
 
                 //    return this.Created($"{this.HttpContext.Request.Scheme}//{this.HttpContext.Request.Host}{url}", comment);

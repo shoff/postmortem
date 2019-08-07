@@ -7,6 +7,7 @@
     using ChaosMonkey.Guards;
     using Domain;
     using Domain.Voters;
+    using Infrastructure;
     using Infrastructure.Questions.Commands;
     using Infrastructure.Questions.Queries;
     using MediatR;
@@ -14,7 +15,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Routing;
     using Microsoft.Extensions.Logging;
-    using PostMortem.Dtos;
+    using Dtos;
     using Zatoichi.Common.Infrastructure.Extensions;
     using Zatoichi.Common.Infrastructure.Services;
 
@@ -46,12 +47,12 @@
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetQuestionById(Guid id)
         {
             // this is not exactly how I would like it
             var request = new GetQuestionByIdQuery(id);
             var result = await this.mediator.Send(request).ConfigureAwait(false);
-            var apiResult = new ApiResult<QuestionDto>(HttpStatusCode.OK, this.mapper.Map<QuestionDto>(result));
+            var apiResult = new ApiResult<QuestionDto>(HttpStatusCode.OK, result);
             return apiResult.ToActionResult();
         }
 
@@ -67,7 +68,7 @@
 
             try
             {
-                var command = new AddQuestionCommand(question.QuestionId, question.ProjectId, question.QuestionText);
+                var command = new AddQuestionCommand(question.ProjectId, question.QuestionText);
                 await this.mediator.Publish(command);
 
                 // TODO 

@@ -3,11 +3,11 @@
     using System.Collections.Generic;
     using System.Linq;
     using AutoFixture;
-    using Data.MongoDb;
     using Infrastructure.Comments.Commands;
     using MediatR;
     using Moq;
     using Newtonsoft.Json;
+    using PostMortem.Domain.Projects;
     using PostMortem.Domain.Questions;
     using PostMortem.Domain.Voters;
     using Xunit;

@@ -3,7 +3,6 @@
     using AutoMapper;
     using Converters;
     using Data.MongoDb;
-    using Domain;
     using Domain.Questions;
     using Domain.Voters;
     using Infrastructure;
@@ -33,8 +32,7 @@
             services.AddTransient<IRepository, Repository>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHttpClient<INameGeneratorClient, NameGeneratorClient>();
-            services.AddMediatR(typeof(CommentAddedHandler).Assembly);
-            services.AddTransient<IEventBus, EventBus>();
+            services.AddMediatR(typeof(AddCommentHandler).Assembly);
             services.AddEventSourcing();
             services.AddMongoEventStore();
             return services;
