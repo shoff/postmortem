@@ -1,5 +1,6 @@
 ﻿namespace PostMortem.Data.MongoDb.Converters
 {
+    using System;
     using AutoMapper;
     using ChaosMonkey.Guards;
     using DomainProject = Domain.Projects.Project;
@@ -10,12 +11,11 @@
         public Project Convert(DomainProject source, Project destination, ResolutionContext context)
         {
             Guard.IsNotNull(source, nameof(source));
-            Guard.IsNotNull(destination, nameof(destination));
-            Guard.IsNotNull(context, nameof(context));
-
+            // TODO configure default project length
             destination = new Project
             {
-                EndDate = source.EndDate,
+                StartDate = source.StartDate,
+                EndDate = source.EndDate ?? source.StartDate.AddYears(1),
                 ProjectId = source.ProjectId.Id,
                 ProjectName = source.ProjectName
             };

@@ -4,21 +4,16 @@
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
     using Commands;
-    using Domain;
     using Domain.Projects;
     using MediatR;
-    using Zatoichi.Common.Infrastructure.Resilience;
 
     public class CreateProjectHandler : INotificationHandler<CreateProjectCommand>
     {
-        private readonly IExecutionPolicies executionPolicies;
         private readonly IRepository repository;
 
         public CreateProjectHandler(
-            IRepository repository,
-            IExecutionPolicies executionPolicies)
+            IRepository repository)
         {
-            this.executionPolicies = Guard.IsNotNull(executionPolicies, nameof(executionPolicies));
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
@@ -26,6 +21,7 @@
         {
             var project = new Project(
                 notification.ProjectName,
+                notification.CreatedBy,
                 notification.StartDate,
                 notification.EndDate);
 

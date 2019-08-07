@@ -11,51 +11,39 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Routing;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     [Route("api/[controller]")]
     [ApiController]
     public class ProjectsController : BaseController
     {
+        private readonly ILogger<ProjectsController> logger;
         private readonly IMediator mediator;
         private readonly LinkGenerator linkGenerator;
-        private readonly IMapper mapper;
 
         public ProjectsController(
             IMediator mediator,
-            IMapper mapper,
             INameGeneratorClient nameGenerator,
             LinkGenerator linkGenerator,
+            ILogger<ProjectsController> logger,
             IHttpContextAccessor httpContextAccessor)
-            : base(httpContextAccessor, nameGenerator)
+            : base(logger, httpContextAccessor, nameGenerator)
         {
-            this.mediator = Guard.IsNotNull(mediator, nameof(mediator));
+            this.logger = Guard.IsNotNull(logger, nameof(logger));
             this.linkGenerator = Guard.IsNotNull(linkGenerator, nameof(linkGenerator));
-            this.mapper = Guard.IsNotNull(mapper, nameof(mapper));
+            this.mediator = Guard.IsNotNull(mediator, nameof(mediator));
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            //var result = await this.mediator.Send(Project.CreateGetAllEventArgs());
-            //if (result.Outcome == OutcomeType.Successful)
-            //{
-            //    var projects = result.Result.Map(p => this.mapper.Map<ProjectDto>(p));
-            //    return this.Ok(projects);
-            //}
-
             return new StatusCodeResult(500);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetProjectById")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            //var result = await this.mediator.Send(Project.CreateGetByIdEventArgs(id));
-            //if (result.Outcome == OutcomeType.Successful)
-            //{
-            //    var project = this.mapper.Map<ProjectDto>(result.Result);
-            //    return this.Ok(project);
-            //}
-
             return new StatusCodeResult(500);
         }
 
@@ -69,10 +57,17 @@
                 return this.BadRequest(this.ModelState);
             }
 
-            project.CreatedBy = this.username;
-            var p = new CreateProjectCommand(project.ProjectName, project.StartDate, project.EndDate, Guid.NewGuid());
-            await this.mediator.Publish(p);
-            return new StatusCodeResult(500);
+            var command = new CreateProjectCommand(project.ProjectName, this.username, project.StartDate, project.EndDate, Guid.NewGuid());
+            try
+            {
+                await this.mediator.Publish(command);
+                return this.Created(new Uri("http://localhost:5500/Project/"), JsonConvert.SerializeObject(project));
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError(e, e.Message);
+                return new StatusCodeResult(500);
+            }
         }
     }
 

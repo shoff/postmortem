@@ -5,7 +5,6 @@
     using System.Threading.Tasks;
     using AutoMapper;
     using ChaosMonkey.Guards;
-    using Domain;
     using Domain.Voters;
     using Infrastructure;
     using Infrastructure.Questions.Commands;

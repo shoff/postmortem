@@ -6,12 +6,10 @@
 
     public class DomainProjectConverter : ITypeConverter<Project, DomainProject>
     {
-        public Domain.Projects.Project Convert(Project source, DomainProject destination, ResolutionContext context)
+        public DomainProject Convert(Project source, DomainProject destination, ResolutionContext context)
         {
             Guard.IsNotNull(source, nameof(source));
-            Guard.IsNotNull(destination, nameof(destination));
-            Guard.IsNotNull(context, nameof(context));
-            destination = new DomainProject(source.ProjectName, source.StartDate, source.EndDate, source.ProjectId);
+            destination = new DomainProject(source.ProjectName, source.CreatedBy, source.StartDate, source.EndDate, source.ProjectId);
             return destination;
         }
     }

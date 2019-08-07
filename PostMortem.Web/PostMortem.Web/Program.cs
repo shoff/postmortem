@@ -1,19 +1,20 @@
 ﻿namespace PostMortem.Web
 {
     using System;
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Serilog;
     using Serilog.Events;
 
-    public class Program
+    public static class Program
     {
         internal static string HostingEnvironment =>
             Environment.GetEnvironmentVariable("DOTNETCORE_ENVIRONMENT", EnvironmentVariableTarget.Process) ??
             Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", EnvironmentVariableTarget.Process);
 
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var serilogConfiguration = new ConfigurationBuilder()
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
@@ -28,7 +29,7 @@
                 .ReadFrom.Configuration(serilogConfiguration)
                 .CreateLogger();
 
-            CreateWebHostBuilder(args).Run();
+            await CreateWebHostBuilder(args).RunAsync();
         }
 
         public static IWebHost CreateWebHostBuilder(string[] args)

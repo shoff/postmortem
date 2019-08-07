@@ -17,13 +17,15 @@
 
         [JsonConstructor]
         public Project(
-            string projectName, 
+            string projectName,
+            string createdBy,
             DateTime startDate, 
             DateTime? endDate, 
             Guid? id = null)
         {
             this.ProjectId = new ProjectId(id ?? Guid.NewGuid());
             this.ProjectName = projectName;
+            this.CreatedBy = createdBy;
             this.StartDate = startDate;
             this.EndDate = endDate;
         }
@@ -36,7 +38,10 @@
         public DateTime StartDate { get; private set; }
         [JsonProperty]
         public DateTime? EndDate { get; private set; }
-
+        [JsonProperty]
+        public string CreatedBy { get; private set; }
+        [JsonProperty]
+        public string UpdatedBy { get; private set; }
         [JsonProperty]
         public IReadOnlyCollection<Question> Questions
         {

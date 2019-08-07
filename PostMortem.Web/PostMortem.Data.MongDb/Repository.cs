@@ -69,6 +69,8 @@
         {
             try
             {
+                Guard.IsNotNull(project, nameof(project));
+
                 var projects = this.database.GetCollection<Project>(Constants.PROJECTS_COLLECTION);
                 var mongoProject = this.mapper.Map<Project>(project);
                 await projects.InsertOneAsync(mongoProject).ConfigureAwait(false);
@@ -96,7 +98,7 @@
             }
             var questions = await this.GetQuestionsByProjectIdAsync(project.ProjectId);
 
-            var domainProject = new DomainProject(project.ProjectName, project.StartDate, project.EndDate, project.ProjectId);
+            var domainProject = new DomainProject(project.ProjectName, project.CreatedBy, project.StartDate, project.EndDate, project.ProjectId);
             domainProject.AddQuestions(questions);
             return domainProject;
         }
