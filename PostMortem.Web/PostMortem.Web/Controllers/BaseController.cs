@@ -69,7 +69,6 @@
             };
 
             this.httpContextAccessor.HttpContext.Response.Cookies.Append(key, value, option);
-            var validateCookie = this.httpContextAccessor.HttpContext.Request.Cookies["username"];
         }
     }
 }
