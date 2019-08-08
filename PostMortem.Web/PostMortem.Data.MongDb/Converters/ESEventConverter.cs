@@ -18,7 +18,7 @@
             destination = new EsEvent
             {
                 Body = JsonConvert.SerializeObject(source),
-                EventType = Type.GetType(source.EventType),
+                EventType = source.EventType,
                 CommitDate = source.CommitDate
             };
 
@@ -26,6 +26,7 @@
 
             if (source is CommentEvent commentEvent)
             {
+                destination.QuestionId = commentEvent.QuestionId;
                 destination.CommentId = commentEvent.CommentId;
                 destination.VoterId = commentEvent.VoterId;
             }

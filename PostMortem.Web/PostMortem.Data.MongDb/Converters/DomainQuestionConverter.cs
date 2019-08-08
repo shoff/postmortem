@@ -8,8 +8,13 @@
         public Domain.Questions.Question Convert(Question source, Domain.Questions.Question destination, ResolutionContext context)
         {
             Guard.IsNotNull(source, nameof(source));
-            destination =
-                new Domain.Questions.Question(source.QuestionText, source.ProjectId, source.Author, source.QuestionId);
+            destination = new Domain.Questions.Question(
+                    source.QuestionText, 
+                    source.ProjectId, 
+                    source.Author,
+                    source.CommitDate, 
+                    source.QuestionId);
+
             return destination;
         }
     }

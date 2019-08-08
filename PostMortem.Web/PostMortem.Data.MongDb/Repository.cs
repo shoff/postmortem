@@ -91,6 +91,67 @@
             domainProject.AddQuestions(questions);
             return domainProject;
         }
+
+        public Task UpdateProjectAsync(DomainProject requestProject, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+      
+        // CODE SMELL 
+        public async Task<ICollection<DomainQuestion>> GetQuestionsByProjectIdAsync(Guid projectId, bool replay, CancellationToken cancellationToken)
+        {
+            var mongoQuestions = await this.Questions.FindAsync(f => f.ProjectId == projectId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var questions = await mongoQuestions.ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            List<DomainQuestion> domainQuestions = questions.Map(q => this.mapper.Map<DomainQuestion>(q)).ToList();
+
+            if (replay)
+            {
+                foreach (var question in domainQuestions)
+                {
+                    var lastCommit = (from quest in questions
+                        where quest.QuestionId == question.QuestionId.Id
+                        select quest.CommitDate).First();
+
+                    var events = this.mapper.ProjectTo<DomainEvent>
+                        (this.DomainEvents.AsQueryable().Where(d => d.CommitDate > lastCommit)).ToList();
+
+                    question.ApplyEvents(events);
+                }
+            }
+            return domainQuestions;
+        }
+
+        public async Task UpdateQuestionAsync(DomainQuestion question, CancellationToken cancellationToken)
+        {
+            Guard.IsNotNull(question, nameof(question));
+
+            var esEvents = question.DomainEvents.Map(d => this.mapper.Map<EsEvent>(d)).ToList();
+
+            await this.DomainEvents.InsertManyAsync(esEvents, this.doBypassMany, cancellationToken).ConfigureAwait(false);
+
+            await this.Questions.ReplaceOneAsync(q => q.QuestionId == question.QuestionId.Id,
+                this.mapper.Map<Question>(question), cancellationToken: cancellationToken).ConfigureAwait(false);
+        }
+
+        public Task<DomainQuestion> GetQuestionByIdAsync(Guid id, CancellationToken cancellationToken,
+            bool getSnapshot = false)
+        {
+            var question = this.Questions.AsQueryable().FirstOrDefault(q => q.QuestionId == id);
+            if (question == null)
+            {
+                throw new QuestionNotFoundException();
+            }
+            // get the initial question
+            var questionEntity = this.mapper.Map<DomainQuestion>(question);
+
+            var domainEvents = this.DomainEvents.AsQueryable()
+                .Where(de => de.QuestionId == id).ToList();
+
+            questionEntity.ApplyEvents(domainEvents.Map(d => this.mapper.Map<DomainEvent>(d)).ToList());
+            questionEntity.ClearPendingEvents();
+            return Task.FromResult(questionEntity);
+        }
+
         public Task AddQuestionAsync(DomainQuestion domainQuestion, CancellationToken cancellationToken)
         {
             Guard.IsNotNull(domainQuestion, nameof(domainQuestion));
@@ -115,66 +176,7 @@
         {
             throw new NotImplementedException();
         }
-
-        // CODE SMELL 
-        public async Task<ICollection<DomainQuestion>> GetQuestionsByProjectIdAsync(Guid projectId, bool replay, CancellationToken cancellationToken)
-        {
-            var mongoQuestions = await this.Questions.FindAsync(f => f.ProjectId == projectId, cancellationToken: cancellationToken).ConfigureAwait(false);
-            var questions = await mongoQuestions.ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-            List<DomainQuestion> domainQuestions = questions.Map(q => this.mapper.Map<DomainQuestion>(q)).ToList();
-
-            if (replay)
-            {
-                foreach (var question in domainQuestions)
-                {
-                    var lastCommit = (from quest in questions
-                                      where quest.QuestionId == question.QuestionId.Id
-                                      select quest.CommitDate).First();
-
-                    var events = this.mapper.ProjectTo<DomainEvent>
-                        (this.DomainEvents.AsQueryable().Where(d => d.CommitDate > lastCommit)).ToList();
-
-                    question.ApplyEvents(events);
-                }
-            }
-            return domainQuestions;
-        }
-
-        public async Task UpdateQuestionAsync(DomainQuestion question, CancellationToken cancellationToken)
-        {
-            Guard.IsNotNull(question, nameof(question));
-
-            var esEvents = question.DomainEvents.Map(d => this.mapper.Map<EsEvent>(d)).ToList();
-
-            await this.DomainEvents.InsertManyAsync(esEvents, this.doBypassMany, cancellationToken).ConfigureAwait(false);
-
-            await this.Questions.ReplaceOneAsync(q => q.QuestionId == question.QuestionId.Id,
-                this.mapper.Map<Question>(question), cancellationToken: cancellationToken).ConfigureAwait(false);
-        }
-
-        public Task UpdateProjectAsync(DomainProject requestProject, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public  Task<DomainQuestion> GetQuestionByIdAsync(Guid id, CancellationToken cancellationToken,
-            bool getSnapshot = false)
-        {
-            var question = this.Questions.AsQueryable().FirstOrDefault(q => q.QuestionId == id);
-            if (question == null)
-            {
-                throw new QuestionNotFoundException();
-            }
-            // get the initial question
-            var questionEntity = this.mapper.Map<DomainQuestion>(question);
-            var domainEvents = this.DomainEvents.AsQueryable()
-                .Where(de => de.QuestionId == id && de.CommitDate > question.CommitDate).ToList();
-
-            questionEntity.ApplyEvents(domainEvents.Map(d => this.mapper.Map<DomainEvent>(d)).ToList());
-            questionEntity.ClearPendingEvents();
-            return Task.FromResult(questionEntity);
-        }
-
+        
         private IMongoCollection<EsEvent> DomainEvents => this.database.GetCollection<EsEvent>(Constants.DOMAIN_EVENTS_COLLECTION);
         private IMongoCollection<Question> Questions => this.database.GetCollection<Question>(Constants.QUESTIONS_COLLECTION);
         private IMongoCollection<Project> Projects => this.database.GetCollection<Project>(Constants.PROJECTS_COLLECTION);

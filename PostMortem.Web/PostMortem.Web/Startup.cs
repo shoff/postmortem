@@ -23,7 +23,7 @@
                 .InitializeContainer(this.Configuration)
                 .InitializeSwagger()
                 .AddCors()
-                .AddMvc()
+                .AddMvc().AddJsonOptions(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddSession(options => { options.Cookie.IsEssential = true; });

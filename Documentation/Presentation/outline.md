@@ -14,17 +14,8 @@
 * Avoids impedance mismatch between the object oriented and relational world.
 * As the events represent every action the system has undertaken any possible model describing the system can be built from the events.
 
-## Where is event sourcing appropriate
-
-
-
-## Where is event sourcing inappropriate
-
-* Consistency, Availablility, Speed - pick two.
-
-
 ## Implementing event sourcing
-
+![Hexaganal Architecture](serveimage.png)
 * You can use CQRS without Event Sourcing, but with Event Sourcing you must use CQRS: [CQRS and Event Sourcing](http://youtu.be/JHGkaShoyNs)
 * Events must not be removed from the system once committed. 
     * If an error is made in an event, a new event is appended to correct the mistake.

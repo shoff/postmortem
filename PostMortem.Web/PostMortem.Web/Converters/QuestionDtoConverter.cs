@@ -1,5 +1,6 @@
 ﻿namespace PostMortem.Web.Converters
 {
+    using System;
     using AutoMapper;
     using ChaosMonkey.Guards;
     using Domain.Questions;
@@ -17,7 +18,7 @@
                 QuestionId = source.QuestionId.Id,
                 QuestionText = source.QuestionText,
                 ResponseCount = source.ResponseCount,
-                CommitDate = source.LastUpdated,
+                CommitDate = source.LastUpdated ?? DateTime.UtcNow,
                 Author = source.Author,
                 Importance = source.Importance,
                 ProjectId = source.ProjectId
