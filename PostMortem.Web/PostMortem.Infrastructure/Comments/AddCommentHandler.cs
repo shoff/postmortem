@@ -7,20 +7,25 @@
     using Commands;
     using Domain.Questions;
     using MediatR;
+    using Microsoft.Extensions.Logging;
 
     public class AddCommentHandler : INotificationHandler<AddCommentCommand>
     {
+        private readonly ILogger<AddCommentHandler> logger;
         private readonly IRepository repository;
 
         public AddCommentHandler(
+            ILogger<AddCommentHandler> logger,
             IRepository repository)
         {
+            this.logger = Guard.IsNotNull(logger, nameof(logger));
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
         public async Task Handle(AddCommentCommand notification, CancellationToken cancellationToken)
         {
-            Question question = await this.repository.GetQuestionByIdAsync(notification.QuestionId);
+
+            Question question = await this.repository.GetQuestionByIdAsync(notification.QuestionId, cancellationToken);
 
             if (question == null)
             {
@@ -28,7 +33,9 @@
                 // already exist.
                 throw new QuestionNotFoundException();
             }
-            question.AddComment(notification.CommentText, notification.Commenter, notification.ParentId);
+
+            this.logger.LogInformation(notification.Description);
+            question.AddComment(notification.CommentText, notification.Author, notification.ParentId);
 
         }
     }

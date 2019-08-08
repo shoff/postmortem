@@ -22,7 +22,7 @@
 
         public async Task<QuestionDto> Handle(GetQuestionByIdQuery request, CancellationToken cancellationToken)
         {
-            var entity = await this.repository.GetQuestionByIdAsync(request.Id).ConfigureAwait(false);
+            var entity = await this.repository.GetQuestionByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
             return this.mapper.Map<QuestionDto>(entity);
         }
     }

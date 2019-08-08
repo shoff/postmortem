@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using Events;
     using Newtonsoft.Json;
     using Questions;
     using Questions.Events;
@@ -47,6 +48,19 @@
         public string UpdatedBy { get; private set; }
         [JsonProperty]
         public IReadOnlyCollection<Question> Questions => this.questions;
+
+        public void Update(string projectName, string author, DateTime? startDate = null, DateTime? endDate = null)
+        {
+            this.ProjectName = projectName;
+            this.UpdatedBy = string.IsNullOrWhiteSpace(author) ? Constants.ANONYMOUS_COWARD : author;
+            this.StartDate = startDate ?? this.StartDate;
+            this.EndDate = endDate ?? this.EndDate;
+            var domainEvent = new ProjectUpdated(this.ProjectId.Id, this.UpdatedBy, this.StartDate, this.EndDate);
+            lock (this.syncRoot)
+            {
+                this.domainEvents.Enqueue(domainEvent);
+            }
+        }
 
         public void AddQuestion(string questionText, string author)
         {

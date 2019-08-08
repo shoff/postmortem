@@ -26,7 +26,7 @@
         {
             Guard.IsNotNull(notification, nameof(notification));
             this.logger.LogInformation($"Handling command {notification.Description}");
-            var question = await this.repository.GetQuestionByIdAsync(notification.QuestionId);
+            var question = await this.repository.GetQuestionByIdAsync(notification.QuestionId, cancellationToken);
 
             // we ca
             question.QuestionTextUpdatedEvent += this.QuestionUpdateSucceeded;

@@ -4,29 +4,35 @@
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
     using Commands;
-    using Domain;
-    using Polly;
-    using Zatoichi.Common.Infrastructure.Resilience;
-    using Zatoichi.EventSourcing.Commands;
+    using Domain.Questions;
+    using MediatR;
+    using Microsoft.Extensions.Logging;
 
-    public class CommentLikedHandler : ICommand
+    public class CommentLikedHandler : INotificationHandler<LikeCommentCommand>
     {
-        private readonly IExecutionPolicies executionPolicies;
+        private readonly ILogger<CommentLikedHandler> logger;
         private readonly IRepository repository;
 
         public CommentLikedHandler(
-            IRepository repository,
-            IExecutionPolicies executionPolicies)
+            ILogger<CommentLikedHandler> logger,
+            IRepository repository)
         {
-            this.executionPolicies = Guard.IsNotNull(executionPolicies, nameof(executionPolicies));
+            this.logger = Guard.IsNotNull(logger, nameof(logger));
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
-        public Task<PolicyResult> Handle(LikeCommentCommand request, CancellationToken cancellationToken)
+        public async Task Handle(LikeCommentCommand notification, CancellationToken cancellationToken)
         {
-            return this.executionPolicies.DbExecutionPolicy.ExecuteAndCaptureAsync(() => this.repository.LikeCommentAsync(request.CommentId));
-        }
+            Guard.IsNotNull(notification, nameof(notification));
+            var question = await this.repository.GetQuestionByIdAsync(notification.QuestionId, cancellationToken);
+            if (question == null)
+            {
+                throw new QuestionNotFoundException();
+            }
 
-        public string Description { get; set; } = "Comment liked command.";
+            this.logger.LogInformation(notification.Description);
+            question.VoteOnComment(notification.CommentId, notification.VoterId, true);
+            await this.repository.UpdateQuestionAsync(question, cancellationToken);
+        }
     }
 }

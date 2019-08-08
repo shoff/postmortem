@@ -1,6 +1,7 @@
 ﻿namespace PostMortem.Web.Controllers
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using ChaosMonkey.Guards;
@@ -43,14 +44,14 @@
         }
 
         [HttpGet("{id}", Name = "GetProjectById")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
         {
             return new StatusCodeResult(500);
         }
 
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromBody] CreateProjectDto project)
+        public async Task<IActionResult> Create([FromBody] CreateProjectDto project, CancellationToken cancellationToken)
         {
             Guard.IsNotNull(project, nameof(project));
             if (!ModelState.IsValid)

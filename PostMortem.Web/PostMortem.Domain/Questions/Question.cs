@@ -2,10 +2,12 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Comments;
     using Comments.Events;
     using Events;
     using Newtonsoft.Json;
+    using Voters;
     using Zatoichi.Common.Infrastructure.Extensions;
     using Zatoichi.EventSourcing;
 
@@ -35,7 +37,7 @@
         public void Update(string text, string author)
         {
             this.QuestionText = text;
-            var domainEvent = new QuestionUpdated(this.QuestionId.Id, text, author);
+            var domainEvent = new QuestionUpdated(this.QuestionId.Id, this.ProjectId, text, author);
             this.AddDomainEvent(domainEvent);
             this.QuestionTextUpdatedEvent.Raise(this, domainEvent);
         }
@@ -65,6 +67,27 @@
             }
         }
 
+        public void VoteOnComment(Guid commentId, string author, bool liked)
+        {
+            var comment = (from c in this.comments
+                where c.CommentId.Id == commentId
+                select c).FirstOrDefault();
+
+            if (comment == null)
+            {
+                throw new CommentNotFoundException();
+            }
+
+            var events = this.Build(comment.CommentId.Id, author, liked);
+            comment.Vote(events.disposition);
+
+            lock (this.syncRoot)
+            {
+                this.domainEvents.Enqueue(events.domainEvent);
+            }
+            
+        }
+
         [JsonProperty]
         public IQuestionId QuestionId { get; private set; }
         [JsonProperty]
@@ -82,6 +105,18 @@
             {
                 this.domainEvents.Clear();
             }
+        }
+        private (Disposition disposition, CommentEvent domainEvent) Build(Guid commentId, string author, bool liked)
+        {
+            var disposition = liked ? 
+                new Like(new VoterId(author)) : 
+                new DisLike(new VoterId(author)) as Disposition;
+
+            var domainEvent = liked ?
+                new CommentLiked(commentId, this.QuestionId.Id, author) :
+                new CommentDisliked(commentId, this.QuestionId.Id, author) as CommentEvent;
+
+            return (disposition, domainEvent);
         }
     }
 }

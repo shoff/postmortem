@@ -2,39 +2,23 @@
 {
     using System;
     using Newtonsoft.Json;
-    using Zatoichi.EventSourcing;
 
-    public sealed class QuestionUpdated : DomainEvent
+    public sealed class QuestionUpdated : QuestionEvent
     {
         public QuestionUpdated(
             Guid questionId,
+            Guid projectId,
             string questionText,
-            string author) 
-            : base(VersionRegistry.GetLatestVersionInformation())
+            string author)
         {
             this.QuestionId = questionId;
+            this.ProjectId = projectId;
             this.QuestionText = questionText;
-            this.CommitDateTime = DateTime.UtcNow;
             this.Author = string.IsNullOrWhiteSpace(author) ? Constants.ANONYMOUS_COWARD : author;
             this.EventType = this.GetType().FullName;
         }
 
         [JsonProperty]
-        public string Author { get; private set; }
-
-        [JsonProperty]
-        public DateTime CommitDateTime { get; private set; }
-
-        [JsonProperty]
-        public Guid QuestionId { get; private set; }
-
-        [JsonProperty]
         public string QuestionText { get; private set; }
-
-        [JsonProperty]
-        public override string Body { get; set; }
-
-        [JsonProperty]
-        public override string EventType { get; protected set; }
     }
 }

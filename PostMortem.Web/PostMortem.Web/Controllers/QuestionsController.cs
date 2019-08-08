@@ -2,6 +2,7 @@
 {
     using System;
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
     using Infrastructure;
@@ -34,17 +35,17 @@
         }
 
         [HttpGet("{id}", Name = "GetQuestionById")]
-        public async Task<IActionResult> GetQuestionById(Guid id)
+        public async Task<IActionResult> GetQuestionById(Guid id, CancellationToken cancellationToken)
         {
             // this is not exactly how I would like it
             var request = new GetQuestionByIdQuery(id);
-            var result = await this.mediator.Send(request).ConfigureAwait(false);
+            var result = await this.mediator.Send(request, cancellationToken).ConfigureAwait(false);
             var apiResult = new ApiResult<QuestionDto>(HttpStatusCode.OK, result);
             return apiResult.ToActionResult();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] QuestionDto question)
+        public async Task<IActionResult> Create([FromBody] QuestionDto question, CancellationToken cancellationToken)
         {
             Guard.IsNotNull(question, nameof(question));
 
@@ -56,7 +57,7 @@
             try
             {
                 var command = new AddQuestionCommand(question.ProjectId, question.QuestionText, this.voter.VoterId.Id);
-                await this.mediator.Publish(command);
+                await this.mediator.Publish(command, cancellationToken);
                 string id = command.QuestionId == null ? Guid.Empty.ToString() : command.QuestionId.Id.ToString();
                 string url = $"https://localhost:5500/api/question/GetQuestionById?id={id}";
                 return new CreatedResult(new Uri(url), id);

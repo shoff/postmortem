@@ -2,24 +2,33 @@
 {
     using System;
     using ChaosMonkey.Guards;
-    using Domain.Voters;
-    using Zatoichi.EventSourcing;
+    using Domain;
+    using Newtonsoft.Json;
+    using Zatoichi.EventSourcing.Commands;
 
-    public class UpdateCommentCommand : CommentCommand
+    public class UpdateCommentCommand : ICommand
     {
-
-        public UpdateCommentCommand(Guid commentId, IVoterId voterId)
-            : base(commentId)
+        public UpdateCommentCommand(
+            Guid commentId, 
+            Guid questionId, 
+            string commentText,
+            string author = null)
         {
-            this.VoterId = Guard.IsNotNull(voterId, nameof(voterId));
+            this.CommentText = commentText;
+            this.CommentId = Guard.IsNotDefault(commentId, nameof(commentId));
+            this.QuestionId = Guard.IsNotDefault(questionId, nameof(questionId));
+            this.VoterId = string.IsNullOrWhiteSpace(author) ? Constants.ANONYMOUS_COWARD : author;
+            this.Description = $"{this.VoterId} issued update command on comment {this.CommentId}";
         }
-
-        public IVoterId VoterId { get; }
-
-        public void Apply(IEntity eventEntity)
-        {
-            throw new NotImplementedException();
-        }
-
+        [JsonProperty]
+        public string CommentText { get; private set; }
+        [JsonProperty]
+        public Guid QuestionId { get; private set; }
+        [JsonProperty]
+        public Guid CommentId { get; private set; }
+        [JsonProperty]
+        public string VoterId { get; private set; }
+        [JsonProperty]
+        public string Description { get; set; }
     }
 }

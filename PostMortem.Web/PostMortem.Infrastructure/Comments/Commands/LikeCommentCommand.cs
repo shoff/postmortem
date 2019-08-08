@@ -2,23 +2,30 @@
 {
     using System;
     using ChaosMonkey.Guards;
-    using Domain.Voters;
-    using Zatoichi.EventSourcing;
+    using Domain;
+    using Newtonsoft.Json;
+    using Zatoichi.EventSourcing.Commands;
 
-    public class LikeCommentCommand : CommentCommand
+    public class LikeCommentCommand : ICommand
     {
-        public LikeCommentCommand(Guid commentId, IVoterId voterId) 
-            : base(commentId)
+        public LikeCommentCommand(Guid commentId, Guid questionId, string author = null)
         {
-            this.VoterId = Guard.IsNotNull(voterId, nameof(voterId));
-        }
-        
-        public IVoterId VoterId { get; }
-
-        public void Apply(IEntity eventEntity)
-        {
-            throw new NotImplementedException();
+            this.CommentId = Guard.IsNotDefault(commentId, nameof(commentId));
+            this.QuestionId = Guard.IsNotDefault(questionId, nameof(questionId));
+            this.VoterId = string.IsNullOrWhiteSpace(author) ? Constants.ANONYMOUS_COWARD : author;
+            this.Description = $"{this.VoterId} liked the comment {this.CommentId}";
         }
 
+        [JsonProperty]
+        public Guid QuestionId { get; set; }
+
+        [JsonProperty]
+        public Guid CommentId { get; private set; }
+
+        [JsonProperty]
+        public string VoterId { get; private set; }
+
+        [JsonProperty]
+        public string Description { get; set; }
     }
 }

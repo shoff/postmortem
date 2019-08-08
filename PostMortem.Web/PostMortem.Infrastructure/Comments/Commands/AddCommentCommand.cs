@@ -1,30 +1,27 @@
 ﻿namespace PostMortem.Infrastructure.Comments.Commands
 {
     using System;
-    using ChaosMonkey.Guards;
-    using Domain.Voters;
-    using Dtos;
+    using Domain;
     using Newtonsoft.Json;
+    using Zatoichi.EventSourcing.Commands;
 
-    public class AddCommentCommand : CommentCommand
+    public class AddCommentCommand : ICommand
     {
         public AddCommentCommand(
-            CommentDto comment,
-            IVoterId voterId)
-            : base(comment.CommentId)
+            Guid questionId,
+            string author,
+            string commentText,
+            Guid? parentId = null)
         {
-            this.QuestionId = comment.QuestionId;
-            this.VoterId = Guard.IsNotNull(voterId, nameof(voterId));
-            this.CommentText = comment.CommentText;
-            this.Commenter = comment.Commenter;
-            this.ParentId = comment.ParentId;
+            this.QuestionId = questionId;
+            this.Author = string.IsNullOrWhiteSpace(author) ? Constants.ANONYMOUS_COWARD : author;
+            this.CommentText = commentText;
+            this.ParentId = parentId;
+            this.Description = $"{Author} issued a command to add a comment to question {questionId}";
         }
 
         [JsonProperty]
         public Guid? ParentId { get; private set; }
-
-        [JsonProperty]
-        public string Commenter { get; private set; }
 
         [JsonProperty]
         public string CommentText { get; private set; }
@@ -33,6 +30,9 @@
         public Guid QuestionId { get; private set; }
 
         [JsonProperty]
-        public IVoterId VoterId { get; private set; }
+        public string Author { get; private set; }
+
+        [JsonProperty]
+        public string Description { get; set; }
     }
 }

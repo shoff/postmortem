@@ -4,26 +4,35 @@
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
     using Commands;
-    using Domain;
+    using Domain.Questions;
     using MediatR;
-    using Zatoichi.Common.Infrastructure.Resilience;
+    using Microsoft.Extensions.Logging;
 
     public class CommentDislikedHandler : INotificationHandler<DislikeCommentCommand>
     {
-        private readonly IExecutionPolicies executionPolicies;
+        private readonly ILogger<CommentDislikedHandler> logger;
         private readonly IRepository repository;
 
         public CommentDislikedHandler (
-            IRepository repository,
-            IExecutionPolicies executionPolicies)
+            ILogger<CommentDislikedHandler> logger,
+            IRepository repository)
         {
-            this.executionPolicies = Guard.IsNotNull(executionPolicies, nameof(executionPolicies));
+            this.logger = Guard.IsNotNull(logger, nameof(logger));
             this.repository = Guard.IsNotNull(repository, nameof(repository));
         }
 
-        public Task Handle(DislikeCommentCommand notification, CancellationToken cancellationToken)
+        public async Task Handle(DislikeCommentCommand notification, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            Guard.IsNotNull(notification, nameof(notification));
+            var question = await this.repository.GetQuestionByIdAsync(notification.QuestionId, cancellationToken);
+            if (question == null)
+            {
+                throw new QuestionNotFoundException();
+            }
+
+            this.logger.LogInformation(notification.Description);
+            question.VoteOnComment(notification.CommentId, notification.VoterId, false);
+            await this.repository.UpdateQuestionAsync(question, cancellationToken);
         }
     }
 }

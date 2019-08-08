@@ -31,7 +31,7 @@
                 notification.ProjectId,
                 notification.Author);
             notification.QuestionId = question.QuestionId;
-            await this.repository.AddQuestionAsync(question).ConfigureAwait(false);
+            await this.repository.AddQuestionAsync(question, cancellationToken).ConfigureAwait(false);
         }
     }
 }

@@ -2,23 +2,31 @@
 {
     using System;
     using ChaosMonkey.Guards;
-    using Domain.Voters;
-    using Zatoichi.EventSourcing;
+    using Domain;
+    using Newtonsoft.Json;
+    using Zatoichi.EventSourcing.Commands;
 
-    public class DislikeCommentCommand : CommentCommand
+    public class DislikeCommentCommand : ICommand
     {
 
-        public DislikeCommentCommand(Guid commentId, IVoterId voterId)
-            : base(commentId)
+        public DislikeCommentCommand(Guid commentId, Guid questionId, string author = null)
         {
-            this.VoterId = Guard.IsNotNull(voterId, nameof(voterId));
+            this.CommentId = Guard.IsNotDefault(commentId, nameof(commentId));
+            this.QuestionId = Guard.IsNotDefault(questionId, nameof(questionId));
+            this.VoterId = string.IsNullOrWhiteSpace(author) ? Constants.ANONYMOUS_COWARD : author;
+            this.Description = $"{this.VoterId} disliked the comment {this.CommentId}";
         }
 
-        public IVoterId VoterId { get; }
+        [JsonProperty]
+        public Guid QuestionId { get; set; }
 
-        public void Apply(IEntity eventEntity)
-        {
-            throw new NotImplementedException();
-        }
+        [JsonProperty]
+        public Guid CommentId { get; private set; }
+
+        [JsonProperty]
+        public string VoterId { get; private set; }
+
+        [JsonProperty]
+        public string Description { get; set; }
     }
 }

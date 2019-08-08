@@ -25,7 +25,7 @@
                 notification.StartDate,
                 notification.EndDate);
 
-            return this.repository.CreateProjectAsync(project);
+            return this.repository.CreateProjectAsync(project, cancellationToken);
         }
     }
 }
