@@ -12,6 +12,7 @@
     using Infrastructure;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using MongoDB.Bson;
     using MongoDB.Driver;
     using Zatoichi.Common.Infrastructure.Extensions;
     using Zatoichi.EventSourcing;
@@ -159,26 +160,34 @@
         public async Task<DomainQuestion> GetQuestionByIdAsync(Guid id, CancellationToken cancellationToken,
             bool getSnapshot = false)
         {
+            var x = this.Questions.AsQueryable().FirstOrDefault();
+
             // get the initial question
-            var questionCursor = await this.Questions.FindAsync(q => q.Id == id, cancellationToken: cancellationToken).ConfigureAwait(false);
-            var question = questionCursor.FirstOrDefault();
-            if (question == null)
+            using (var questionCursor = await this.Questions.FindAsync(q => q.Id == id, cancellationToken: cancellationToken).ConfigureAwait(false))
             {
-                throw new QuestionNotFoundException();
+                var question = questionCursor.FirstOrDefault();
+                if (question == null)
+                {
+                    throw new QuestionNotFoundException();
+                }
+
+                var questionEntity = this.mapper.Map<DomainQuestion>(question);
+
+                // only get the events since the last time we took a snapshot of our question.
+                using (var domainEventsCursor = await this.DomainEvents.FindAsync(
+                        c => c.QuestionId == id && c.CommitDate > question.CommitDate,
+                        cancellationToken: cancellationToken).ConfigureAwait(false))
+                {
+
+                    var domainEvents = await domainEventsCursor.ToListAsync(cancellationToken).ConfigureAwait(false);
+                    questionEntity.ApplyEvents(domainEvents.Map(d => this.mapper.Map<DomainEvent>(d)).ToList());
+
+                    // clear the events on queries otherwise we'll likely persist them twice.
+                    questionEntity.ClearPendingEvents();
+
+                    return questionEntity;
+                }
             }
-            var questionEntity = this.mapper.Map<DomainQuestion>(question);
-
-            // only get the events since the last time we took a snapshot of our question.
-            var domainEventsCursor = await this.DomainEvents.FindAsync(
-                c => c.QuestionId == id && c.CommitDate > question.CommitDate, cancellationToken: cancellationToken).ConfigureAwait(false);
-
-            var domainEvents = await domainEventsCursor.ToListAsync(cancellationToken).ConfigureAwait(false);
-            questionEntity.ApplyEvents(domainEvents.Map(d => this.mapper.Map<DomainEvent>(d)).ToList());
-
-            // clear the events on queries otherwise we'll likely persist them twice.
-            questionEntity.ClearPendingEvents();
-
-            return questionEntity;
         }
 
         private IMongoCollection<EsEvent> DomainEvents => this.database.GetCollection<EsEvent>(Constants.DOMAIN_EVENTS_COLLECTION);
