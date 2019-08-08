@@ -1,5 +1,6 @@
 ﻿namespace PostMortem.Tests.Domain
 {
+    using System;
     using System.Collections.Generic;
     using AutoFixture;
     using Newtonsoft.Json;
@@ -46,7 +47,7 @@
                     "comment text",
                     "me",
                     this.question.QuestionId);
-                likeEvents.Add(new CommentLiked(comment.CommentId.Id, voterId.Id));
+                likeEvents.Add(new CommentLiked(comment.CommentId.Id, Guid.NewGuid(), voterId.Id));
             }
 
             this.question.AddEvents(likeEvents);

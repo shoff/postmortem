@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
@@ -14,10 +13,9 @@
     using Infrastructure;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using MongoDB.Bson;
     using MongoDB.Driver;
     using Zatoichi.Common.Infrastructure.Extensions;
-
+    using Zatoichi.EventSourcing;
     using DomainProject = Domain.Projects.Project;
     using DomainQuestion = Domain.Questions.Question;
     using DomainComment = Domain.Comments.Comment;
@@ -263,13 +261,10 @@
             }
 
             var questionEntity = this.mapper.Map<DomainQuestion>(question);
-
             // ok so I know there are comment events not sure if this the best way to approach this, guess I'll find out :)
             var domainEventsCursor = await this.DomainEvents.FindAsync(c => c.QuestionId == id, cancellationToken: cancellationToken).ConfigureAwait(false);
-
-            await domainEventsCursor.ForEachAsync(c =>
-                questionEntity.AddComment(c.CommentText, c.Commenter, c.CommentId, c.ParentId), cancellationToken: cancellationToken);
-
+            var domainEvents = await domainEventsCursor.ToListAsync(cancellationToken);
+            questionEntity.ApplyEvents(domainEvents.Map(d => this.mapper.Map<DomainEvent>(d)).ToList());
             questionEntity.ClearPendingEvents();
             return questionEntity;
         }

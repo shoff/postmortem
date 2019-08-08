@@ -1,6 +1,7 @@
 ﻿namespace PostMortem.Data.MongoDb.Converters
 {
     using System;
+    using System.Collections.Generic;
     using AutoMapper;
     using ChaosMonkey.Guards;
     using Domain.Comments.Events;
@@ -43,6 +44,18 @@
                 destination.ProjectId = projectEvent.ProjectId;
             }
 
+            return destination;
+        }
+    }
+
+    public class DomainEventConverter : ITypeConverter<EsEvent, DomainEvent>
+    {
+
+        // ReSharper disable once RedundantAssignment
+        public DomainEvent Convert(EsEvent source, DomainEvent destination, ResolutionContext context)
+        {
+            Guard.IsNotNull(source, nameof(source));
+            destination = (DomainEvent) JsonConvert.DeserializeObject(source.Body);
             return destination;
         }
     }

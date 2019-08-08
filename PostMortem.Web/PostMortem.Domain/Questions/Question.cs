@@ -41,7 +41,6 @@
             this.AddDomainEvent(domainEvent);
             this.QuestionTextUpdatedEvent.Raise(this, domainEvent);
         }
-
         public void AddComment(string commentText, string commenter, Guid? commentId = null, Guid? parentId = null)
         {
             var comment = new Comment(
@@ -66,7 +65,6 @@
                         parentId));
             }
         }
-
         public void VoteOnComment(Guid commentId, string author, bool liked)
         {
             var comment = (from c in this.comments
@@ -87,7 +85,6 @@
             }
             
         }
-
         [JsonProperty]
         public IQuestionId QuestionId { get; private set; }
         [JsonProperty]
@@ -105,6 +102,11 @@
             {
                 this.domainEvents.Clear();
             }
+        }
+
+        public void ApplyEvents(ICollection<DomainEvent> domainEvents)
+        {
+
         }
         private (Disposition disposition, CommentEvent domainEvent) Build(Guid commentId, string author, bool liked)
         {
