@@ -3,8 +3,8 @@
     using AutoMapper;
     using Converters;
     using Data.MongoDb;
+    using Data.MongoDb.Converters;
     using Domain.Questions;
-    using Domain.Voters;
     using Infrastructure;
     using Infrastructure.Comments;
     using MediatR;
@@ -14,7 +14,6 @@
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Swashbuckle.AspNetCore.Swagger;
     using Zatoichi.Common.Infrastructure.Resilience;
-    using Zatoichi.EventSourcing.MongoDb;
 
     public static class ServiceExtensions
     {
@@ -22,17 +21,14 @@
             IConfiguration configuration)
         {
             services.AddLogging();
-            services.AddAutoMapper(
-                typeof(ProjectProfile).Assembly, 
-                typeof(Data.MongoDb.Converters.MongoDbProfile).Assembly);
-            
+            services.AddAutoMapper(typeof(ProjectProfile).Assembly, typeof(MongoDbProfile).Assembly);
+
             services.AddTransient<IExecutionPolicies, ExecutionPolicies>();
             services.AddTransient<IPolicyFactory, AsyncPolicyFactory>();
             services.AddTransient<IRepository, Repository>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHttpClient<INameGeneratorClient, NameGeneratorClient>();
             services.AddMediatR(typeof(AddCommentHandler).Assembly);
-            services.AddMongoEventStore();
             return services;
         }
 

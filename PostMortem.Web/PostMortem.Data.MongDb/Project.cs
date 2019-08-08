@@ -21,7 +21,7 @@
         public string CreatedBy { get; set; }
 
         [BsonElement("commit_date")]
-        public DateTime CommitDate { get; set; }
+        public DateTime CommitDate { get; set; } = DateTime.UtcNow;
 
     }
 }

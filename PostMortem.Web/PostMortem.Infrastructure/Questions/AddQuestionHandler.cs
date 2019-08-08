@@ -6,7 +6,6 @@
     using Commands;
     using Domain.Questions;
     using MediatR;
-    using Microsoft.Extensions.Options;
 
     public class AddQuestionHandler : INotificationHandler<AddQuestionCommand>
     {

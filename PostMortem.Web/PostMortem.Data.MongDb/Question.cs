@@ -23,6 +23,12 @@
         [BsonElement("importance")]
         public int Importance { get; set; }
 
+        [BsonElement("author")]
+        public string Author { get; set; }
+
+        [BsonElement("commit_date")]
+        public DateTime CommitDate { get; set; } = DateTime.UtcNow;
+
         [BsonElement("comments")]
         public ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
     }

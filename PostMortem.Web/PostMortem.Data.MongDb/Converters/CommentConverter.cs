@@ -1,5 +1,6 @@
 ﻿namespace PostMortem.Data.MongoDb.Converters
 {
+    using System;
     using AutoMapper;
     using ChaosMonkey.Guards;
     using DomainComment = Domain.Comments.Comment;
@@ -9,7 +10,6 @@
         public Comment Convert(DomainComment source, Comment destination, ResolutionContext context)
         {
             Guard.IsNotNull(source, nameof(source));
-            Guard.IsNotNull(destination, nameof(destination));
             Guard.IsNotNull(context, nameof(context));
 
             destination = new Comment
@@ -21,7 +21,8 @@
                 Dislikes = source.Dislikes,
                 GenerallyPositive = source.GenerallyPositive,
                 Likes = source.Likes,
-                QuestionId = source.QuestionId
+                QuestionId = source.QuestionId,
+                CommitDate = DateTime.UtcNow
             };
             return destination;
         }

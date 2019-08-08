@@ -1,27 +1,15 @@
 ﻿namespace PostMortem.Data.MongoDb.Converters
 {
-    using System;
     using AutoMapper;
     using ChaosMonkey.Guards;
-    using DomainQuestion = Domain.Questions.Question;
 
-    public class DomainQuestionConverter : ITypeConverter<Question, DomainQuestion>
+    public class DomainQuestionConverter : ITypeConverter<Question, Domain.Questions.Question>
     {
-        public DomainQuestion Convert(Question source, DomainQuestion destination, ResolutionContext context)
+        public Domain.Questions.Question Convert(Question source, Domain.Questions.Question destination, ResolutionContext context)
         {
             Guard.IsNotNull(source, nameof(source));
-            Guard.IsNotNull(destination, nameof(destination));
-            Guard.IsNotNull(context, nameof(context));
-
-            throw new NotImplementedException();
-            //destination = new DomainQuestion()
-            //{
-            //    Importance = 0,
-            //    ProjectId = source.ProjectId,
-            //    QuestionId = source.Id,
-            //    QuestionText = source.QuestionText,
-            //    ResponseCount = 0
-            //};
+            destination =
+                new Domain.Questions.Question(source.QuestionText, source.ProjectId, source.Author, source.Id);
             return destination;
         }
     }

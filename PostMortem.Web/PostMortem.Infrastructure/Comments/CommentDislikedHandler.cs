@@ -32,7 +32,8 @@
 
             this.logger.LogInformation(notification.Description);
             question.VoteOnComment(notification.CommentId, notification.VoterId, false);
-            await this.repository.UpdateQuestionAsync(question, cancellationToken);
+            await this.repository.UpdateQuestionAsync(question, cancellationToken).ConfigureAwait(false);
+            question.ClearPendingEvents();
         }
     }
 }

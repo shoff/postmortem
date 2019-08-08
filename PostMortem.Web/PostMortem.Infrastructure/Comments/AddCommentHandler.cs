@@ -1,6 +1,5 @@
 ﻿namespace PostMortem.Infrastructure.Comments
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
@@ -24,8 +23,10 @@
 
         public async Task Handle(AddCommentCommand notification, CancellationToken cancellationToken)
         {
+            Guard.IsNotNull(notification, nameof(notification));
 
-            Question question = await this.repository.GetQuestionByIdAsync(notification.QuestionId, cancellationToken);
+            Question question = await this.repository.GetQuestionByIdAsync
+                (notification.QuestionId, cancellationToken).ConfigureAwait(false);
 
             if (question == null)
             {
@@ -35,8 +36,13 @@
             }
 
             this.logger.LogInformation(notification.Description);
-            question.AddComment(notification.CommentText, notification.Author, notification.ParentId);
 
+            notification.CommentId = question.AddComment(
+                notification.CommentText,
+                notification.Author, 
+                notification.ParentId);
+
+            await this.repository.UpdateQuestionAsync(question, cancellationToken).ConfigureAwait(false);
         }
     }
 }

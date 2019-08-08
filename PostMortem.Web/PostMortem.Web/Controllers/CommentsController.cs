@@ -7,6 +7,7 @@
     using ChaosMonkey.Guards;
     using Dtos;
     using Infrastructure;
+    using Infrastructure.Comments.Commands;
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -34,7 +35,7 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CommentDto comment, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create([FromBody] CreateCommentDto comment, CancellationToken cancellationToken)
         {
             Guard.IsNotNull(comment, nameof(comment));
             if (!ModelState.IsValid)
@@ -44,8 +45,15 @@
 
             try
             {
+                var addCommentCommand = new AddCommentCommand(
+                    comment.QuestionId, 
+                    this.voter.VoterId.Id,
+                    comment.CommentText, 
+                    comment.ParentId);
 
-                return new StatusCodeResult(500);
+                await this.mediator.Publish(addCommentCommand, cancellationToken);
+                string url = $"https://localhost:5500/api/question/GetQuestionById?id={comment.QuestionId}";
+                return new CreatedResult(new Uri(url), comment.QuestionId);
             }
             catch (Exception e)
             {

@@ -19,6 +19,8 @@
             this.ParentId = parentId;
             this.Description = $"{Author} issued a command to add a comment to question {questionId}";
         }
+        [JsonProperty]
+        public Guid? CommentId { get; set; }
 
         [JsonProperty]
         public Guid? ParentId { get; private set; }

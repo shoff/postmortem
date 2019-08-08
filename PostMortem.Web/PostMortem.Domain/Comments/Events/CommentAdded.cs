@@ -24,6 +24,7 @@
             this.CommentId = commentId;
             this.ParentId = parentId;
             this.EventType = this.GetType().FullName;
+
         }
 
         [JsonProperty]

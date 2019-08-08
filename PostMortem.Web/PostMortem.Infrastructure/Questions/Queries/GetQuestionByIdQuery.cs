@@ -1,7 +1,6 @@
 ﻿namespace PostMortem.Infrastructure.Questions.Queries
 {
     using System;
-    using Domain.Questions;
     using Dtos;
     using MediatR;
 
@@ -11,6 +10,7 @@
         {
             this.Id = id;
         }
+
         public Guid Id { get; }
     }
 }

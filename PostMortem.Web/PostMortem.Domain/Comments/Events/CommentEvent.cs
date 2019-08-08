@@ -10,7 +10,8 @@
             : base(version ?? VersionRegistry.GetLatestVersionInformation())
         {
         }
-
+        [JsonProperty]
+        public string Expression { get; set; }
         [JsonProperty]
         public Guid CommentId { get; protected set; }
         [JsonProperty]

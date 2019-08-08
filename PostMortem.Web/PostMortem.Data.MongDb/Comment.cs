@@ -35,5 +35,8 @@
         [BsonRequired]
         [BsonElement("question_id")]
         public Guid QuestionId { get; set; }
+
+        [BsonElement("commit_date")]
+        public DateTime CommitDate { get; set; } = DateTime.UtcNow;
     }
 }

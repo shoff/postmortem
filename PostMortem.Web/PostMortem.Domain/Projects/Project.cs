@@ -77,6 +77,8 @@
 
         public void AddQuestions(ICollection<Question> collection)
         {
+            // Do not add domain events here. This is used to reconstitute from 
+            // the repository
             this.questions.AddRange(collection);
         }
 

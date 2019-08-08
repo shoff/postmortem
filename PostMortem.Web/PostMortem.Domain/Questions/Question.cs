@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Linq.Expressions;
     using Comments;
     using Comments.Events;
     using Events;
@@ -14,14 +15,11 @@
     public sealed class Question : Aggregate
     {
         private readonly object syncRoot = new object();
-
-        [JsonProperty]
         private readonly CommentCollection comments = new CommentCollection();
         public event EventHandler<QuestionUpdated> QuestionTextUpdatedEvent;
 
         public Question() { }
 
-        [JsonConstructor]
         public Question(
             string questionText,
             Guid projectId,
@@ -41,7 +39,8 @@
             this.AddDomainEvent(domainEvent);
             this.QuestionTextUpdatedEvent.Raise(this, domainEvent);
         }
-        public void AddComment(string commentText, string commenter, Guid? commentId = null, Guid? parentId = null)
+
+        public Guid AddComment(string commentText, string commenter, Guid? commentId = null, Guid? parentId = null)
         {
             var comment = new Comment(
                 commentText,
@@ -56,20 +55,27 @@
 
             lock (this.syncRoot)
             {
+                Expression<Action<Comment, CommentCollection>> apply = ((c, collection) => collection.Add(c));
                 this.domainEvents.Enqueue(
                     new CommentAdded(
                         commentText,
                         commenter,
                         this.QuestionId.Id,
                         comment.CommentId.Id,
-                        parentId));
+                        parentId)
+                    {
+                        Expression = JsonConvert.SerializeObject(apply)
+                    });
             }
+
+            return comment.CommentId.Id;
         }
+
         public void VoteOnComment(Guid commentId, string author, bool liked)
         {
             var comment = (from c in this.comments
-                where c.CommentId.Id == commentId
-                select c).FirstOrDefault();
+                           where c.CommentId.Id == commentId
+                           select c).FirstOrDefault();
 
             if (comment == null)
             {
@@ -83,15 +89,11 @@
             {
                 this.domainEvents.Enqueue(events.domainEvent);
             }
-            
         }
-        [JsonProperty]
+
         public IQuestionId QuestionId { get; private set; }
-        [JsonProperty]
         public Guid ProjectId { get; private set; }
-        [JsonProperty]
         public string QuestionText { get; private set; } = string.Empty;
-        [JsonProperty]
         public string Author { get; private set; }
         public int ResponseCount => this.comments.Count;
         public int Importance { get; set; }
@@ -103,15 +105,26 @@
                 this.domainEvents.Clear();
             }
         }
+        // Added so we can reconstitute from a snapshot
+        public void AddComments(ICollection<Comment> comments)
+        {
+            if (comments == null)
+            {
+                // guaranteed valid
+                return;
+            }
 
+            this.comments.AddRange(comments);
+        }
         public void ApplyEvents(ICollection<DomainEvent> domainEvents)
         {
 
         }
+
         private (Disposition disposition, CommentEvent domainEvent) Build(Guid commentId, string author, bool liked)
         {
-            var disposition = liked ? 
-                new Like(new VoterId(author)) : 
+            var disposition = liked ?
+                new Like(new VoterId(author)) :
                 new DisLike(new VoterId(author)) as Disposition;
 
             var domainEvent = liked ?

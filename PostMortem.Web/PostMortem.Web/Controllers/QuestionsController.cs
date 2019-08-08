@@ -39,9 +39,16 @@
         {
             // this is not exactly how I would like it
             var request = new GetQuestionByIdQuery(id);
-            var result = await this.mediator.Send(request, cancellationToken).ConfigureAwait(false);
-            var apiResult = new ApiResult<QuestionDto>(HttpStatusCode.OK, result);
-            return apiResult.ToActionResult();
+            try
+            {
+                var result = await this.mediator.Send(request, cancellationToken).ConfigureAwait(false);
+                return this.Ok(result);
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError(e, e.Message);
+                return new StatusCodeResult(500);
+            }
         }
 
         [HttpPost]

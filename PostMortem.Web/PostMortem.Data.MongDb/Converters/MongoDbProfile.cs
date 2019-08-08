@@ -2,18 +2,15 @@
 {
     using AutoMapper;
     using Zatoichi.EventSourcing;
-    using DomainProject = Domain.Projects.Project;
-    using DomainComment = Domain.Comments.Comment;
-    using DomainQuestion = Domain.Questions.Question;
 
     public class MongoDbProfile : Profile
     {
         public MongoDbProfile()
         {
-            this.CreateMap<DomainProject, Project>().ConvertUsing<ProjectConverter>();
-            this.CreateMap<Project, DomainProject>().ConvertUsing<DomainProjectConverter>();
-            this.CreateMap<DomainComment, Comment>().ConvertUsing<CommentConverter>();
-            this.CreateMap<DomainQuestion, Question>().ConvertUsing<QuestionConverter>();
+            this.CreateMap<Domain.Projects.Project, Project>().ConvertUsing<ProjectConverter>();
+            this.CreateMap<Project, Domain.Projects.Project>().ConvertUsing<DomainProjectConverter>();
+            this.CreateMap<Domain.Comments.Comment, Comment>().ConvertUsing<CommentConverter>();
+            this.CreateMap<Domain.Questions.Question, Question>().ConvertUsing<QuestionConverter>();
             this.CreateMap<DomainEvent, EsEvent>().ConvertUsing<EsEventConverter>();
         }
     }
