@@ -30,6 +30,7 @@
             this.ProjectId = projectId;
             this.QuestionId = new QuestionId(questionId ?? Guid.NewGuid());
             this.QuestionText = questionText;
+            this.LastUpdated = DateTime.UtcNow;
         }
 
         public void Update(string text, string author)
@@ -37,6 +38,7 @@
             this.QuestionText = text;
             var domainEvent = new QuestionUpdated(this.QuestionId.Id, this.ProjectId, text, author);
             this.AddDomainEvent(domainEvent);
+            this.LastUpdated = DateTime.UtcNow;
             this.QuestionTextUpdatedEvent.Raise(this, domainEvent);
         }
 
@@ -67,7 +69,7 @@
                         Expression = JsonConvert.SerializeObject(apply)
                     });
             }
-
+            this.LastUpdated = DateTime.UtcNow;
             return comment.CommentId.Id;
         }
 
@@ -87,8 +89,13 @@
 
             lock (this.syncRoot)
             {
+                if (this.domainEvents == null)
+                {
+                    this.domainEvents = new Queue<DomainEvent>();
+                }
                 this.domainEvents.Enqueue(events.domainEvent);
             }
+            this.LastUpdated = DateTime.UtcNow;
         }
 
         public IQuestionId QuestionId { get; private set; }
@@ -96,13 +103,14 @@
         public string QuestionText { get; private set; } = string.Empty;
         public string Author { get; private set; }
         public int ResponseCount => this.comments.Count;
+        public DateTime LastUpdated { get; private set; }
         public int Importance { get; set; }
         public IReadOnlyCollection<Comment> Comments => this.comments;
         public override void ClearPendingEvents()
         {
             lock (this.syncRoot)
             {
-                this.domainEvents.Clear();
+                this.domainEvents?.Clear();
             }
         }
         // Added so we can reconstitute from a snapshot
@@ -115,12 +123,13 @@
             }
 
             this.comments.AddRange(comments);
+            this.LastUpdated = DateTime.UtcNow;
         }
         public void ApplyEvents(ICollection<DomainEvent> domainEvents)
         {
-
+            // TODO 
+            this.LastUpdated = DateTime.UtcNow;
         }
-
         private (Disposition disposition, CommentEvent domainEvent) Build(Guid commentId, string author, bool liked)
         {
             var disposition = liked ?

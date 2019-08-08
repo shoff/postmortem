@@ -12,7 +12,7 @@
         public ProjectProfile()
         {
             this.CreateMap<Comment, CommentDto>().ConvertUsing<CommentDtoConverter>();
-            this.CreateMap<Question, QuestionDto>().ConvertUsing<QuestionConverter>();
+            this.CreateMap<Question, QuestionDto>().ConvertUsing<QuestionDtoConverter>();
             this.CreateMap<Data.MongoDb.Project, Project>();
             this.CreateMap<CreateProjectDto, Project>().ForMember(p => p.ProjectId, opt => opt.MapFrom(g => Guid.NewGuid()));
             this.CreateMap<Project, ProjectDto>().ConvertUsing<ProjectDtoConverter>();

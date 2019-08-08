@@ -11,6 +11,8 @@
         public string QuestionText { get; set; }
         public int ResponseCount { get; set; }
         public int Importance { get; set; }
+        public DateTime CommitDate { get; set; }
+        public string Author { get; set; }
         public ICollection<CommentDto> Comments { get; set; } = new HashSet<CommentDto>();
     }
 

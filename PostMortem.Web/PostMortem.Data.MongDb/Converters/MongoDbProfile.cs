@@ -11,7 +11,9 @@
             this.CreateMap<Project, Domain.Projects.Project>().ConvertUsing<DomainProjectConverter>();
             this.CreateMap<Domain.Comments.Comment, Comment>().ConvertUsing<CommentConverter>();
             this.CreateMap<Domain.Questions.Question, Question>().ConvertUsing<QuestionConverter>();
+            this.CreateMap<Question, Domain.Questions.Question>().ConvertUsing<DomainQuestionConverter>();
             this.CreateMap<DomainEvent, EsEvent>().ConvertUsing<EsEventConverter>();
+            this.CreateMap<EsEvent, DomainEvent>().ConvertUsing<DomainEventConverter>();
         }
     }
 }

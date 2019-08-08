@@ -1,7 +1,6 @@
 ﻿namespace PostMortem.Web.Controllers
 {
     using System;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using ChaosMonkey.Guards;
@@ -13,8 +12,6 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Dtos;
-    using Zatoichi.Common.Infrastructure.Extensions;
-    using Zatoichi.Common.Infrastructure.Services;
 
     [Route("api/[controller]")]
     [ApiController]
@@ -52,7 +49,7 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] QuestionDto question, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create([FromBody] CreateQuestionDto question, CancellationToken cancellationToken)
         {
             Guard.IsNotNull(question, nameof(question));
 

@@ -3,9 +3,10 @@
     using System;
     using MongoDB.Bson.Serialization.Attributes;
 
+    [BsonIgnoreExtraElements]
     public class Project
     {
-        [BsonId]
+        [BsonElement("project_id")]
         public Guid ProjectId { get; set; }
 
         [BsonElement("project_name")]

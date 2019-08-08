@@ -12,7 +12,6 @@
     using Infrastructure;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using MongoDB.Bson;
     using MongoDB.Driver;
     using Zatoichi.Common.Infrastructure.Extensions;
     using Zatoichi.EventSourcing;
@@ -44,7 +43,8 @@
             MongoClientSettings settings = new MongoClientSettings
             {
                 Credential = mongoCredential,
-                Server = new MongoServerAddress(options.Value.MongoHost, int.Parse(options.Value.Port))
+                Server = new MongoServerAddress(options.Value.MongoHost, int.Parse(options.Value.Port)),
+                GuidRepresentation = MongoDB.Bson.GuidRepresentation.Standard
             };
 
             var client = new MongoClient(settings);
@@ -128,7 +128,7 @@
                 foreach (var question in domainQuestions)
                 {
                     var lastCommit = (from quest in questions
-                                      where quest.Id == question.QuestionId.Id
+                                      where quest.QuestionId == question.QuestionId.Id
                                       select quest.CommitDate).First();
 
                     var events = this.mapper.ProjectTo<DomainEvent>
@@ -148,7 +148,7 @@
 
             await this.DomainEvents.InsertManyAsync(esEvents, this.doBypassMany, cancellationToken).ConfigureAwait(false);
 
-            await this.Questions.ReplaceOneAsync(q => q.Id == question.QuestionId.Id,
+            await this.Questions.ReplaceOneAsync(q => q.QuestionId == question.QuestionId.Id,
                 this.mapper.Map<Question>(question), cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
@@ -157,37 +157,22 @@
             throw new NotImplementedException();
         }
 
-        public async Task<DomainQuestion> GetQuestionByIdAsync(Guid id, CancellationToken cancellationToken,
+        public  Task<DomainQuestion> GetQuestionByIdAsync(Guid id, CancellationToken cancellationToken,
             bool getSnapshot = false)
         {
-            var x = this.Questions.AsQueryable().FirstOrDefault();
-
-            // get the initial question
-            using (var questionCursor = await this.Questions.FindAsync(q => q.Id == id, cancellationToken: cancellationToken).ConfigureAwait(false))
+            var question = this.Questions.AsQueryable().FirstOrDefault(q => q.QuestionId == id);
+            if (question == null)
             {
-                var question = questionCursor.FirstOrDefault();
-                if (question == null)
-                {
-                    throw new QuestionNotFoundException();
-                }
-
-                var questionEntity = this.mapper.Map<DomainQuestion>(question);
-
-                // only get the events since the last time we took a snapshot of our question.
-                using (var domainEventsCursor = await this.DomainEvents.FindAsync(
-                        c => c.QuestionId == id && c.CommitDate > question.CommitDate,
-                        cancellationToken: cancellationToken).ConfigureAwait(false))
-                {
-
-                    var domainEvents = await domainEventsCursor.ToListAsync(cancellationToken).ConfigureAwait(false);
-                    questionEntity.ApplyEvents(domainEvents.Map(d => this.mapper.Map<DomainEvent>(d)).ToList());
-
-                    // clear the events on queries otherwise we'll likely persist them twice.
-                    questionEntity.ClearPendingEvents();
-
-                    return questionEntity;
-                }
+                throw new QuestionNotFoundException();
             }
+            // get the initial question
+            var questionEntity = this.mapper.Map<DomainQuestion>(question);
+            var domainEvents = this.DomainEvents.AsQueryable()
+                .Where(de => de.QuestionId == id && de.CommitDate > question.CommitDate).ToList();
+
+            questionEntity.ApplyEvents(domainEvents.Map(d => this.mapper.Map<DomainEvent>(d)).ToList());
+            questionEntity.ClearPendingEvents();
+            return Task.FromResult(questionEntity);
         }
 
         private IMongoCollection<EsEvent> DomainEvents => this.database.GetCollection<EsEvent>(Constants.DOMAIN_EVENTS_COLLECTION);

@@ -9,7 +9,7 @@
         {
             Guard.IsNotNull(source, nameof(source));
             destination =
-                new Domain.Questions.Question(source.QuestionText, source.ProjectId, source.Author, source.Id);
+                new Domain.Questions.Question(source.QuestionText, source.ProjectId, source.Author, source.QuestionId);
             return destination;
         }
     }

@@ -1,7 +1,9 @@
 ﻿namespace PostMortem.Data.MongoDb
 {
     using System;
+    using MongoDB.Bson.Serialization.Attributes;
 
+    [BsonIgnoreExtraElements]
     public class EsEvent
     {
         public string VoterId { get; set; }

@@ -46,6 +46,8 @@
         [HttpGet("{id}", Name = "GetProjectById")]
         public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
         {
+
+
             return new StatusCodeResult(500);
         }
 

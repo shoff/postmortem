@@ -4,9 +4,10 @@
     using System.ComponentModel.DataAnnotations;
     using MongoDB.Bson.Serialization.Attributes;
 
+    [BsonIgnoreExtraElements]
     public class Comment
     {
-        [BsonId]
+        [BsonElement("comment_id")]
         [Range(0, 50000)]
         public Guid CommentId { get; set; }
         

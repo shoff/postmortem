@@ -16,7 +16,7 @@
             {
                 Importance = 0,
                 ProjectId = source.ProjectId,
-                Id = source.QuestionId.Id,
+                QuestionId = source.QuestionId.Id,
                 QuestionText = source.QuestionText,
                 ResponseCount = 0,
                 Author = source.Author,

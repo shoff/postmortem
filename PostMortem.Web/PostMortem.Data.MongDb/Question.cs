@@ -5,10 +5,11 @@
     using System.ComponentModel.DataAnnotations;
     using MongoDB.Bson.Serialization.Attributes;
 
+    [BsonIgnoreExtraElements]
     public class Question
     {
-        [BsonId]
-        public Guid Id { get; set; }
+        [BsonElement("question_id")]
+        public Guid QuestionId { get; set; }
 
         [BsonElement("question_text")]
         public string QuestionText { get; set; }
